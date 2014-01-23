@@ -18,10 +18,13 @@
   },
   "dependencies": {
     "browser-split": "0.0.1",
-    "extend": "~1.2.1"
+    "extend": "~1.2.1",
+    "data-set": "~0.2.2",
+    "global": "~2.0.7"
   },
   "devDependencies": {
-    "tape": "~2.3.2"
+    "tape": "~2.3.2",
+    "min-document": "~0.3.1"
   },
   "licenses": [
     {
