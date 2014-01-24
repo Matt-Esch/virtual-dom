@@ -2,16 +2,20 @@ var DataSet = require("data-set")
 var globalDocument = require("global/document")
 
 var isString = require("./lib/is-string")
-var VirtualDOMNode = require("./virtual-dom-node")
+var isVirtualDomNode = require("./lib/is-virtual-dom")
 
 module.exports = render
 
 function render(virtualDom, opts) {
     var doc = opts ? opts.document || globalDocument : globalDocument
+    var warn = opts ? opts.warn : null
 
     if (isString(virtualDom)) {
         return doc.createTextNode(virtualDom)
-    } else if (!virtualDom instanceof VirtualDOMNode) {
+    } else if (!isVirtualDomNode(virtualDom)) {
+        if (warn) {
+            warn("Item is not a valid virtual dom node", virtualDom)
+        }
         return null
     }
 
@@ -20,7 +24,10 @@ function render(virtualDom, opts) {
     var children = virtualDom.children
 
     for (var i = 0; i < children.length; i++) {
-        node.appendChild(render(children[i]))
+        var childNode = render(children[i], opts)
+        if (childNode) {
+            node.appendChild(childNode)
+        }
     }
 
     return node

@@ -1,3 +1,5 @@
+var version = require("./version")
+
 module.exports = VirtualDOMNode
 
 function VirtualDOMNode(tagName, properties, children) {
@@ -5,3 +7,6 @@ function VirtualDOMNode(tagName, properties, children) {
     this.properties = properties
     this.children = children
 }
+
+VirtualDOMNode.prototype.version = version.split(".")
+VirtualDOMNode.prototype.type = "VirtualDOMNode"
