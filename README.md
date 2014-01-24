@@ -1,5 +1,7 @@
 # Virtual DOM and diffing algorithm
 
+(Please note this is currently work in progress)
+
 There was a [great article][1] about how react implements it's
   virtual DOM. There are some really interesting ideas in there
   but they are deeply buried in the implementation of the React
