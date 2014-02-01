@@ -1,7 +1,3 @@
-// NOT WORKING, just the general outline
-
-var deepEqual = require("deep-equal")
-
 var isVDOMNode = require("./lib/is-virtual-dom")
 var isVTextNode = require("./lib/is-virtual-text")
 
@@ -36,10 +32,11 @@ function walk(a, b, patch) {
 
     if (isVDOMNode(a) && isVDOMNode(b)) {
         if (a.tagName === b.tagName) {
-            if (!deepEqual(a.properties, b.properties)) {
+            var propsPatch = diffProps(a.properties, b.properties)
+            if (diffProps) {
                 apply = [{
                     type: "update",
-                    patch: diffProps(a.properties, b.properties)
+                    patch: propsPatch
                 }]
             }
 
@@ -81,6 +78,30 @@ function walk(a, b, patch) {
     }
 }
 
-function diffProps(a, b) {
+var nullProps = {}
 
+function diffProps(a, b) {
+    var diff
+
+    for (var aKey in a) {
+        if (aKey === "style") {
+            var styleDiff = diffProps(a.style, b.style || nullProps)
+            if (styleDiff) {
+                diff = diff || {}
+                diff.style = styleDiff
+            }
+        } else if (a[aKey] !== b[aKey]) {
+            diff = diff || {}
+            diff[aKey] = b[aKey]
+        }
+    }
+
+    for (var bKey in b) {
+        if (!(bKey in a)) {
+            diff = diff || {}
+            diff[bKey] = b[bKey]
+        }
+    }
+
+    return diff
 }

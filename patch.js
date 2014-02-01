@@ -14,13 +14,15 @@ function patch(rootNode, patches) {
             continue
         }
 
-        applyPatch(index[nodeIndex], patches[nodeIndex])
+        rootNode = applyPatch(rootNode, index[nodeIndex], patches[nodeIndex])
     }
+
+    return rootNode
 }
 
-function applyPatch(domNode, patchList) {
+function applyPatch(rootNode, domNode, patchList) {
     if (!domNode || !isArray(patchList)) {
-        return
+        return rootNode
     }
 
     for (var i = 0; i < patchList.length; i++) {
@@ -31,11 +33,17 @@ function applyPatch(domNode, patchList) {
         } else if (op.type ===  "insert") {
             insert(domNode, render(op.b))
         } else if (op.type === "replace") {
-            replace(domNode, render(op.b))
+            if (domNode === rootNode) {
+                rootNode = render(op.b)
+            } else {
+                replace(domNode, render(op.b))
+            }
         } else if (op.type === "update") {
             update(domNode, op.patch)
         }
     }
+
+    return rootNode
 }
 
 function remove(domNode) {
@@ -67,7 +75,15 @@ function update(domNode, patch) {
         }
     } else {
         for (var prop in patch) {
-            domNode[prop] = patch[prop]
+            if (prop === "style") {
+                var stylePatch = patch.style
+                var domStyle = domNode.style
+                for (var s in stylePatch) {
+                    domStyle[s] = stylePatch[s]
+                }
+            } else {
+                domNode[prop] = patch[prop]
+            }
         }
     }
 }
