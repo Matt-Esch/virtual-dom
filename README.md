@@ -12,7 +12,7 @@ However, it's possible to implement just the virtual DOM and
 
 ## Motivation
 
-The reason we wan't a diff engine is so that we can write our
+The reason we want a diff engine is so that we can write our
   templates as plain javascript functions that take in our
   current application state and returns a visual representation
   of the view for that state.
@@ -100,7 +100,7 @@ var applyUpdate = false
 computed([state.text, state.items], function () {
     // only call `update()` in next tick.
     // this allows for multiple synchronous changes to the state
-*    // in the current tick without re-rendering the virtual DOM
+    // in the current tick without re-rendering the virtual DOM
     if (applyUpdate === false) {
         applyUpdate = true
         setImmediate(function () {
@@ -122,7 +122,7 @@ function update() {
 // at 60 fps, batch all the patches and then apply them
 raf(function renderDOM() {
     var patches = batch(diffQueue)
-    patch(elem, patches)
+    elem = patch(elem, patches)
 
     raf(renderDOM)
 })
@@ -167,11 +167,12 @@ Generally you want to call `batch` 60 or 30 times per second to
 `batch` also does other useful things like re-ordering mutations
   to avoid reflows.
 
-### `patch(elem, patches)`
+### `var elem = patch(elem, patches)`
 
 `patch` will take a real DOM element and apply the DOM mutations
   in order. This is the only part that actually does the
-  expensive work of mutating the DOM.
+  expensive work of mutating the DOM. In case that the root node
+  needs to be replaced, the root is returned from the operation
 
 We recommend you do this in a `requestAnimationFrame` handler.
 
