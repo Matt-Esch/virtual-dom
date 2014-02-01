@@ -2,18 +2,20 @@
 
 var deepEqual = require("deep-equal")
 
-var isVirtualDomNode = require("./lib/is-virtual-dom")
+var isVDOMNode = require("./lib/is-virtual-dom")
+var isVTextNode = require("./lib/is-virtual-text")
 
 module.exports = diff
 
 function diff(a, b) {
+    var patch = {}
     // index a and b so we can implicitly reference
     indexTree(a)
-    indexTree(b)
-    return walk(a, b)
+    walk(a, b, patch)
+    return patch
 }
 
-// Index the tree in-order
+// Index the tree in-order (we should be able to avoid this)
 function indexTree(tree, index) {
     index = index || 0
     tree.index = index
@@ -27,14 +29,15 @@ function indexTree(tree, index) {
     return tree.index
 }
 
+var remove = { type: "remove" }
 
 function walk(a, b, patch) {
-    patch = patch || []
+    var apply
 
-    if (isVirtualDomNode(a) && isVirtualDomNode(b)) {
+    if (isVDOMNode(a) && isVDOMNode(b)) {
         if (a.tagName === b.tagName) {
             if (!deepEqual(a.properties, b.properties)) {
-                patch.push({ type: "update", a: a.index, b: b.index })
+                apply = [{ type: "update", b: b }]
             }
 
             var aChildren = a.children
@@ -50,21 +53,27 @@ function walk(a, b, patch) {
 
             // Excess nodes in a need to be removed
             for (; i < aLen; i++) {
-                patch.push({ type: "delete", a: aChildren[i].index })
+                patch[aChildren[i].index] = [remove]
             }
 
             // Excess nodes in b need to be added
             for (; i < bLen; i++) {
-                patch.push({
+                apply = apply || []
+                apply.push({
                     type: "insert",
-                    a: a.index,
-                    b: bChildren[i].index
+                    b: bChildren[i]
                 })
             }
         } else {
-            patch.push({ type: "replace", a: a.index, b: b.index })
+            apply = [{ type: "replace", b: b }]
         }
+    } else if (isVTextNode(a) && isVTextNode(b) && a.text !== b.text) {
+        apply = [{ type: "update", b: b }]
     } else if (a !== b) {
-        patch.push({ type: "replace", a: a.index, b: b.index })
+        apply = [{ type: "replace", b: b }]
+    }
+
+    if (apply) {
+        patch[a.index] = apply
     }
 }
