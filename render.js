@@ -1,8 +1,9 @@
 var DataSet = require("data-set")
-var globalDocument = require("global/document")
+var globalDocument = require("./lib/document")
 
 var isVirtualDomNode = require("./lib/is-virtual-dom")
 var isVirtualTextNode = require("./lib/is-virtual-text")
+var isString = require("./lib/is-string")
 
 module.exports = render
 
@@ -12,6 +13,8 @@ function render(virtualDom, opts) {
 
     if (isVirtualTextNode(virtualDom)) {
         return doc.createTextNode(virtualDom.text)
+    } else if (isString(virtualDom)) {
+        return doc.createTextNode(virtualDom)
     } else if (!isVirtualDomNode(virtualDom)) {
         if (warn) {
             warn("Item is not a valid virtual dom node", virtualDom)

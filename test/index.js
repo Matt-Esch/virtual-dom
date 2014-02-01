@@ -2,6 +2,8 @@ var test = require("tape")
 var DataSet = require("data-set")
 
 var h = require("../h")
+var diff = require("../diff")
+var patch = require("../patch")
 var Node = require("../virtual-dom-node")
 var render = require("../render")
 var tags = require("./tags.json")
@@ -370,6 +372,18 @@ test("injected warning is used", function (assert) {
     assert.equal(dom.style.cssText, "border:1px solid #000")
     assert.equal(dom.childNodes.length, 0)
     assert.equal(i, 2)
+    assert.end()
+})
+
+
+// Complete patch test
+test("Complete patch test", function (assert) {
+    var hello = h("div", "hello")
+    var goodbye = h("div", "goodbye")
+    var rootNode = render(hello)
+    var equalNode = render(goodbye)
+    var patches = diff(hello, goodbye)
+    patch(rootNode, patches)
     assert.end()
 })
 

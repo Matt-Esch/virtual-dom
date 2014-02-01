@@ -8,7 +8,7 @@ var isVTextNode = require("./lib/is-virtual-text")
 module.exports = diff
 
 function diff(a, b) {
-    var patch = {}
+    var patch = { a: a }
     // index a and b so we can implicitly reference
     indexTree(a)
     walk(a, b, patch)
@@ -37,7 +37,10 @@ function walk(a, b, patch) {
     if (isVDOMNode(a) && isVDOMNode(b)) {
         if (a.tagName === b.tagName) {
             if (!deepEqual(a.properties, b.properties)) {
-                apply = [{ type: "update", b: b }]
+                apply = [{
+                    type: "update",
+                    patch: diffProps(a.properties, b.properties)
+                }]
             }
 
             var aChildren = a.children
@@ -68,7 +71,7 @@ function walk(a, b, patch) {
             apply = [{ type: "replace", b: b }]
         }
     } else if (isVTextNode(a) && isVTextNode(b) && a.text !== b.text) {
-        apply = [{ type: "update", b: b }]
+        apply = [{ type: "update", patch: b.text }]
     } else if (a !== b) {
         apply = [{ type: "replace", b: b }]
     }
@@ -76,4 +79,8 @@ function walk(a, b, patch) {
     if (apply) {
         patch[a.index] = apply
     }
+}
+
+function diffProps(a, b) {
+
 }
