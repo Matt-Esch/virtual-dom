@@ -159,7 +159,7 @@ function assertNode(assert, node, tagName, properties, children) {
         var child = children[i]
 
         if (typeof child === "string") {
-            assert.equal(node.children[i], child)
+            assert.equal(node.children[i].text, child)
         } else {
             assertNode(assert,
                 node.children[i],

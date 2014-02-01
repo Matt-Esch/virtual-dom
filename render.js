@@ -1,8 +1,8 @@
 var DataSet = require("data-set")
 var globalDocument = require("global/document")
 
-var isString = require("./lib/is-string")
 var isVirtualDomNode = require("./lib/is-virtual-dom")
+var isVirtualTextNode = require("./lib/is-virtual-text")
 
 module.exports = render
 
@@ -10,8 +10,8 @@ function render(virtualDom, opts) {
     var doc = opts ? opts.document || globalDocument : globalDocument
     var warn = opts ? opts.warn : null
 
-    if (isString(virtualDom)) {
-        return doc.createTextNode(virtualDom)
+    if (isVirtualTextNode(virtualDom)) {
+        return doc.createTextNode(virtualDom.text)
     } else if (!isVirtualDomNode(virtualDom)) {
         if (warn) {
             warn("Item is not a valid virtual dom node", virtualDom)
@@ -42,7 +42,7 @@ function applyProperties(node, props) {
                 node.style.cssText = propValue
             } else {
                 for (var s in propValue) {
-                    node.style.setProperty(s, propValue[s])
+                    node.style[s] = propValue[s]
                 }
             }
         } else if (propName.substr(0, 5) === "data-") {
