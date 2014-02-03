@@ -30,6 +30,10 @@ var remove = { type: "remove" }
 function walk(a, b, patch) {
     var apply
 
+    if (a === b) {
+        return
+    }
+
     if (isVDOMNode(a) && isVDOMNode(b)) {
         if (a.tagName === b.tagName) {
             var propsPatch = diffProps(a.properties, b.properties)
