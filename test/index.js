@@ -465,6 +465,20 @@ test("dom node remove", function (assert) {
     assert.end()
 })
 
+
+test("reuse dom node without breaking", function (assert) {
+    var hSpan = h("span", "hello")
+    var hello = h("div", [hSpan, hSpan, hSpan])
+    var goodbye = h("div", [h("span", "hello"), hSpan, h("span", "goodbye")])
+    var rootNode = render(hello)
+    var equalNode = render(goodbye)
+    var patches = diff(hello, goodbye)
+    var newRoot = patch(rootNode, patches)
+    assertEqualDom(assert, newRoot, equalNode)
+    assert.end()
+
+})
+
 function assertEqualDom(assert, a, b) {
     for (var key in a) {
         if (key !== "parentNode") {

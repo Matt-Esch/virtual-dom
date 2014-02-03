@@ -1,3 +1,6 @@
+var VirtualDOMNode = require("./virtual-dom-node")
+var VirtualTextNode = require("./virtual-text-node")
+
 var isVDOMNode = require("./lib/is-virtual-dom")
 var isVTextNode = require("./lib/is-virtual-text")
 
@@ -5,20 +8,36 @@ module.exports = diff
 
 function diff(a, b) {
     var patch = { a: a }
-    // index a and b so we can implicitly reference
+    // index a so we can implicitly reference
     indexTree(a)
     walk(a, b, patch)
     return patch
 }
 
 // Index the tree in-order (we should be able to avoid this)
-function indexTree(tree, index) {
+function indexTree(tree, index, parent, c) {
+    if (tree.index === 0) {
+        // The tree has already been indexed once
+        return
+    } else if (tree.index && tree.index > 0 && parent) {
+        // This node has been indexed somewhere else in the tree, so clone
+        if (isVDOMNode(tree)) {
+            tree = parent[c] = new VirtualDOMNode(
+                tree.tagName,
+                tree.properties,
+                tree.children)
+        } else if (isVTextNode(tree)) {
+            tree = parent[c] = new VirtualTextNode(tree.text)
+        }
+    }
+
     index = index || 0
+
     tree.index = index
 
     if (tree.children) {
         for (var i = 0; i < tree.children.length; i++) {
-            index = indexTree(tree.children[i], index + 1)
+            index = indexTree(tree.children[i], index + 1, tree, i)
         }
     }
 
