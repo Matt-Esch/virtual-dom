@@ -27,7 +27,8 @@
     "tape": "~2.3.2",
     "min-document": "git+ssh://github.com:Matt-Esch/min-document",
     "data-set": "~0.2.2",
-    "semver": "~2.2.1"
+    "semver": "~2.2.1",
+    "serve-browserify": "~0.3.3"
   },
   "licenses": [
     {
