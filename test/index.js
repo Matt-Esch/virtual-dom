@@ -475,8 +475,15 @@ test("reuse dom node without breaking", function (assert) {
     var patches = diff(hello, goodbye)
     var newRoot = patch(rootNode, patches)
     assertEqualDom(assert, newRoot, equalNode)
-    assert.end()
 
+    // Undo the rendering with new trees
+    hello = h("div", [hSpan, hSpan, hSpan])
+    goodbye = h("div", [h("span", "hello"), hSpan, h("span", "goodbye")])
+    patches = diff(goodbye, hello)
+    newRoot = patch(rootNode, patches)
+    assertEqualDom(assert, newRoot, rootNode)
+
+    assert.end()
 })
 
 function assertEqualDom(assert, a, b) {

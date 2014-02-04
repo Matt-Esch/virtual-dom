@@ -14,12 +14,13 @@ function diff(a, b) {
     return patch
 }
 
-// Index the tree in-order (we should be able to avoid this)
+// Index the tree in-order
 function indexTree(tree, index, parent, c) {
-    if (tree.index === 0) {
+
+    if (tree.index === 0 && !parent) {
         // The tree has already been indexed once
         return
-    } else if (tree.index && tree.index > 0 && parent) {
+    } else if (tree.index >= 0 && parent) {
         // This node has been indexed somewhere else in the tree, so clone
         if (isVDOMNode(tree)) {
             tree = parent[c] = new VirtualDOMNode(
@@ -32,7 +33,6 @@ function indexTree(tree, index, parent, c) {
     }
 
     index = index || 0
-
     tree.index = index
 
     if (tree.children) {
