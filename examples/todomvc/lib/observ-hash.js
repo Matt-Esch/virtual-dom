@@ -14,7 +14,8 @@ function ObservHash(hash) {
 
     keys.forEach(function (key) {
         var observ = hash[key]
-        initialState[key] = observ()
+        initialState[key] = typeof observ === "function" ?
+            observ() : observ
     })
 
     var obs = Observ(initialState)
@@ -22,11 +23,13 @@ function ObservHash(hash) {
         var observ = hash[key]
         obs[key] = observ
 
-        observ(function (value) {
-            var state = extend(obs())
-            state[key] = value
-            obs.set(state)
-        })
+        if (typeof observ === "function") {
+            observ(function (value) {
+                var state = extend(obs())
+                state[key] = value
+                obs.set(state)
+            })
+        }
     })
 
     return obs

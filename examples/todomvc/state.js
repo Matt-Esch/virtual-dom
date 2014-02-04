@@ -1,3 +1,5 @@
+var uuid = require("uuid")
+
 var ObservHash = require("./lib/observ-hash.js")
 var ObservArray = require("./lib/observ-array.js")
 var Observ = require("./lib/observ.js")
@@ -14,7 +16,10 @@ function State(initialState) {
 
     var state = ObservHash({
         todos: ObservArray(initialState.todos),
-        route: Observ(initialState.route)
+        route: Observ(initialState.route),
+        evs: {
+            todos: uuid()
+        }
     })
 
     return state
