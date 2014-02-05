@@ -74,11 +74,23 @@ function todoItem(evs, todo) {
         h("input.edit", {
             value: todo.title,
             name: "title",
+            // when we need an RPC invocation we add a 
+            // custom mutable operation into the tree to be
+            // invoked at patch time
+            "data-focus": todo.editing ? doMutableFocus : null,
             "data-change": event(evs.todo, "textChange"),
             "data-submit": event(evs.todo, "edit"),
             "data-blur": event(evs.todo, "edit")
         })
     ])
+}
+
+var document = require("global/document")
+
+function doMutableFocus(node, property) {
+    if (document.activeElement !== node) {
+        node.focus();
+    }
 }
 
 function statsSection(todos, route) {
