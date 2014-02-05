@@ -59,7 +59,7 @@ function todoItem(todo, evs) {
     var className = (todo.completed ? "completed " : "") +
         (todo.editing ? "editing" : "")
 
-    return h("li", { className: className }, [
+    return h("li", { className: className, key: todo.id }, [
         h(".view", [
             h("input.toggle", {
                 type: "checkbox",
