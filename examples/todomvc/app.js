@@ -5,12 +5,13 @@ var footer = infoFooter()
 
 module.exports = App
 
+/* state is a plain JS object */
 function App(state) {
-    return h("div.todomvc-wrapper", [
+    return h(".todomvc-wrapper", [
         h("section.todoapp", [
             partial(header, state.todoField, state.evs.todos),
-            partial(mainSection, state),
-            partial(statsSection, state)
+            partial(mainSection, state.todos, state.route, state.evs),
+            partial(statsSection, state.todos, state.route)
         ]),
         footer
     ])
@@ -31,35 +32,77 @@ function header(todoField, evsTodos) {
     ])
 }
 
-function mainSection() {}
+function mainSection(todos, route, evs) {
+    var allCompleted = todos.every(function (todo) {
+        return todo.completed
+    })
+    var visibleTodos = todos.filter(function (todo) {
+        return route === "completed" && todo.completed ||
+            route === "active" && !todo.completed ||
+            route === "all"
+    })
 
-function statsSection(state) {
-    var todosLeft = state.todos.filter(function (todo) {
+    return h("section.main", { hidden: !todos.length }, [
+        h("input#toggle-all.toggle-all", {
+            type: "checkbox",
+            checked: allCompleted,
+            "data-change": event(evs.todos, "toggleAll")
+        }),
+        h("label", { htmlFor: "toggle-all" }, "Mark all as complete"),
+        h("ul.todolist", visibleTodos.map(todoItem.bind(null, evs)))
+    ])
+}
+
+function todoItem(evs, todo) {
+    var className = (todo.completed ? "completed " : "") +
+        (todo.editing ? "editing" : "")
+
+    return h("li", { className: className }, [
+        h(".view", [
+            h("input.toggle", {
+                type: "checkbox",
+                checked: todo.completed,
+                "data-change": event(evs.todo, "toggle", todo.completed)
+            }),
+            h("label", {
+                "data-dblclick": event(evs.todo, "editing")
+            }, todo.title),
+            h("button.destroy", {
+                "data-click": event(evs.todo, "destroy", todo.id)
+            })
+        ]),
+        h("input.edit", {
+            value: todo.title,
+            name: "title",
+            "data-change": event(evs.todo, "textChange"),
+            "data-submit": event(evs.todo, "edit"),
+            "data-blur": event(evs.todo, "edit")
+        })
+    ])
+}
+
+function statsSection(todos, route) {
+    var todosLeft = todos.filter(function (todo) {
         return !todo.completed
     }).length
 
-    return h("footer.footer", {
-        hidden: state.todos.length === 0
-    }, [
+    return h("footer.footer", { hidden: !todos.length }, [
         h("span.todo-count", [
             h("strong", todosLeft),
             todosLeft === 1 ? " item" : " items",
             " left"
         ]),
         h("ul.filters", [
-            link("#/", "All", state.route === "all"),
-            link("#/active", "Active", state.route === "active"),
-            link("#/completed", "Completed", state.route === "completed")
+            link("#/", "All", route === "all"),
+            link("#/active", "Active", route === "active"),
+            link("#/completed", "Completed", route === "completed")
         ])
     ])
 }
 
 function link(uri, text, isSelected) {
     return h("li", [
-        h("a", {
-            className: isSelected ? "selected" : "",
-            href: uri
-        }, text)
+        h("a", { className: isSelected ? "selected" : "", href: uri }, text)
     ])
 }
 
