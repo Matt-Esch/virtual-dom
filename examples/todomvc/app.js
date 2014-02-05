@@ -49,11 +49,13 @@ function mainSection(todos, route, evs) {
             "data-change": event(evs.todos, "toggleAll")
         }),
         h("label", { htmlFor: "toggle-all" }, "Mark all as complete"),
-        h("ul.todolist", visibleTodos.map(todoItem.bind(null, evs)))
+        h("ul.todolist", visibleTodos.map(function (todo) {
+            return partial(todoItem, todo, evs)
+        }))
     ])
 }
 
-function todoItem(evs, todo) {
+function todoItem(todo, evs) {
     var className = (todo.completed ? "completed " : "") +
         (todo.editing ? "editing" : "")
 
