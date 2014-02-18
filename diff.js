@@ -113,9 +113,14 @@ function diffProps(a, b) {
                 diff = diff || {}
                 diff.style = styleDiff
             }
-        } else if (a[aKey] !== b[aKey]) {
-            diff = diff || {}
-            diff[aKey] = b[aKey]
+        } else {
+            var aValue = a[aKey]
+            var bValue = a[bKey]
+            
+            if (typeof aValue === "function" || a[aKey] !== b[aKey]) {
+                diff = diff || {}
+                diff[aKey] = b[aKey]
+            }
         }
     }
 

@@ -82,7 +82,13 @@ function update(domNode, patch) {
                     domStyle[s] = stylePatch[s]
                 }
             } else {
-                domNode[prop] = patch[prop]
+                var patchValue = patch[prop]
+
+                if (typeof patchValue === "function") {
+                    patchValue(domNode[prop], prop)
+                } else {
+                    domNode[prop] = patchValue
+                }
             }
         }
     }
