@@ -85,7 +85,7 @@ function update(domNode, patch) {
                 var patchValue = patch[prop]
 
                 if (typeof patchValue === "function") {
-                    patchValue(domNode[prop], prop)
+                    patchValue(domNode, prop)
                 } else {
                     domNode[prop] = patchValue
                 }
