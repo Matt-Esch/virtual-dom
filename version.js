@@ -1,4 +1,3 @@
-var pj = require("./package.json")
 var semver = require("semver")
 
-module.exports = semver.clean(pj.version)
+module.exports = semver.clean("0.1.0")
