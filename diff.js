@@ -61,7 +61,7 @@ function walk(a, b, patch) {
         b = a
     } else if (isVDOMNode(a) && isVDOMNode(b) && a.tagName === b.tagName) {
         var propsPatch = diffProps(a.properties, b.properties)
-        if (diffProps) {
+        if (propsPatch) {
             apply = [{
                 type: "update",
                 patch: propsPatch

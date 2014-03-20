@@ -11,7 +11,9 @@ function render(virtualDom, opts) {
     var doc = opts ? opts.document || globalDocument : globalDocument
     var warn = opts ? opts.warn : null
 
-    if (isVirtualTextNode(virtualDom)) {
+    if (virtualDom && typeof virtualDom.init === "function") {
+        return virtualDom.init()
+    } else if (isVirtualTextNode(virtualDom)) {
         return doc.createTextNode(virtualDom.text)
     } else if (isString(virtualDom)) {
         return doc.createTextNode(virtualDom)
@@ -40,7 +42,9 @@ function applyProperties(node, props) {
     for (var propName in props) {
         var propValue = props[propName]
 
-        if(propName === "style") {
+        if (typeof propValue === "function") {
+            propValue(node, propName)
+        } else if(propName === "style") {
             if(typeof propValue === "string") {
                 node.style.cssText = propValue
             } else {

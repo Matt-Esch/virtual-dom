@@ -76,7 +76,7 @@ function replace(domNode, newNode) {
 function update(domNode, patch) {
     if (isString(patch)) {
         if (domNode.nodeType === 3) {
-            domNode.replaceData(patch)
+            domNode.replaceData(0, patch.length, patch)
         } else  if (patch.a && patch.bl) {
             // update widget
             var wNode = patch.a.update(patch.b)
