@@ -3,6 +3,7 @@ var VirtualTextNode = require("./virtual-text-node")
 
 var isVDOMNode = require("./lib/is-virtual-dom")
 var isVTextNode = require("./lib/is-virtual-text")
+var isWidget = require("./lib/is-widget")
 
 module.exports = diff
 
@@ -29,6 +30,8 @@ function indexTree(tree, index, parent, c) {
                 tree.children)
         } else if (isVTextNode(tree)) {
             tree = parent[c] = new VirtualTextNode(tree.text)
+        } else if (isWidget(tree)) {
+            tree = tree.init(tree)  // calling init with self should clone
         }
     }
 
@@ -44,61 +47,86 @@ function indexTree(tree, index, parent, c) {
     return tree.index
 }
 
-var remove = { type: "remove" }
+var remove = [{ type: "remove" }]
 
 function walk(a, b, patch) {
     var apply
 
     if (a === b) {
-        return
+        return b
     }
 
-    if (isVDOMNode(a) && isVDOMNode(b)) {
-        if (a.tagName === b.tagName) {
-            var propsPatch = diffProps(a.properties, b.properties)
-            if (diffProps) {
-                apply = [{
-                    type: "update",
-                    patch: propsPatch
+    if (updateWidget(a, b)) {
+        apply = [{ "type": "update", widget: a, patch: b }]
+        b = a
+    } else if (isVDOMNode(a) && isVDOMNode(b) && a.tagName === b.tagName) {
+        var propsPatch = diffProps(a.properties, b.properties)
+        if (diffProps) {
+            apply = [{
+                type: "update",
+                patch: propsPatch
+            }]
+        }
+
+        var aChildren = a.children
+        var bChildren = b.children
+        var aLen = aChildren.length
+        var bLen = bChildren.length
+        var len = aLen < bLen ? aLen : bLen
+
+        for (var i = 0; i < len; i++) {
+            var rightNode = bChildren[i]
+            var newRight = walk(aChildren[i], rightNode, patch)
+
+            if (rightNode !== newRight) {
+                b[i] = newRight
+            }
+        }
+
+        // Excess nodes in a need to be removed
+        for (; i < aLen; i++) {
+            var excess = aChildren[i]
+            if (isWidget(excess)) {
+                patch[excess.index] = [{
+                    type: "remove",
+                    widget: excess
                 }]
+            } else {
+                patch[aChildren[i].index] = remove
             }
+        }
 
-            var aChildren = a.children
-            var bChildren = b.children
-            var aLen = aChildren.length
-            var bLen = bChildren.length
-            var len = aLen < bLen ? aLen : bLen
-
-
-            for (var i = 0; i < len; i++) {
-                walk(aChildren[i], bChildren[i], patch)
-            }
-
-            // Excess nodes in a need to be removed
-            for (; i < aLen; i++) {
-                patch[aChildren[i].index] = [remove]
-            }
-
-            // Excess nodes in b need to be added
-            for (; i < bLen; i++) {
-                apply = apply || []
+        // Excess nodes in b need to be added
+        for (; i < bLen; i++) {
+            apply = apply || []
+            var addition = bChildren[i]
+            if (isWidget(addition)) {
                 apply.push({
                     type: "insert",
-                    b: bChildren[i]
+                    widget: addition
+                })
+            } else {
+                apply.push({
+                    type: "insert",
+                    b: addition
                 })
             }
-        } else {
-            apply = [{ type: "replace", b: b }]
         }
     } else if (isVTextNode(a) && isVTextNode(b) && a.text !== b.text) {
         apply = [{ type: "update", patch: b.text }]
     } else if (a !== b) {
-        apply = [{ type: "replace", b: b }]
+        if (isWidget(b)) {
+            apply = [{ type: "replace", widget: b }]
+        } else {
+            apply = [{ type: "replace", b: b }]
+        }
     }
 
     if (apply) {
         patch[a.index] = apply
     }
+
+    return b
 }
 
 var nullProps = {}
@@ -115,11 +143,11 @@ function diffProps(a, b) {
             }
         } else {
             var aValue = a[aKey]
-            var bValue = a[bKey]
-            
-            if (typeof aValue === "function" || a[aKey] !== b[aKey]) {
+            var bValue = b[aKey]
+
+            if (typeof aValue === "function" || aValue !== bValue) {
                 diff = diff || {}
-                diff[aKey] = b[aKey]
+                diff[aKey] = bValue
             }
         }
     }
@@ -132,4 +160,16 @@ function diffProps(a, b) {
     }
 
     return diff
+}
+
+function updateWidget(a, b) {
+    if (isWidget(a) && isWidget(b)) {
+        if ("type" in a && "type" in b) {
+            return a.type === b.type
+        } else {
+            return a.init === b.init
+        }
+    }
+
+    return false
 }

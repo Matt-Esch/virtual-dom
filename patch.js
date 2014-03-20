@@ -30,8 +30,15 @@ function applyPatch(rootNode, domNode, patchList) {
 
         if (op.type === "remove") {
             remove(domNode)
+            if (op.widget) {
+                op.widget.destroy()
+            }
         } else if (op.type ===  "insert") {
-            insert(domNode, render(op.b))
+            if (op.widget) {
+                insert(domNode, op.widget.init())
+            } else {
+                insert(domNode, render(op.b))
+            }
         } else if (op.type === "replace") {
             if (domNode === rootNode) {
                 rootNode = render(op.b)
@@ -70,7 +77,13 @@ function update(domNode, patch) {
     if (isString(patch)) {
         if (domNode.nodeType === 3) {
             domNode.replaceData(patch)
-        } else  {
+        } else  if (patch.a && patch.bl) {
+            // update widget
+            var wNode = patch.a.update(patch.b)
+            if (domNode !== wNode) {
+                replace(domNode, wNode)
+            }
+        } else {
             replace(domNode, render(patch))
         }
     } else {
