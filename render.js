@@ -42,7 +42,9 @@ function applyProperties(node, props) {
     for (var propName in props) {
         var propValue = props[propName]
 
-        if(propName === "style") {
+        if (typeof propValue === "function") {
+            propValue(node, propName)
+        } else if(propName === "style") {
             if(typeof propValue === "string") {
                 node.style.cssText = propValue
             } else {
