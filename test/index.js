@@ -489,6 +489,14 @@ test("reuse dom node without breaking", function (assert) {
     assert.end()
 })
 
+test("Allow empty textnode", function (assert) {
+    var empty = h("span", "")
+    var rootNode = render(empty)
+    assert.equal(rootNode.childNodes.length, 1)
+    assert.equal(rootNode.childNodes[0].data, "")
+    assert.end()
+})
+
 function assertEqualDom(assert, a, b) {
     for (var key in a) {
         if (key !== "parentNode") {
