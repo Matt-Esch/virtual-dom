@@ -35,6 +35,9 @@ test("defaults to div node", function (assert) {
     assert.end()
 })
 
+
+/*
+
 test("works with basic html tag types", function (assert) {
     var nodes = []
 
@@ -61,7 +64,7 @@ test("forces lowercase tag names", function (assert) {
     }
 
     assert.end()
-})
+}) */
 
 test("can use class selector", function (assert) {
     var node = h("div.pretty")
@@ -375,7 +378,6 @@ test("injected warning is used", function (assert) {
     assert.end()
 })
 
-
 // Complete patch tests
 test("textnode update test", function (assert) {
     var hello = h("div", "hello")
@@ -422,6 +424,7 @@ test("textnode remove", function (assert) {
 })
 
 test("dom node update test", function (assert) {
+    debugger
     var hello = h("div.hello", "hello")
     var goodbye = h("div.goodbye", "goodbye")
     var rootNode = render(hello)

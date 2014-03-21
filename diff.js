@@ -1,6 +1,7 @@
-var VirtualDOMNode = require("./virtual-dom-node")
-var VirtualTextNode = require("./virtual-text-node")
+var createPatch = require("./lib/patch-op")
 
+var indexTree = require("./lib/vtree-index")
+var isArray = require("./lib/is-array")
 var isVDOMNode = require("./lib/is-virtual-dom")
 var isVTextNode = require("./lib/is-virtual-text")
 var isWidget = require("./lib/is-widget")
@@ -15,111 +16,34 @@ function diff(a, b) {
     return patch
 }
 
-// Index the tree in-order
-function indexTree(tree, index, parent, c) {
 
-    if (tree.index === 0 && !parent) {
-        // The tree has already been indexed once
-        return
-    } else if (tree.index >= 0 && parent) {
-        // This node has been indexed somewhere else in the tree, so clone
-        if (isVDOMNode(tree)) {
-            tree = parent[c] = new VirtualDOMNode(
-                tree.tagName,
-                tree.properties,
-                tree.children)
-        } else if (isVTextNode(tree)) {
-            tree = parent[c] = new VirtualTextNode(tree.text)
-        } else if (isWidget(tree)) {
-            tree = tree.init(tree)  // calling init with self should clone
-        }
-    }
-
-    index = index || 0
-    tree.index = index
-
-    if (tree.children) {
-        for (var i = 0; i < tree.children.length; i++) {
-            index = indexTree(tree.children[i], index + 1, tree, i)
-        }
-    }
-
-    return tree.index
-}
-
-var remove = [{ type: "remove" }]
 
 function walk(a, b, patch) {
-    var apply
-
     if (a === b) {
         return b
     }
 
-    if (updateWidget(a, b)) {
-        apply = [{ "type": "update", widget: a, patch: b }]
-        b = a
+    var apply = patch[a.index]
+
+
+    if (isWidget(a)) {
+        apply = appendPatch(apply, createPatch(a, b))
+        b = a // replaces the widget in b with the stateful a widget
+    } else if (isWidget(b)) {
+        apply = appendPatch(apply, createPatch(a, b))
+     } else if (isVTextNode(a) && isVTextNode(b)) {
+        if (a.text !== b.text) {
+            apply = appendPatch(apply, createPatch(a.text, b.text))
+        }
     } else if (isVDOMNode(a) && isVDOMNode(b) && a.tagName === b.tagName) {
         var propsPatch = diffProps(a.properties, b.properties)
         if (propsPatch) {
-            apply = [{
-                type: "update",
-                patch: propsPatch
-            }]
+            apply = appendPatch(apply, createPatch(a.properties, b.properties))
         }
 
-        var aChildren = a.children
-        var bChildren = b.children
-        var aLen = aChildren.length
-        var bLen = bChildren.length
-        var len = aLen < bLen ? aLen : bLen
-
-        for (var i = 0; i < len; i++) {
-            var rightNode = bChildren[i]
-            var newRight = walk(aChildren[i], rightNode, patch)
-
-            if (rightNode !== newRight) {
-                b[i] = newRight
-            }
-        }
-
-        // Excess nodes in a need to be removed
-        for (; i < aLen; i++) {
-            var excess = aChildren[i]
-            if (isWidget(excess)) {
-                patch[excess.index] = [{
-                    type: "remove",
-                    widget: excess
-                }]
-            } else {
-                patch[aChildren[i].index] = remove
-            }
-        }
-
-        // Excess nodes in b need to be added
-        for (; i < bLen; i++) {
-            apply = apply || []
-            var addition = bChildren[i]
-            if (isWidget(addition)) {
-                apply.push({
-                    type: "insert",
-                    widget: addition
-                })
-            } else {
-                apply.push({
-                    type: "insert",
-                    b: addition
-                })
-            }
-        }
-    } else if (isVTextNode(a) && isVTextNode(b) && a.text !== b.text) {
-        apply = [{ type: "update", patch: b.text }]
+        apply = diffChildren(a, b, patch, apply)
     } else if (a !== b) {
-        if (isWidget(b)) {
-            apply = [{ type: "replace", widget: b }]
-        } else {
-            apply = [{ type: "replace", b: b }]
-        }
+        apply = appendPatch(apply, createPatch(a, b))
     }
 
     if (apply) {
@@ -162,14 +86,47 @@ function diffProps(a, b) {
     return diff
 }
 
-function updateWidget(a, b) {
-    if (isWidget(a) && isWidget(b)) {
-        if ("type" in a && "type" in b) {
-            return a.type === b.type
-        } else {
-            return a.init === b.init
+function diffChildren(a, b, patch, apply) {
+    var aChildren = a.children
+    var bChildren = b.children
+    var aLen = aChildren.length
+    var bLen = bChildren.length
+    var len = aLen < bLen ? aLen : bLen
+
+    for (var i = 0; i < len; i++) {
+        var rightNode = bChildren[i]
+        var newRight = walk(aChildren[i], rightNode, patch)
+
+        if (rightNode !== newRight) {
+            bChildren[i] = newRight
         }
     }
 
-    return false
+    // Excess nodes in a need to be removed
+    for (; i < aLen; i++) {
+        var excess = aChildren[i]
+        patch[excess.index] = createPatch(excess, null)
+    }
+
+    // Excess nodes in b need to be added
+    for (; i < bLen; i++) {
+        var addition = bChildren[i]
+        apply = appendPatch(apply, createPatch(null, addition))
+    }
+
+    return apply
+}
+
+function appendPatch(apply, patch) {
+    if (apply) {
+        if (isArray(apply)) {
+            apply.push(patch)
+        } else {
+            apply = [apply, patch]
+        }
+
+        return apply
+    } else {
+        return patch
+    }
 }

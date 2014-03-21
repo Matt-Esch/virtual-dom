@@ -28,7 +28,7 @@ function h(tagName, properties, children) {
 
     if (children) {
         if (isArray(children)) {
-            for (var i =0; i < children.length; i++) {
+            for (var i = 0; i < children.length; i++) {
                 addChild(children[i], childNodes)
             }
         } else {
