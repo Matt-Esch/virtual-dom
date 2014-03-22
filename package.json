@@ -20,13 +20,11 @@
     "browser-split": "0.0.1",
     "extend": "~1.2.1",
     "data-set": "~0.2.2",
-    "min-document": "~1.0.3",
-    "deep-equal": "~0.1.2"
+    "semver": "~2.2.1"
   },
   "devDependencies": {
     "tape": "~2.3.2",
-    "data-set": "~0.2.2",
-    "semver": "~2.2.1"
+    "min-document": "~2.0.0"
   },
   "licenses": [
     {
