@@ -1,6 +1,5 @@
 var createPatch = require("./lib/patch-op")
 
-var indexTree = require("./lib/vtree-index")
 var isArray = require("./lib/is-array")
 var isVDOMNode = require("./lib/is-virtual-dom")
 var isVTextNode = require("./lib/is-virtual-text")
@@ -10,25 +9,21 @@ module.exports = diff
 
 function diff(a, b) {
     var patch = { a: a }
-    // index a so we can implicitly reference
-    indexTree(a)
-    walk(a, b, patch)
+    walk(a, b, patch, 0)
     return patch
 }
 
 
 
-function walk(a, b, patch) {
+function walk(a, b, patch, index) {
     if (a === b) {
         return b
     }
 
-    var apply = patch[a.index]
-
+    var apply = patch[index]
 
     if (isWidget(a)) {
         apply = appendPatch(apply, createPatch(a, b))
-        b = a // replaces the widget in b with the stateful a widget
     } else if (isWidget(b)) {
         apply = appendPatch(apply, createPatch(a, b))
      } else if (isVTextNode(a) && isVTextNode(b)) {
@@ -41,16 +36,14 @@ function walk(a, b, patch) {
             apply = appendPatch(apply, createPatch(a.properties, b.properties))
         }
 
-        apply = diffChildren(a, b, patch, apply)
+        apply = diffChildren(a, b, patch, apply, index)
     } else if (a !== b) {
         apply = appendPatch(apply, createPatch(a, b))
     }
 
     if (apply) {
-        patch[a.index] = apply
+        patch[index] = apply
     }
-
-    return b
 }
 
 var nullProps = {}
@@ -86,7 +79,7 @@ function diffProps(a, b) {
     return diff
 }
 
-function diffChildren(a, b, patch, apply) {
+function diffChildren(a, b, patch, apply, index) {
     var aChildren = a.children
     var bChildren = b.children
     var aLen = aChildren.length
@@ -94,18 +87,19 @@ function diffChildren(a, b, patch, apply) {
     var len = aLen < bLen ? aLen : bLen
 
     for (var i = 0; i < len; i++) {
+        var leftNode = aChildren[i]
         var rightNode = bChildren[i]
-        var newRight = walk(aChildren[i], rightNode, patch)
-
-        if (rightNode !== newRight) {
-            bChildren[i] = newRight
-        }
+        index += 1
+        walk(leftNode, rightNode, patch, index)
+        leftNode && (index += leftNode.count || 0)
     }
 
     // Excess nodes in a need to be removed
     for (; i < aLen; i++) {
         var excess = aChildren[i]
-        patch[excess.index] = createPatch(excess, null)
+        index += 1
+        patch[index] = createPatch(excess, null)
+        excess && (index += excess.count || 0)
     }
 
     // Excess nodes in b need to be added

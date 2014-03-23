@@ -424,7 +424,6 @@ test("textnode remove", function (assert) {
 })
 
 test("dom node update test", function (assert) {
-    debugger
     var hello = h("div.hello", "hello")
     var goodbye = h("div.goodbye", "goodbye")
     var rootNode = render(hello)
