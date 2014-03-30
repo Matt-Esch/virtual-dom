@@ -6,6 +6,7 @@ var patch = require("./patch")
 var isString = require("./lib/is-string")
 
 /* Usage
+var h = require("virtual-dom/h")
 var thunk = require("virtual-dom/thunk")
 
 module.exports = thunk("myThunk", render, shouldUpdate)
