@@ -15,7 +15,7 @@ function render(state) {
 }
 
 function shouldUpdate(prev, curr) {
-    return preve.value !== curr.value
+    return prev.value !== curr.value
 }
 */
 
