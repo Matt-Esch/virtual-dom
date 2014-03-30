@@ -31,7 +31,6 @@ thunk(type<String>, render<Function>, shouldUpdate<Function|Boolean>) : <Widget>
 module.exports = thunk
 
 function thunk(type, render, shouldUpdate) {
-
     if (arguments.length === 2) {
         if (!isString(type)) {
             shouldUpdate = render

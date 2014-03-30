@@ -658,14 +658,165 @@ test("Patch nested widgets", function (assert) {
     assert.end()
 })
 
+test("VNode indicates stateful sibling", function (assert) {
+    var statefulWidget  = {
+        init: function () {},
+        update: function () {},
+        destroy: function () {}
+    }
+
+    var pureWidget = {
+        init: function () {},
+        update: function () {}
+    }
+
+    var stateful = h("div", [statefulWidget])
+    var pure = h("div", [pureWidget])
+
+    assert.true(stateful.hasWidgets)
+    assert.false(pure.hasWidgets)
+    assert.end()
+})
+
+test("Replacing stateful widget with vnode calls destroy", function (assert) {
+    var count = 0
+    var statefulWidget  = {
+        init: function () {},
+        update: function () {},
+        destroy: function () {
+            count++
+        }
+    }
+
+    var rootNode = render(h("div"))
+    patch(rootNode, diff(statefulWidget, h("div")))
+    assert.equal(count, 1)
+    assert.end()
+})
+
+test("Replacing stateful widget with stateful widget", function (assert) {
+    var count = 0
+    var statefulWidget  = {
+        init: function () {},
+        update: function () {},
+        destroy: function () {
+            count++
+        }
+    }
+
+    var newWidget = {
+        init: function () {},
+        update: function () {},
+        destroy: function () {
+            count = 10000000
+        }
+    }
+
+    var rootNode = render(h("div"))
+    patch(rootNode, diff(statefulWidget, newWidget))
+    assert.equal(count, 1)
+    assert.end()
+})
+
+test("Replacing stateful widget with pure widget", function (assert) {
+    var count = 0
+    var statefulWidget  = {
+        init: function () {},
+        update: function () {},
+        destroy: function () {
+            count++
+        }
+    }
+
+    var newWidget = {
+        init: function () {},
+        update: function () {}
+    }
+
+    var rootNode = render(h("div"))
+    patch(rootNode, diff(statefulWidget, newWidget))
+    assert.equal(count, 1)
+    assert.end()
+})
+
+test("Removing stateful widget calls destroy", function (assert) {
+    var count = 0
+    var statefulWidget  = {
+        init: function () {},
+        update: function () {},
+        destroy: function () {
+            count++
+        }
+    }
+
+    var rootNode = render(h("div"))
+    patch(rootNode, diff(statefulWidget, null))
+    assert.equal(count, 1)
+    assert.end()
+})
+
+test("Patching parent destroys stateful sibling", function (assert) {
+    var count = 0
+    var widgetRoot = render(h("span"))
+    var statefulWidget  = {
+        init: function () {
+            return widgetRoot
+        },
+        update: function () {
+            assert.error()
+        },
+        destroy: function (domNode) {
+            assert.equal(domNode, widgetRoot)
+            count++
+        }
+    }
+
+    var deepTree = h("div", [
+        "hello",
+        h("span", "test"),
+        h("div", [
+            h("article", [statefulWidget])
+        ]),
+        h("div", [
+            h("div", "test")
+        ])
+    ])
+
+    var rootNode
+
+    rootNode = render(deepTree)
+    patch(rootNode, diff(deepTree, null))
+    assert.equal(count, 1)
+
+    rootNode = render(deepTree)
+    patch(rootNode, diff(deepTree, h("span")))
+    assert.equal(count, 2)
+
+    rootNode = render(deepTree)
+    patch(rootNode, diff(deepTree, h("div")))
+    assert.equal(count, 3)
+
+    assert.end()
+})
+
 function assertEqualDom(assert, a, b) {
+    assert.ok(areEqual(a, b) && areEqual(b, a), "Dom structures are equal")
+}
+
+function areEqual(a, b) {
     for (var key in a) {
         if (key !== "parentNode") {
             if (typeof a === "object") {
-                assertEqualDom(assert, a[key], b[key])
+                if (!areEqual(a[key], b[key])) {
+                    return false
+                }
             } else {
-                assert.equal(a, b)
+                if (a !== b) {
+                    return false
+                }
             }
         }
     }
+
+    return true
 }

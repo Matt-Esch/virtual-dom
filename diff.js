@@ -130,19 +130,18 @@ function diffChildren(a, b, patch, apply, index) {
 // Patch records for all destroyed widgets must be added because we need
 // a DOM node reference for the destroy function
 function destroyWidgets(vNode, patch, index) {
-    if (isVDOMNode(vNode) && vNode.hasWidgets) {
+    if (isWidget(vNode)) {
+        if (typeof vNode.destroy === "function") {
+            patch[index] = createPatch(vNode, null)
+        }
+    } else if (isVDOMNode(vNode) && vNode.hasWidgets) {
         var children = vNode.children
         var len = children.length
         for (var i = 0; i < len; i++) {
             var child = children[i]
             index += 1
-            if (isWidget(vNode)) {
-                if (typeof vNode.destroy === "function") {
-                    patch[index] = appendPatch(patch[index], null)
-                }
-            } else {
-                destroyWidgets(child, patch, index)
-            }
+
+            destroyWidgets(child, patch, index)
 
             if (isVDOMNode(child) && child.count) {
                 index += child.count
