@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "tape": "~2.3.2",
-    "min-document": "~2.0.0"
+    "min-document": "~2.2.0"
   },
   "licenses": [
     {

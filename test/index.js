@@ -5,10 +5,16 @@ var h = require("../h")
 var diff = require("../diff")
 var patch = require("../patch")
 var Node = require("../virtual-dom-node")
-var render = require("../render")
+var renderDom = require("../render")
 var tags = require("./tags.json")
 var version = require("../version")
+var doc = typeof document !== "undefined" ? document : require("min-document")
 
+function render(virtualDom, opts) {
+  opts = opts || {}
+  opts.document = opts.document || doc
+  return renderDom(virtualDom, opts)
+}
 
 // VirtualDOMNode tests
 test("Node is a function", function (assert) {
@@ -806,6 +812,7 @@ function assertEqualDom(assert, a, b) {
 function areEqual(a, b) {
     for (var key in a) {
         if (key !== "parentNode") {
+            if (key === "ownerDocument") return a[key] === b[key]
             if (typeof a === "object") {
                 if (!areEqual(a[key], b[key])) {
                     return false
