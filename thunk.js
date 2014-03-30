@@ -72,6 +72,7 @@ function updateThunk(previous, domNode) {
 
     if (shouldUpdate === false || (shouldUpdate !== true &&
             !shouldUpdate(previous.state, currentState))) {
+        this.vnode = previous.vnode
         return
     }
 
