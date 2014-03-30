@@ -35,7 +35,7 @@ function walk(a, b, patch, index) {
         // Update a VDOMNode
         var propsPatch = diffProps(a.properties, b.properties)
         if (propsPatch) {
-            apply = appendPatch(apply, createPatch(a.properties, b.properties))
+            apply = appendPatch(apply, createPatch(a.properties, propsPatch))
         }
 
         apply = diffChildren(a, b, patch, apply, index)
