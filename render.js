@@ -1,5 +1,4 @@
 var DataSet = require("data-set")
-var globalDocument = require("./lib/document")
 
 var isVirtualDomNode = require("./lib/is-virtual-dom")
 var isVirtualTextNode = require("./lib/is-virtual-text")
@@ -8,7 +7,7 @@ var isString = require("./lib/is-string")
 module.exports = render
 
 function render(virtualDom, opts) {
-    var doc = opts ? opts.document || globalDocument : globalDocument
+    var doc = opts ? opts.document || document : document
     var warn = opts ? opts.warn : null
 
     if (virtualDom && typeof virtualDom.init === "function") {
