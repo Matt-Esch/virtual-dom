@@ -71,7 +71,8 @@ function updateThunk(previous, domNode) {
     var render = this.render
     var shouldUpdate = this.shouldUpdate
 
-    if (!shouldUpdate(previous.state, currentState)) {
+    if (shouldUpdate === false || (shouldUpdate !== true &&
+            !shouldUpdate(previous.state, currentState))) {
         return
     }
 
