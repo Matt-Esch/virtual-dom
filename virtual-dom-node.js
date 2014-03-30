@@ -1,4 +1,6 @@
 var version = require("./version")
+var isVDOM = require("./lib/is-virtual-dom")
+var isWidget = require("./lib/is-widget")
 
 module.exports = VirtualDOMNode
 
@@ -7,6 +9,7 @@ function VirtualDOMNode(tagName, properties, children) {
     this.properties = properties
     this.children = children
     this.count = countDescendants(children)
+    this.hasWidgets = hasWidgets(children)
 }
 
 VirtualDOMNode.prototype.version = version.split(".")
@@ -22,10 +25,31 @@ function countDescendants(children) {
 
     for (var i = 0; i < count; i++) {
         var child = children[i]
-        if (child) {
+        if (isVDOM(child)) {
             descendants += child.count || 0
         }
     }
 
     return count + descendants
+}
+
+function hasWidgets(children) {
+    if (!children) {
+        return false
+    }
+
+    var count = children.length
+
+    for (var i = 0; i < count; i++) {
+        var child = children[i]
+        if (isWidget(child)) {
+            if (typeof child.destroy === "function") {
+                return true
+            }
+        } else if (isVDOM(child) && child.hasWidgets) {
+            return true
+        }
+    }
+
+    return false
 }

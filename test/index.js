@@ -496,6 +496,168 @@ test("Allow empty textnode", function (assert) {
     assert.end()
 })
 
+// Widget tests
+test("Widget is initialised on render", function (assert) {
+    var initCount = 0
+    var testNode = render(h("div"))
+    var Widget = {
+        init: function () {
+            initCount++
+            return testNode
+        }
+    }
+
+    var result = render(Widget)
+
+    assert.equal(initCount, 1)
+    assert.equal(result, testNode)
+    assert.end()
+})
+
+test("Nested widget is initialised on render", function (assert) {
+    var initCount = 0
+    var testNode = render(h("div"))
+    var Widget = {
+        init: function () {
+            initCount++
+            return testNode
+        }
+    }
+
+    var vdom = h("div", [
+        h("span", "text"),
+        h("div.widgetContainer", [
+            Widget
+        ]),
+        h("p", "more text")
+    ])
+
+    var result = render(vdom)
+
+    assert.equal(initCount, 1)
+    assert.equal(result.childNodes[1].childNodes[0], testNode)
+    assert.end()
+})
+
+test("Patch widgets at the root", function (assert) {
+    var initCount = 0
+    var updateCount = 0
+    var leftState = { a: 1 }
+    var rightState = { a: 2 }
+    var domNode
+
+    function Widget(state) {
+        this.state = state
+        this.vdom = this.render(state)
+    }
+
+    Widget.prototype.init = function () {
+        initCount++
+        return render(this.vdom)
+    }
+
+    Widget.prototype.update = function (leftNode, dom) {
+        updateCount++
+        assert.equal(this.state, rightState)
+        assert.equal(leftNode.state, leftState)
+        assert.equal(dom, domNode)
+        patch(dom, diff(leftNode.vdom, this.vdom))
+    }
+
+    Widget.prototype.render = function (state) {
+        return h("div", "" + state.a)
+    }
+
+    var leftTree = new Widget(leftState)
+    var rightTree = new Widget(rightState)
+    domNode = render(leftTree)
+    assert.equal(initCount, 1, "initCount after left render")
+    assert.equal(updateCount, 0, "updateCount after left render")
+
+    var patches = diff(leftTree, rightTree)
+    assert.equal(Object.keys(patches).length, 2)
+    assert.equal(initCount, 1, "initCount after diff")
+    assert.equal(updateCount, 0, "updateCount after diff")
+
+    var newRoot = patch(domNode, patches)
+    assert.equal(initCount, 1, "initCount after patch")
+    assert.equal(updateCount, 1, "updateCount after patch")
+
+    // The patch should only update sibling value in this use case
+    var expectedNode = render(rightTree)
+    assert.equal(newRoot, domNode)
+    assertEqualDom(assert, newRoot, expectedNode)
+    assert.end()
+})
+
+test("Patch nested widgets", function (assert) {
+    var initCount = 0
+    var updateCount = 0
+    var leftState = { a: 1 }
+    var rightState = { a: 2 }
+    var domNode
+
+    function Widget(state) {
+        this.state = state
+        this.vdom = this.render(state)
+    }
+
+    Widget.prototype.init = function () {
+        initCount++
+        return render(this.vdom)
+    }
+
+    Widget.prototype.update = function (leftNode, dom) {
+        updateCount++
+        assert.equal(this.state, rightState)
+        assert.equal(leftNode.state, leftState)
+        assert.equal(dom, domNode.childNodes[1].childNodes[0])
+        patch(dom, diff(leftNode.vdom, this.vdom))
+    }
+
+    Widget.prototype.render = function (state) {
+        return h("div", "" + state.a)
+    }
+
+    var leftWidget = new Widget(leftState)
+    var rightWidget = new Widget(rightState)
+
+    var leftTree = h("div", [
+        h("span", "text"),
+        h("div.widgetContainer", [
+            leftWidget
+        ]),
+        h("p", "more text")
+    ])
+
+    var rightTree = h("div", [
+        h("span", "text"),
+        h("div.widgetContainer", [
+            rightWidget
+        ]),
+        h("p", "more text")
+    ])
+
+    domNode = render(leftTree)
+    assert.equal(initCount, 1, "initCount after left render")
+    assert.equal(updateCount, 0, "updateCount after left render")
+
+    var patches = diff(leftTree, rightTree)
+    assert.equal(Object.keys(patches).length, 2)
+    assert.equal(initCount, 1, "initCount after diff")
+    assert.equal(updateCount, 0, "updateCount after diff")
+
+    var newRoot = patch(domNode, patches)
+    assert.equal(initCount, 1, "initCount after patch")
+    assert.equal(updateCount, 1, "updateCount after patch")
+
+    // The patch should only update sibling value in this use case
+    var expectedNode = render(rightTree)
+    assert.equal(newRoot, domNode)
+    assertEqualDom(assert, newRoot, expectedNode)
+    assert.end()
+})
+
 function assertEqualDom(assert, a, b) {
     for (var key in a) {
         if (key !== "parentNode") {
