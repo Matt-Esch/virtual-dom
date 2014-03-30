@@ -1,5 +1,4 @@
 var test = require("tape")
-var DataSet = require("data-set")
 
 var h = require("../h")
 var diff = require("../diff")
@@ -231,18 +230,6 @@ test("mixture of node/classname applied correctly", function (assert) {
     assert.equal(dom.className, "very pretty")
     assert.equal(dom.tagName, "div")
     assert.equal(dom.childNodes.length, 0)
-    assert.end()
-})
-
-test("data-set is applied correctly", function (assert) {
-    var vdom = h("div", { "data-id": "12345" })
-    var dom = render(vdom)
-    var data = DataSet(dom)
-    assert.false(dom.id)
-    assert.false(dom.className)
-    assert.equal(dom.tagName, "div")
-    assert.equal(dom.childNodes.length, 0)
-    assert.equal(data.id, "12345")
     assert.end()
 })
 
