@@ -13,8 +13,6 @@ function diff(a, b) {
     return patch
 }
 
-
-
 function walk(a, b, patch, index) {
     if (a === b) {
         return b
@@ -26,7 +24,7 @@ function walk(a, b, patch, index) {
         apply = appendPatch(apply, createPatch(a, b))
     } else if (isWidget(b)) {
         apply = appendPatch(apply, createPatch(a, b))
-     } else if (isVTextNode(a) && isVTextNode(b)) {
+    } else if (isVTextNode(a) && isVTextNode(b)) {
         if (a.text !== b.text) {
             apply = appendPatch(apply, createPatch(a.text, b.text))
         }
