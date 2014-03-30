@@ -502,6 +502,7 @@ test("Allow empty textnode", function (assert) {
     assert.end()
 })
 
+
 // Widget tests
 test("Widget is initialised on render", function (assert) {
     var initCount = 0

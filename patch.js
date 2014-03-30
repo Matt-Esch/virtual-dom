@@ -11,12 +11,21 @@ function patch(rootNode, patches) {
     }
 
     var index = domIndex(rootNode, patches.a, indices)
-    var renderOptions = !(typeof document !== "undefined" && rootNode.ownerDocument === document)
-      && { document: rootNode.ownerDocument }
+    var ownerDocument, renderOptions
+
+    if (typeof document === "undefined" ||
+        (ownerDocument = rootNode.ownerDocument) === document) {
+        renderOptions = {
+            document: ownerDocument || rootNode.ownerDocument
+        }
+    }
 
     for (var i = 0; i < indices.length; i++) {
         var nodeIndex = indices[i]
-        rootNode = applyPatch(rootNode, index[nodeIndex], patches[nodeIndex], renderOptions)
+        rootNode = applyPatch(rootNode,
+            index[nodeIndex],
+            patches[nodeIndex],
+            renderOptions)
     }
 
     return rootNode
