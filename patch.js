@@ -11,16 +11,18 @@ function patch(rootNode, patches) {
     }
 
     var index = domIndex(rootNode, patches.a, indices)
+    var renderOptions = !(typeof document !== "undefined" && rootNode.ownerDocument === document)
+      && { document: rootNode.ownerDocument }
 
     for (var i = 0; i < indices.length; i++) {
         var nodeIndex = indices[i]
-        rootNode = applyPatch(rootNode, index[nodeIndex], patches[nodeIndex])
+        rootNode = applyPatch(rootNode, index[nodeIndex], patches[nodeIndex], renderOptions)
     }
 
     return rootNode
 }
 
-function applyPatch(rootNode, domNode, patchList) {
+function applyPatch(rootNode, domNode, patchList, renderOptions) {
     if (!domNode) {
         return rootNode
     }
@@ -29,14 +31,14 @@ function applyPatch(rootNode, domNode, patchList) {
 
     if (isArray(patchList)) {
         for (var i = 0; i < patchList.length; i++) {
-            newNode = patchList[i].apply(domNode)
+            newNode = patchList[i].apply(domNode, renderOptions)
 
             if (domNode === rootNode) {
                 rootNode = newNode
             }
         }
     } else {
-        newNode = patchList.apply(domNode)
+        newNode = patchList.apply(domNode, renderOptions)
 
         if (domNode === rootNode) {
             rootNode = newNode
