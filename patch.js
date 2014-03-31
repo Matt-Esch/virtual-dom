@@ -1,3 +1,5 @@
+var document = require("global/document")
+
 var domIndex = require("./lib/dom-index")
 var isArray = require("./lib/is-array")
 
