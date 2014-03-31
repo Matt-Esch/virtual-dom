@@ -14,7 +14,7 @@ function patch(rootNode, patches) {
     var ownerDocument, renderOptions
 
     if (typeof document === "undefined" ||
-        (ownerDocument = rootNode.ownerDocument) === document) {
+        (ownerDocument = rootNode.ownerDocument) !== document) {
         renderOptions = {
             document: ownerDocument || rootNode.ownerDocument
         }
