@@ -5,7 +5,7 @@ var h = require("../h")
 var diff = require("../diff")
 var patch = require("../patch")
 var Node = require("../virtual-dom-node")
-var renderDom = require("../render")
+var createElement = require("../create-element")
 var tags = require("./tags.json")
 var version = require("../version")
 var doc = typeof document !== "undefined" ? document : require("min-document")
@@ -13,7 +13,7 @@ var doc = typeof document !== "undefined" ? document : require("min-document")
 function render(virtualDom, opts) {
   opts = opts || {}
   opts.document = opts.document || doc
-  return renderDom(virtualDom, opts)
+  return createElement(virtualDom, opts)
 }
 
 // VirtualDOMNode tests

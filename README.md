@@ -47,7 +47,7 @@ The virtual DOM has nothing to do with events or representing
 
 ```js
 var h = require("virtual-dom/h")
-var render = require("virtual-dom/render")
+var createElement = require("virtual-dom/create-element")
 var raf = require("raf").polyfill
 var Observ = require("observ")
 var ObservArray = require("observ-array")
@@ -90,7 +90,7 @@ delegator.on("addTodo", function (ev) {
 
 // render initial state
 var currTree = TodoApp({ text: state.text(), items: state.items().value })
-var elem = render(currTree)
+var elem = createElement(currTree)
 
 document.body.appendChild(elem)
 
@@ -135,9 +135,9 @@ raf(function renderDOM() {
 `h` creates a virtual DOM tree. You can give it a `tagName` and
   optionally DOM properties & optionally an array of children.
 
-### `var elem = render(virtualDOM)`
+### `var elem = createElement(virtualDOM)`
 
-`render` takes a virtual DOM tree and turns it into a DOM element
+`createElement` takes a virtual DOM tree and turns it into a DOM element
   that you can put in your DOM. Use this to render the initial
   tree.
 
