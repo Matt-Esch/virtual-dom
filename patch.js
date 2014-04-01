@@ -1,5 +1,7 @@
+var document = require("global/document")
+
 var domIndex = require("./lib/dom-index")
-var isArray = require("./lib/is-array")
+var isArray = require("./util-wtf/is-array")
 
 module.exports = patch
 

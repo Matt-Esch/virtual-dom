@@ -1,6 +1,6 @@
 var version = require("./version")
-var isVDOM = require("./lib/is-virtual-dom")
-var isWidget = require("./lib/is-widget")
+var isVDOM = require("./is-virtual-dom")
+var isWidget = require("./is-widget")
 
 module.exports = VirtualDOMNode
 

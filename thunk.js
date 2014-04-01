@@ -3,7 +3,7 @@ var cuid = require("cuid")
 var dom = require("./render")
 var diff = require("./diff")
 var patch = require("./patch")
-var isString = require("./lib/is-string")
+var isString = require("./util-wtf/is-string")
 
 /* Usage
 var h = require("virtual-dom/h")

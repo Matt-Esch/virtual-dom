@@ -1,9 +1,9 @@
 var createPatch = require("./lib/patch-op")
 
-var isArray = require("./lib/is-array")
-var isVDOMNode = require("./lib/is-virtual-dom")
-var isVTextNode = require("./lib/is-virtual-text")
-var isWidget = require("./lib/is-widget")
+var isArray = require("./util-wtf/is-array")
+var isVDOMNode = require("./vtree/is-virtual-dom")
+var isVTextNode = require("./vtree/is-virtual-text")
+var isWidget = require("./vtree/is-widget")
 
 module.exports = diff
 
