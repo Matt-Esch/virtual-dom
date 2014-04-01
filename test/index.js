@@ -3,7 +3,7 @@ var DataSet = require("data-set")
 var document = require("global/document")
 
 var h = require("../vh/h")
-var diff = require("../diff")
+var diff = require("../vtree/diff")
 var patch = require("../patch")
 var Node = require("../vtree/virtual-dom-node")
 var createElement = require("../create-element")
