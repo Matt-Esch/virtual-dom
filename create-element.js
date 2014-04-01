@@ -46,6 +46,8 @@ function applyProperties(node, props) {
             propValue(node, propName)
         } else if(propName === "style" && typeof propValue === "string") {
             node.style.cssText = propValue
+        } else if (propName.substr(0, 5) === "data-") {
+            DataSet(node)[propName.substr(5)] = propValue
         } else if (isObject(propValue)) {
             if (!node[propName]) {
                 node[propName] = {}
@@ -55,8 +57,6 @@ function applyProperties(node, props) {
             for (var k in propValue) {
                 nodeValue[k] = propValue[k]
             }
-        } else if (propName.substr(0, 5) === "data-") {
-            DataSet(node)[propName.substr(5)] = propValue
         } else {
             node[propName] = propValue
         }
