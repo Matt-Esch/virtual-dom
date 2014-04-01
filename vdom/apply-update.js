@@ -1,6 +1,6 @@
 var DataSet = require("data-set")
 
-var render = require("../create-element")
+var render = require("./create-element")
 var isWidget = require("../vtree/is-widget")
 var isString = require("../util-wtf/is-string")
 var isVNode = require("../vtree/is-virtual-dom")

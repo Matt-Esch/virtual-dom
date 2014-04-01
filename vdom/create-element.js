@@ -1,9 +1,9 @@
 var DataSet = require("data-set")
 var document = require("global/document")
 
-var isVirtualDomNode = require("./vtree/is-virtual-dom")
-var isVirtualTextNode = require("./vtree/is-virtual-text")
-var isString = require("./util-wtf/is-string")
+var isVirtualDomNode = require("../vtree/is-virtual-dom")
+var isVirtualTextNode = require("../vtree/is-virtual-text")
+var isString = require("../util-wtf/is-string")
 
 module.exports = render
 
