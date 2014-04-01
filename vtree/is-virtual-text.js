@@ -1,4 +1,4 @@
-var version = require("../version")
+var version = require("./version")
 var major = version[0]
 
 module.exports = isVirtualTextNode

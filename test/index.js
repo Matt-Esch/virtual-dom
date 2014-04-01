@@ -1,13 +1,14 @@
 var test = require("tape")
 var DataSet = require("data-set")
+var document = require("global/document")
 
-var h = require("../h")
-var diff = require("../diff")
-var patch = require("../patch")
-var Node = require("../virtual-dom-node")
-var createElement = require("../create-element")
-var tags = require("./tags.json")
-var version = require("../version")
+var h = require("../vh/h")
+var diff = require("../vtree/diff")
+var patch = require("../vdom/patch")
+var Node = require("../vtree/virtual-dom-node")
+var createElement = require("../vdom/create-element")
+// var tags = require("./tags.json")
+var version = require("../vtree/version")
 var doc = typeof document !== "undefined" ? document : require("min-document")
 
 function render(virtualDom, opts) {

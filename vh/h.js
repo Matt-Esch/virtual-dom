@@ -1,13 +1,13 @@
 var extend = require("extend")
 
-var isArray = require("./lib/is-array")
-var isString = require("./lib/is-string")
-var parseTag = require("./lib/parse-tag")
-var isVirtualDOMNode = require("./lib/is-virtual-dom")
-var isVirtualTextNode = require("./lib/is-virtual-text")
+var isArray = require("../util-wtf/is-array")
+var isString = require("../util-wtf/is-string")
+var parseTag = require("./parse-tag")
+var isVirtualDOMNode = require("../vtree/is-virtual-dom")
+var isVirtualTextNode = require("../vtree/is-virtual-text")
 
-var VirtualDOMNode = require("./virtual-dom-node.js")
-var VirtualTextNode = require("./virtual-text-node.js")
+var VirtualDOMNode = require("../vtree/virtual-dom-node.js")
+var VirtualTextNode = require("../vtree/virtual-text-node.js")
 
 module.exports = h
 

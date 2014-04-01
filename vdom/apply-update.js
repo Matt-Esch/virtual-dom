@@ -1,31 +1,20 @@
 var DataSet = require("data-set")
 
-var render = require("../create-element")
-var isWidget = require("./is-widget")
-var isString = require("./is-string")
-var isVNode = require("./is-virtual-dom")
+var render = require("./create-element")
+var isWidget = require("../vtree/is-widget")
+var isString = require("../util-wtf/is-string")
+var isVNode = require("../vtree/is-virtual-dom")
 var updateWidget = require("./update-widget")
 
-module.exports = createPatch
+module.exports = applyUpdate
 
-function createPatch(vNode, patch) {
-    return new PatchOp(vNode, patch)
-}
+function applyUpdate(patchOp, domNode, renderOptions) {
+    var vNode = patchOp.vNode
+    var patch = patchOp.patch
 
-function PatchOp(vNode, patch) {
-    this.vNode = vNode
-    this.patch = patch
-}
-
-PatchOp.prototype.apply = applyUpdate
-
-function applyUpdate(domNode, renderOptions) {
-    var vNode = this.vNode
-    var patch = this.patch
-
-    if (patch == null) {
+    if (patch === null || patch === undefined) {
         return removeNode(domNode, vNode)
-    } else if (vNode == null) {
+    } else if (vNode === null || patch === undefined) {
         return insertNode(domNode, patch, renderOptions)
     } else if (isString(patch)) {
         return stringPatch(domNode, vNode, patch, renderOptions)

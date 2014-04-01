@@ -1,5 +1,8 @@
-var domIndex = require("./lib/dom-index")
-var isArray = require("./lib/is-array")
+var document = require("global/document")
+
+var domIndex = require("./dom-index")
+var applyUpdate = require("./apply-update.js")
+var isArray = require("../util-wtf/is-array")
 
 module.exports = patch
 
@@ -40,14 +43,14 @@ function applyPatch(rootNode, domNode, patchList, renderOptions) {
 
     if (isArray(patchList)) {
         for (var i = 0; i < patchList.length; i++) {
-            newNode = patchList[i].apply(domNode, renderOptions)
+            newNode = applyUpdate(patchList[i], domNode, renderOptions)
 
             if (domNode === rootNode) {
                 rootNode = newNode
             }
         }
     } else {
-        newNode = patchList.apply(domNode, renderOptions)
+        newNode = applyUpdate(patchList, domNode, renderOptions)
 
         if (domNode === rootNode) {
             rootNode = newNode
