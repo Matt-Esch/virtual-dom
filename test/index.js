@@ -1,12 +1,13 @@
 var test = require("tape")
 var DataSet = require("data-set")
+var document = require("global/document")
 
 var h = require("../h")
 var diff = require("../diff")
 var patch = require("../patch")
 var Node = require("../virtual-dom-node")
 var createElement = require("../create-element")
-var tags = require("./tags.json")
+// var tags = require("./tags.json")
 var version = require("../version")
 var doc = typeof document !== "undefined" ? document : require("min-document")
 
@@ -253,26 +254,26 @@ test("data-set is applied correctly", function (assert) {
 })
 
 test("style string is applied correctly", function (assert) {
-    var vdom = h("#important.pretty", { style: "border:1px solid #000" })
+    var vdom = h("#important.pretty", { style: "color: red;" })
     var dom = render(vdom)
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.style.cssText, "border:1px solid #000")
+    assert.equal(dom.style.cssText.trim(), "color: red;")
     assert.equal(dom.childNodes.length, 0)
     assert.end()
 })
 
 test("style object is applied correctly", function (assert) {
     var vdom = h("#important.pretty", { style: {
-        border: "1px solid #000",
+        border: "1px solid rgb(0, 0, 0)",
         padding: "2px"
     } })
     var dom = render(vdom)
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.style.border, "1px solid #000")
+    assert.equal(dom.style.border, "1px solid rgb(0, 0, 0)")
     assert.equal(dom.style.padding, "2px")
     assert.equal(dom.childNodes.length, 0)
     assert.end()
@@ -316,14 +317,14 @@ test("children are added", function (assert) {
 })
 
 test("incompatible children are ignored", function (assert) {
-    var vdom = h("#important.pretty", { style: "border:1px solid #000" }, [
+    var vdom = h("#important.pretty", { style: "color: red;" }, [
         {}, null
     ])
     var dom = render(vdom)
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.style.cssText, "border:1px solid #000")
+    assert.equal(dom.style.cssText.trim(), "color: red;")
     assert.equal(dom.childNodes.length, 0)
     assert.end()
 })
@@ -353,7 +354,7 @@ test("injected document object is used", function (assert) {
 
 test("injected warning is used", function (assert) {
     var badObject = {}
-    var vdom = h("#important.pretty", { style: "border:1px solid #000" }, [
+    var vdom = h("#important.pretty", { style: "color: red;" }, [
         badObject, null
     ])
 
@@ -376,7 +377,7 @@ test("injected warning is used", function (assert) {
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.style.cssText, "border:1px solid #000")
+    assert.equal(dom.style.cssText.trim(), "color: red;")
     assert.equal(dom.childNodes.length, 0)
     assert.equal(i, 2)
     assert.end()
@@ -494,6 +495,8 @@ test("dom node dataset", function (assert) {
     var b = h("div", { dataset: { foo: "baz", bar: "oops" } })
     var rootNode = render(a)
     var d1 = rootNode.dataset
+    assert.equal(rootNode.dataset.foo, "bar")
+    assert.equal(rootNode.dataset.bar, "oops")
     var equalNode = render(b)
     var newRoot = patch(rootNode, diff(a, b))
     var d2 = newRoot.dataset
@@ -857,7 +860,15 @@ function assertEqualDom(assert, a, b) {
 
 function areEqual(a, b) {
     for (var key in a) {
-        if (key !== "parentNode") {
+        if (key !== "parentNode" &&
+            key !== "parentElement" &&
+            key !== "defaultView" &&
+            key !== "ownerElement" &&
+            key !== "nextElementSibling" &&
+            key !== "nextSibling" &&
+            key !== "previousElementSibling" &&
+            key !== "previousSibling"
+        ) {
             if (key === "ownerDocument") return a[key] === b[key]
             if (typeof a === "object") {
                 if (!areEqual(a[key], b[key])) {
