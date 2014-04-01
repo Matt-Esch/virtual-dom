@@ -867,10 +867,18 @@ function areEqual(a, b) {
             key !== "nextElementSibling" &&
             key !== "nextSibling" &&
             key !== "previousElementSibling" &&
-            key !== "previousSibling"
+            key !== "previousSibling" &&
+            key !== "document" &&
+            key !== "window" &&
+            key !== "frames" &&
+            key !== "top" &&
+            key !== "parent" &&
+            key !== "self" &&
+            key !== "outerHTML" &&
+            key !== "innerHTML"
         ) {
             if (key === "ownerDocument") return a[key] === b[key]
-            if (typeof a === "object") {
+            if (typeof a === "object" || typeof a === "function") {
                 if (!areEqual(a[key], b[key])) {
                     return false
                 }

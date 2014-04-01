@@ -43,7 +43,8 @@
     "start": "node ./index.js",
     "cover": "istanbul cover --report none --print detail ./test/index.js",
     "view-cover": "istanbul report html && google-chrome ./coverage/index.html",
-    "browser": "run-browser test/index.js -b"
+    "browser": "run-browser test/index.js",
+    "phantom": "run-browser test/index.js -b | tap-spec"
   },
   "testling": {
     "files": "test/index.js",
