@@ -18,14 +18,18 @@
   },
   "dependencies": {
     "browser-split": "0.0.1",
-    "extend": "~1.2.1",
+    "cuid": "^1.2.1",
     "data-set": "~3.0.0",
-    "semver": "~2.2.1",
-    "cuid": "^1.2.1"
+    "extend": "~1.2.1",
+    "global": "^3.0.0",
+    "semver": "~2.2.1"
   },
   "devDependencies": {
-    "tape": "~2.3.2",
-    "min-document": "~2.2.0"
+    "min-document": "^2.3.0",
+    "run-browser": "git://github.com/Raynos/run-browser",
+    "tap-dot": "^0.2.1",
+    "tap-spec": "^0.1.8",
+    "tape": "^2.12.1"
   },
   "licenses": [
     {
@@ -34,14 +38,12 @@
     }
   ],
   "scripts": {
-    "test": "node ./test/index.js",
+    "test": "node ./test/index.js | tap-spec",
+    "dot": "node ./test/index.js | tap-dot",
     "start": "node ./index.js",
-    "watch": "nodemon -w ./index.js index.js",
-    "travis-test": "istanbul cover ./test/index.js && ((cat coverage/lcov.info | coveralls) || exit 0)",
     "cover": "istanbul cover --report none --print detail ./test/index.js",
     "view-cover": "istanbul report html && google-chrome ./coverage/index.html",
-    "test-browser": "testem-browser ./test/browser/index.js",
-    "testem": "testem-both -b=./test/browser/index.js"
+    "browser": "run-browser test/index.js -b"
   },
   "testling": {
     "files": "test/index.js",

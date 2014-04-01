@@ -1,6 +1,7 @@
 var createPatch = require("./lib/patch-op")
 
 var isArray = require("./lib/is-array")
+var isObject = require("./lib/is-object")
 var isVDOMNode = require("./lib/is-virtual-dom")
 var isVTextNode = require("./lib/is-virtual-text")
 var isWidget = require("./lib/is-widget")
@@ -61,14 +62,15 @@ function diffProps(a, b) {
     var diff
 
     for (var aKey in a) {
-        if (aKey === "style") {
-            var styleDiff = diffProps(a.style, b.style || nullProps)
-            if (styleDiff) {
+        var aValue = a[aKey]
+
+        if (isObject(aValue)) {
+            var objectDiff = diffProps(a[aKey], b[aKey] || nullProps)
+            if (objectDiff) {
                 diff = diff || {}
-                diff.style = styleDiff
+                diff[aKey] = objectDiff
             }
         } else {
-            var aValue = a[aKey]
             var bValue = b[aKey]
 
             if (typeof aValue === "function" || aValue !== bValue) {

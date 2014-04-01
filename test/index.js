@@ -192,7 +192,7 @@ test("render is a function", function (assert) {
 test("render text node", function (assert) {
     var vdom = h("span", "hello")
     var dom = render(vdom)
-    assert.equal(dom.tagName, "span")
+    assert.equal(dom.tagName, "SPAN")
     assert.false(dom.id)
     assert.false(dom.className)
     assert.equal(dom.childNodes.length, 1)
@@ -205,7 +205,7 @@ test("render div", function (assert) {
     var dom = render(vdom)
     assert.false(dom.id)
     assert.false(dom.className)
-    assert.equal(dom.tagName, "div")
+    assert.equal(dom.tagName, "DIV")
     assert.equal(dom.childNodes.length, 0)
     assert.end()
 })
@@ -215,7 +215,7 @@ test("node id is applied correctly", function (assert) {
     var dom = render(vdom)
     assert.equal(dom.id, "important")
     assert.false(dom.className)
-    assert.equal(dom.tagName, "div")
+    assert.equal(dom.tagName, "DIV")
     assert.equal(dom.childNodes.length, 0)
     assert.end()
 })
@@ -225,7 +225,7 @@ test("node class name is applied correctly", function (assert) {
     var dom = render(vdom)
     assert.false(dom.id)
     assert.equal(dom.className, "pretty")
-    assert.equal(dom.tagName, "div")
+    assert.equal(dom.tagName, "DIV")
     assert.equal(dom.childNodes.length, 0)
     assert.end()
 })
@@ -235,7 +235,7 @@ test("mixture of node/classname applied correctly", function (assert) {
     var dom = render(vdom)
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "very pretty")
-    assert.equal(dom.tagName, "div")
+    assert.equal(dom.tagName, "DIV")
     assert.equal(dom.childNodes.length, 0)
     assert.end()
 })
@@ -246,7 +246,7 @@ test("data-set is applied correctly", function (assert) {
     var data = DataSet(dom)
     assert.false(dom.id)
     assert.false(dom.className)
-    assert.equal(dom.tagName, "div")
+    assert.equal(dom.tagName, "DIV")
     assert.equal(dom.childNodes.length, 0)
     assert.equal(data.id, "12345")
     assert.end()
@@ -257,7 +257,7 @@ test("style string is applied correctly", function (assert) {
     var dom = render(vdom)
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
-    assert.equal(dom.tagName, "div")
+    assert.equal(dom.tagName, "DIV")
     assert.equal(dom.style.cssText, "border:1px solid #000")
     assert.equal(dom.childNodes.length, 0)
     assert.end()
@@ -271,7 +271,7 @@ test("style object is applied correctly", function (assert) {
     var dom = render(vdom)
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
-    assert.equal(dom.tagName, "div")
+    assert.equal(dom.tagName, "DIV")
     assert.equal(dom.style.border, "1px solid #000")
     assert.equal(dom.style.padding, "2px")
     assert.equal(dom.childNodes.length, 0)
@@ -295,15 +295,15 @@ test("children are added", function (assert) {
 
     var nodes = dom.childNodes
     assert.equal(nodes.length, 3)
-    assert.equal(nodes[0].tagName, "div")
+    assert.equal(nodes[0].tagName, "DIV")
     assert.equal(nodes[1].data, "hello")
-    assert.equal(nodes[2].tagName, "span")
+    assert.equal(nodes[2].tagName, "SPAN")
 
     var subNodes0 = nodes[0].childNodes
     assert.equal(subNodes0.length, 3)
     assert.equal(subNodes0[0].data, "just testing")
     assert.equal(subNodes0[1].data, "multiple")
-    assert.equal(subNodes0[2].tagName, "b")
+    assert.equal(subNodes0[2].tagName, "B")
 
     var subNodes0_2 = subNodes0[2].childNodes
     assert.equal(subNodes0_2.length, 1)
@@ -322,11 +322,9 @@ test("incompatible children are ignored", function (assert) {
     var dom = render(vdom)
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
-    assert.equal(dom.tagName, "div")
+    assert.equal(dom.tagName, "DIV")
     assert.equal(dom.style.cssText, "border:1px solid #000")
     assert.equal(dom.childNodes.length, 0)
-    assert.end()
-
     assert.end()
 })
 
@@ -377,7 +375,7 @@ test("injected warning is used", function (assert) {
     var dom = render(vdom, { warn: warn })
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
-    assert.equal(dom.tagName, "div")
+    assert.equal(dom.tagName, "DIV")
     assert.equal(dom.style.cssText, "border:1px solid #000")
     assert.equal(dom.childNodes.length, 0)
     assert.equal(i, 2)
@@ -473,6 +471,53 @@ test("dom node remove", function (assert) {
     assert.end()
 })
 
+test("dom node style", function (assert) {
+    var a = h("div", { style: { foo: "bar", bar: "oops" } })
+    var b = h("div", { style: { foo: "baz", bar: "oops" } })
+    var rootNode = render(a)
+    assert.equal(rootNode.style.foo, "bar")
+    assert.equal(rootNode.style.bar, "oops")
+    var s1 = rootNode.style
+    var equalNode = render(b)
+    assert.equal(equalNode.style.foo, "baz")
+    var newRoot = patch(rootNode, diff(a, b))
+    var s2 = newRoot.style
+    assertEqualDom(assert, newRoot, equalNode)
+    assert.equal(newRoot.style.foo, "baz")
+    assert.equal(newRoot.style.bar, "oops")
+    assert.equal(s1, s2)
+    assert.end()
+})
+
+test("dom node dataset", function (assert) {
+    var a = h("div", { dataset: { foo: "bar", bar: "oops" } })
+    var b = h("div", { dataset: { foo: "baz", bar: "oops" } })
+    var rootNode = render(a)
+    var d1 = rootNode.dataset
+    var equalNode = render(b)
+    var newRoot = patch(rootNode, diff(a, b))
+    var d2 = newRoot.dataset
+    assertEqualDom(assert, newRoot, equalNode)
+    assert.equal(newRoot.dataset.foo, "baz")
+    assert.equal(newRoot.dataset.bar, "oops")
+    assert.equal(d1, d2)
+    assert.end()
+})
+
+test("dom node attributes", function (assert) {
+    var a = h("div", { attributes: { foo: "bar", bar: "oops" } })
+    var b = h("div", { attributes: { foo: "baz", bar: "oops" } })
+    var rootNode = render(a)
+    var a1 = rootNode.attributes
+    var equalNode = render(b)
+    var newRoot = patch(rootNode, diff(a, b))
+    var a2 = newRoot.attributes
+    assertEqualDom(assert, newRoot, equalNode)
+    assert.equal(newRoot.attributes.foo, "baz")
+    assert.equal(newRoot.attributes.bar, "oops")
+    assert.equal(a1, a2)
+    assert.end()
+})
 
 test("reuse dom node without breaking", function (assert) {
     var hSpan = h("span", "hello")
