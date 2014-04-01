@@ -522,6 +522,37 @@ test("dom node attributes", function (assert) {
     assert.end()
 })
 
+test("dom data- attributes", function (assert) {
+    function Left() {
+        this.left = 4
+    }
+    Left.prototype.foo = function () { return this.left }
+
+    function Right() {
+        this.right = 5
+    }
+    Right.prototype.foo = function () { return this.right }
+
+    var a = h("div", { "data-foo": new Left() })
+    var b = h("div", { "data-foo": new Right() })
+    var rootNode = render(a)
+    var foo1 = DataSet(rootNode).foo
+    var equalNode = render(b)
+    var foo2 = DataSet(equalNode).foo
+    var newRoot = patch(rootNode, diff(a, b))
+    var foo3 = DataSet(newRoot).foo
+    assertEqualDom(assert, newRoot, equalNode)
+
+    assert.equal(foo1.left, 4)
+    assert.equal(foo1.foo(), 4)
+    assert.equal(foo2.right, 5)
+    assert.equal(foo2.foo(), 5)
+    assert.equal(foo3.right, 5)
+    assert.equal(foo3.foo && foo3.foo(), 5)
+
+    assert.end()
+})
+
 test("reuse dom node without breaking", function (assert) {
     var hSpan = h("span", "hello")
     var hello = h("div", [hSpan, hSpan, hSpan])

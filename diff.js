@@ -63,16 +63,20 @@ function diffProps(a, b) {
 
     for (var aKey in a) {
         var aValue = a[aKey]
+        var bValue = b[aKey] || nullProps
 
         if (isObject(aValue)) {
-            var objectDiff = diffProps(a[aKey], b[aKey] || nullProps)
-            if (objectDiff) {
+            if (getPrototype(bValue) !== getPrototype(aValue)) {
                 diff = diff || {}
-                diff[aKey] = objectDiff
+                diff[aKey] = bValue
+            } else {
+                var objectDiff = diffProps(a[aKey], b[aKey] || nullProps)
+                if (objectDiff) {
+                    diff = diff || {}
+                    diff[aKey] = objectDiff
+                }
             }
         } else {
-            var bValue = b[aKey]
-
             if (typeof aValue === "function" || aValue !== bValue) {
                 diff = diff || {}
                 diff[aKey] = bValue
@@ -88,6 +92,16 @@ function diffProps(a, b) {
     }
 
     return diff
+}
+
+function getPrototype(value) {
+    if (Object.getPrototypeOf) {
+        return Object.getPrototypeOf(value)
+    } else if (value.__proto__) {
+        return value.__proto__
+    } else if (value.constructor) {
+        return value.constructor.prototype
+    }
 }
 
 function diffChildren(a, b, patch, apply, index) {
