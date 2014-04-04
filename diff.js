@@ -70,7 +70,7 @@ function diffProps(a, b) {
                 diff = diff || {}
                 diff[aKey] = bValue
             } else {
-                var objectDiff = diffProps(a[aKey], b[aKey] || nullProps)
+                var objectDiff = diffProps(aValue, bValue || nullProps)
                 if (objectDiff) {
                     diff = diff || {}
                     diff[aKey] = objectDiff
