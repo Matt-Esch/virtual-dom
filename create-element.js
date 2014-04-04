@@ -1,4 +1,3 @@
-var DataSet = require("data-set")
 var document = require("global/document")
 
 var isVirtualDomNode = require("./lib/is-virtual-dom")
@@ -45,10 +44,6 @@ function applyProperties(node, props) {
 
         if (typeof propValue === "function") {
             propValue(node, propName)
-        } else if(propName === "style" && typeof propValue === "string") {
-            node.style.cssText = propValue
-        } else if (propName.substr(0, 5) === "data-") {
-            DataSet(node)[propName.substr(5)] = propValue
         } else if (isObject(propValue)) {
             if (!node[propName]) {
                 node[propName] = {}

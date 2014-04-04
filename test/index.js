@@ -1,5 +1,4 @@
 var test = require("tape")
-var DataSet = require("data-set")
 var document = require("global/document")
 
 var h = require("../h")
@@ -241,29 +240,6 @@ test("mixture of node/classname applied correctly", function (assert) {
     assert.end()
 })
 
-test("data-set is applied correctly", function (assert) {
-    var vdom = h("div", { "data-id": "12345" })
-    var dom = render(vdom)
-    var data = DataSet(dom)
-    assert.false(dom.id)
-    assert.false(dom.className)
-    assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.childNodes.length, 0)
-    assert.equal(data.id, "12345")
-    assert.end()
-})
-
-test("style string is applied correctly", function (assert) {
-    var vdom = h("#important.pretty", { style: "color: red;" })
-    var dom = render(vdom)
-    assert.equal(dom.id, "important")
-    assert.equal(dom.className, "pretty")
-    assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.style.cssText.trim(), "color: red;")
-    assert.equal(dom.childNodes.length, 0)
-    assert.end()
-})
-
 test("style object is applied correctly", function (assert) {
     var vdom = h("#important.pretty", { style: {
         border: "1px solid rgb(0, 0, 0)",
@@ -317,7 +293,11 @@ test("children are added", function (assert) {
 })
 
 test("incompatible children are ignored", function (assert) {
-    var vdom = h("#important.pretty", { style: "color: red;" }, [
+    var vdom = h("#important.pretty", {
+        style: {
+            "cssText": "color: red;"
+        }
+    }, [
         {}, null
     ])
     var dom = render(vdom)
@@ -354,7 +334,11 @@ test("injected document object is used", function (assert) {
 
 test("injected warning is used", function (assert) {
     var badObject = {}
-    var vdom = h("#important.pretty", { style: "color: red;" }, [
+    var vdom = h("#important.pretty", {
+        style: {
+            cssText: "color: red;"
+        }
+    }, [
         badObject, null
     ])
 
@@ -519,37 +503,6 @@ test("dom node attributes", function (assert) {
     assert.equal(newRoot.attributes.foo, "baz")
     assert.equal(newRoot.attributes.bar, "oops")
     assert.equal(a1, a2)
-    assert.end()
-})
-
-test("dom data- attributes", function (assert) {
-    function Left() {
-        this.left = 4
-    }
-    Left.prototype.foo = function () { return this.left }
-
-    function Right() {
-        this.right = 5
-    }
-    Right.prototype.foo = function () { return this.right }
-
-    var a = h("div", { "data-foo": new Left() })
-    var b = h("div", { "data-foo": new Right() })
-    var rootNode = render(a)
-    var foo1 = DataSet(rootNode).foo
-    var equalNode = render(b)
-    var foo2 = DataSet(equalNode).foo
-    var newRoot = patch(rootNode, diff(a, b))
-    var foo3 = DataSet(newRoot).foo
-    assertEqualDom(assert, newRoot, equalNode)
-
-    assert.equal(foo1.left, 4)
-    assert.equal(foo1.foo(), 4)
-    assert.equal(foo2.right, 5)
-    assert.equal(foo2.foo(), 5)
-    assert.equal(foo3.right, 5)
-    assert.equal(foo3.foo && foo3.foo(), 5)
-
     assert.end()
 })
 
