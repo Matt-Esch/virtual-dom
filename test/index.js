@@ -1,20 +1,12 @@
 var test = require("tape")
-var document = require("global/document")
 
 var h = require("../h")
 var diff = require("../diff")
 var patch = require("../patch")
 var Node = require("../virtual-dom-node")
-var createElement = require("../create-element")
-// var tags = require("./tags.json")
+var render = require("../create-element")
 var version = require("../version")
-var doc = typeof document !== "undefined" ? document : require("min-document")
 
-function render(virtualDom, opts) {
-  opts = opts || {}
-  opts.document = opts.document || doc
-  return createElement(virtualDom, opts)
-}
 
 // VirtualDOMNode tests
 test("Node is a function", function (assert) {
@@ -40,37 +32,6 @@ test("defaults to div node", function (assert) {
     assertNode(assert, node, "div")
     assert.end()
 })
-
-
-/*
-
-test("works with basic html tag types", function (assert) {
-    var nodes = []
-
-    tags.forEach(function (tag) {
-        nodes.push(h(tag))
-    })
-
-    for (var i = 0; i < nodes.length; i++) {
-        assertNode(assert, nodes[i], tags[i])
-    }
-
-    assert.end()
-})
-
-test("forces lowercase tag names", function (assert) {
-    var nodes = []
-
-    tags.forEach(function (tag) {
-        nodes.push(h(tag.toUpperCase()))
-    })
-
-    for (var i = 0; i < nodes.length; i++) {
-        assertNode(assert, nodes[i], tags[i])
-    }
-
-    assert.end()
-}) */
 
 test("can use class selector", function (assert) {
     var node = h("div.pretty")
