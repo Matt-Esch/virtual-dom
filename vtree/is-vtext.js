@@ -1,12 +1,12 @@
-var version = require("../version")
+var version = require("./version")
 var major = version[0]
 
-module.exports = isVirtualTextNode
+module.exports = isVirtualText
 
-function isVirtualTextNode(x) {
+function isVirtualText(x) {
     if (!x) {
         return false;
     }
 
-    return x.type === "VirtualTextNode" && x.version[0] === major
+    return x.type === "VirtualText" && x.version[0] === major
 }

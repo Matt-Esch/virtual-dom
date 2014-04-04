@@ -1,10 +1,10 @@
 var version = require("./version")
 
-module.exports = VirtualTextNode
+module.exports = VirtualText
 
-function VirtualTextNode(text) {
+function VirtualText(text) {
     this.text = String(text)
 }
 
-VirtualTextNode.prototype.version = version.split(".")
-VirtualTextNode.prototype.type = "VirtualTextNode"
+VirtualText.prototype.version = version.split(".")
+VirtualText.prototype.type = "VirtualText"

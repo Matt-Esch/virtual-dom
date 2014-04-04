@@ -1,13 +1,14 @@
 var extend = require("extend")
+var isArray = require("x-is-array")
+var isString = require("x-is-string")
 
-var isArray = require("./lib/is-array")
-var isString = require("./lib/is-string")
-var parseTag = require("./lib/parse-tag")
-var isVirtualDOMNode = require("./lib/is-virtual-dom")
-var isVirtualTextNode = require("./lib/is-virtual-text")
+var VNode = require("../vtree/vnode.js")
+var VText = require("../vtree/vtext.js")
+var isVNode = require("../vtree/is-vnode")
+var isVText = require("../vtree/is-vtext")
+var isWidget = require("../vtree/is-widget")
 
-var VirtualDOMNode = require("./virtual-dom-node.js")
-var VirtualTextNode = require("./virtual-text-node.js")
+var parseTag = require("./parse-tag")
 
 module.exports = h
 
@@ -36,20 +37,19 @@ function h(tagName, properties, children) {
         }
     }
 
-    return new VirtualDOMNode(tag, props, childNodes)
+    return new VNode(tag, props, childNodes)
 }
 
 function addChild(c, childNodes) {
     if (isString(c)) {
-        childNodes.push(new VirtualTextNode(c))
-    } else {
-        // For now, we push all objects regardless of type
+        childNodes.push(new VText(c))
+    } else if (isVNode(c) || isWidget(c)) {
         childNodes.push(c)
     }
 }
 
 function isChild(x) {
-    return isVirtualDOMNode(x) || isVirtualTextNode(x)
+    return isVNode(x) || isVText(x) || isWidget(x)
 }
 
 function isChildren(x) {

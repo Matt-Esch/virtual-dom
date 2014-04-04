@@ -1,10 +1,10 @@
-var createPatch = require("./lib/patch-op")
+var isArray = require("x-is-array")
+var isObject = require("x-is-object")
 
-var isArray = require("./lib/is-array")
-var isObject = require("./lib/is-object")
-var isVDOMNode = require("./lib/is-virtual-dom")
-var isVTextNode = require("./lib/is-virtual-text")
-var isWidget = require("./lib/is-widget")
+var VPatch = require("./vpatch")
+var isVNode = require("./is-vnode")
+var isVText = require("./is-vtext")
+var isWidget = require("./is-widget")
 
 module.exports = diff
 
@@ -23,30 +23,30 @@ function walk(a, b, patch, index) {
 
     if (isWidget(a)) {
         // Update a widget
-        apply = appendPatch(apply, createPatch(a, b))
+        apply = appendPatch(apply, new VPatch(a, b))
     } else if (isWidget(b)) {
         // Patch in a new widget
-        apply = appendPatch(apply, createPatch(a, b))
-    } else if (isVTextNode(a) && isVTextNode(b)) {
+        apply = appendPatch(apply, new VPatch(a, b))
+    } else if (isVText(a) && isVText(b)) {
         // Update a text node
         if (a.text !== b.text) {
-            apply = appendPatch(apply, createPatch(a.text, b.text))
+            apply = appendPatch(apply, new VPatch(a.text, b.text))
         }
-    } else if (isVDOMNode(a) && isVDOMNode(b) && a.tagName === b.tagName) {
+    } else if (isVNode(a) && isVNode(b) && a.tagName === b.tagName) {
         // Update a VDOMNode
         var propsPatch = diffProps(a.properties, b.properties)
         if (propsPatch) {
-            apply = appendPatch(apply, createPatch(a.properties, propsPatch))
+            apply = appendPatch(apply, new VPatch(a.properties, propsPatch))
         }
 
         apply = diffChildren(a, b, patch, apply, index)
     } else if (a !== b) {
-        apply = appendPatch(apply, createPatch(a, b))
+        apply = appendPatch(apply, new VPatch(a, b))
 
         // We must detect a remove/replace of widgets here so that
         // we can add patch records for any stateful widgets
-        if (isVDOMNode(a) && a.hasWidgets &&
-            (!isVDOMNode(b) || a.tagName !== b.tagName)) {
+        if (isVNode(a) && a.hasWidgets &&
+            (!isVNode(b) || a.tagName !== b.tagName)) {
             destroyWidgets(a, patch, index)
         }
     }
@@ -117,7 +117,7 @@ function diffChildren(a, b, patch, apply, index) {
         index += 1
         walk(leftNode, rightNode, patch, index)
 
-        if (isVDOMNode(leftNode) && leftNode.count) {
+        if (isVNode(leftNode) && leftNode.count) {
             index += leftNode.count
         }
     }
@@ -126,10 +126,10 @@ function diffChildren(a, b, patch, apply, index) {
     for (; i < aLen; i++) {
         var excess = aChildren[i]
         index += 1
-        patch[index] = createPatch(excess, null)
+        patch[index] = new VPatch(excess, null)
         destroyWidgets(excess, patch, index)
 
-        if (isVDOMNode(excess) && excess.count) {
+        if (isVNode(excess) && excess.count) {
             index += excess.count
         }
     }
@@ -137,7 +137,7 @@ function diffChildren(a, b, patch, apply, index) {
     // Excess nodes in b need to be added
     for (; i < bLen; i++) {
         var addition = bChildren[i]
-        apply = appendPatch(apply, createPatch(null, addition))
+        apply = appendPatch(apply, new VPatch(null, addition))
     }
 
     return apply
@@ -148,9 +148,9 @@ function diffChildren(a, b, patch, apply, index) {
 function destroyWidgets(vNode, patch, index) {
     if (isWidget(vNode)) {
         if (typeof vNode.destroy === "function") {
-            patch[index] = createPatch(vNode, null)
+            patch[index] = new VPatch(vNode, null)
         }
-    } else if (isVDOMNode(vNode) && vNode.hasWidgets) {
+    } else if (isVNode(vNode) && vNode.hasWidgets) {
         var children = vNode.children
         var len = children.length
         for (var i = 0; i < len; i++) {
@@ -159,7 +159,7 @@ function destroyWidgets(vNode, patch, index) {
 
             destroyWidgets(child, patch, index)
 
-            if (isVDOMNode(child) && child.count) {
+            if (isVNode(child) && child.count) {
                 index += child.count
             }
         }

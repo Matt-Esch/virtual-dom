@@ -1,12 +1,12 @@
-var version = require("../version")
+var version = require("./version")
 var major = version[0]
 
-module.exports = isVirtualDomNode
+module.exports = isVirtualNode
 
-function isVirtualDomNode(x) {
+function isVirtualNode(x) {
     if (!x) {
         return false;
     }
 
-    return x.type === "VirtualDOMNode" && x.version[0] === major
+    return x.type === "VirtualNode" && x.version[0] === major
 }

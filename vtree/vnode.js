@@ -1,10 +1,10 @@
 var version = require("./version")
-var isVDOM = require("./lib/is-virtual-dom")
-var isWidget = require("./lib/is-widget")
+var isVNode = require("./is-vnode")
+var isWidget = require("./is-widget")
 
-module.exports = VirtualDOMNode
+module.exports = VirtualNode
 
-function VirtualDOMNode(tagName, properties, children) {
+function VirtualNode(tagName, properties, children) {
     this.tagName = tagName
     this.properties = properties
     this.children = children
@@ -12,8 +12,8 @@ function VirtualDOMNode(tagName, properties, children) {
     this.hasWidgets = hasWidgets(children)
 }
 
-VirtualDOMNode.prototype.version = version.split(".")
-VirtualDOMNode.prototype.type = "VirtualDOMNode"
+VirtualNode.prototype.version = version.split(".")
+VirtualNode.prototype.type = "VirtualNode"
 
 function countDescendants(children) {
     if (!children) {
@@ -25,7 +25,7 @@ function countDescendants(children) {
 
     for (var i = 0; i < count; i++) {
         var child = children[i]
-        if (isVDOM(child)) {
+        if (isVNode(child)) {
             descendants += child.count || 0
         }
     }
@@ -46,7 +46,7 @@ function hasWidgets(children) {
             if (typeof child.destroy === "function") {
                 return true
             }
-        } else if (isVDOM(child) && child.hasWidgets) {
+        } else if (isVNode(child) && child.hasWidgets) {
             return true
         }
     }

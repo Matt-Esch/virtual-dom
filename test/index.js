@@ -3,19 +3,19 @@ var test = require("tape")
 var h = require("../h")
 var diff = require("../diff")
 var patch = require("../patch")
-var Node = require("../virtual-dom-node")
-var render = require("../create-element")
-var version = require("../version")
+var Node = require("../vtree/vnode")
+var render = require("../vdom/create-element")
+var version = require("../vtree/version")
 
 
-// VirtualDOMNode tests
+// VirtualNode tests
 test("Node is a function", function (assert) {
     assert.equal(typeof Node, "function")
     assert.end()
 })
 
 test("Node type and version are set", function (assert) {
-    assert.equal(Node.prototype.type, "VirtualDOMNode")
+    assert.equal(Node.prototype.type, "VirtualNode")
     assert.deepEqual(Node.prototype.version, version.split("."))
     assert.end()
 })
@@ -123,7 +123,7 @@ function assertNode(assert, node, tagName, properties, children) {
     properties = properties || {}
     children = children || []
 
-    assert.true(node instanceof Node, "node is a VirtualDOMNode")
+    assert.true(node instanceof Node, "node is a VirtualNode")
     assert.equal(node.tagName, tagName, "tag names are equal")
     assert.deepEqual(node.properties, properties, "propeties are equal")
     assert.equal(node.children.length, children.length, "child count equal")
@@ -299,9 +299,11 @@ test("injected warning is used", function (assert) {
         style: {
             cssText: "color: red;"
         }
-    }, [
+    })
+
+    vdom.children = [
         badObject, null
-    ])
+    ]
 
     var i = 0
     function warn(warning, node) {
@@ -504,6 +506,9 @@ test("Widget is initialised on render", function (assert) {
         init: function () {
             initCount++
             return testNode
+        },
+        update: function () {
+            initCount = 1000000
         }
     }
 
@@ -521,6 +526,9 @@ test("Nested widget is initialised on render", function (assert) {
         init: function () {
             initCount++
             return testNode
+        },
+        update: function () {
+            initCount = 1000000
         }
     }
 

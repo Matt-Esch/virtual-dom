@@ -1,26 +1,17 @@
-var render = require("../create-element")
-var isWidget = require("./is-widget")
-var isString = require("./is-string")
-var isObject = require("./is-object")
-var isVNode = require("./is-virtual-dom")
+var isString = require("x-is-string")
+var isObject = require("x-is-object")
+
+var isWidget = require("../vtree/is-widget")
+var isVNode = require("../vtree/is-vnode")
+
+var render = require("./create-element")
 var updateWidget = require("./update-widget")
 
-module.exports = createPatch
+module.exports = applyPatch
 
-function createPatch(vNode, patch) {
-    return new PatchOp(vNode, patch)
-}
-
-function PatchOp(vNode, patch) {
-    this.vNode = vNode
-    this.patch = patch
-}
-
-PatchOp.prototype.apply = applyUpdate
-
-function applyUpdate(domNode, renderOptions) {
-    var vNode = this.vNode
-    var patch = this.patch
+function applyPatch(vpatch, domNode, renderOptions) {
+    var vNode = vpatch.vNode
+    var patch = vpatch.patch
 
     if (patch == null) {
         return removeNode(domNode, vNode)
