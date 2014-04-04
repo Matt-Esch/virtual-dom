@@ -19,7 +19,6 @@
   "dependencies": {
     "browser-split": "0.0.1",
     "cuid": "^1.2.1",
-    "data-set": "~3.0.0",
     "extend": "~1.2.1",
     "global": "^3.0.0",
     "semver": "~2.2.1"
