@@ -1,6 +1,7 @@
 var createPatch = require("./lib/patch-op")
 
 var isArray = require("./lib/is-array")
+var isObject = require("./lib/is-object")
 var isVDOMNode = require("./lib/is-virtual-dom")
 var isVTextNode = require("./lib/is-virtual-text")
 var isWidget = require("./lib/is-widget")
@@ -61,16 +62,21 @@ function diffProps(a, b) {
     var diff
 
     for (var aKey in a) {
-        if (aKey === "style") {
-            var styleDiff = diffProps(a.style, b.style || nullProps)
-            if (styleDiff) {
+        var aValue = a[aKey]
+        var bValue = b[aKey] || nullProps
+
+        if (isObject(aValue)) {
+            if (getPrototype(bValue) !== getPrototype(aValue)) {
                 diff = diff || {}
-                diff.style = styleDiff
+                diff[aKey] = bValue
+            } else {
+                var objectDiff = diffProps(a[aKey], b[aKey] || nullProps)
+                if (objectDiff) {
+                    diff = diff || {}
+                    diff[aKey] = objectDiff
+                }
             }
         } else {
-            var aValue = a[aKey]
-            var bValue = b[aKey]
-
             if (typeof aValue === "function" || aValue !== bValue) {
                 diff = diff || {}
                 diff[aKey] = bValue
@@ -86,6 +92,16 @@ function diffProps(a, b) {
     }
 
     return diff
+}
+
+function getPrototype(value) {
+    if (Object.getPrototypeOf) {
+        return Object.getPrototypeOf(value)
+    } else if (value.__proto__) {
+        return value.__proto__
+    } else if (value.constructor) {
+        return value.constructor.prototype
+    }
 }
 
 function diffChildren(a, b, patch, apply, index) {

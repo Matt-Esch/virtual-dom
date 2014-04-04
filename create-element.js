@@ -3,6 +3,7 @@ var DataSet = require("data-set")
 var isVirtualDomNode = require("./lib/is-virtual-dom")
 var isVirtualTextNode = require("./lib/is-virtual-text")
 var isString = require("./lib/is-string")
+var isObject = require("./lib/is-object")
 
 module.exports = render
 
@@ -43,16 +44,19 @@ function applyProperties(node, props) {
 
         if (typeof propValue === "function") {
             propValue(node, propName)
-        } else if(propName === "style") {
-            if(typeof propValue === "string") {
-                node.style.cssText = propValue
-            } else {
-                for (var s in propValue) {
-                    node.style[s] = propValue[s]
-                }
-            }
+        } else if(propName === "style" && typeof propValue === "string") {
+            node.style.cssText = propValue
         } else if (propName.substr(0, 5) === "data-") {
             DataSet(node)[propName.substr(5)] = propValue
+        } else if (isObject(propValue)) {
+            if (!node[propName]) {
+                node[propName] = {}
+            }
+
+            var nodeValue = node[propName]
+            for (var k in propValue) {
+                nodeValue[k] = propValue[k]
+            }
         } else {
             node[propName] = propValue
         }
