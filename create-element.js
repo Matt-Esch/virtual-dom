@@ -1,4 +1,5 @@
 var DataSet = require("data-set")
+var document = require("global/document")
 
 var isVirtualDomNode = require("./lib/is-virtual-dom")
 var isVirtualTextNode = require("./lib/is-virtual-text")

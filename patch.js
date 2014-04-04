@@ -1,3 +1,5 @@
+var document = require("global/document")
+
 var domIndex = require("./lib/dom-index")
 var isArray = require("./lib/is-array")
 
@@ -11,12 +13,12 @@ function patch(rootNode, patches) {
     }
 
     var index = domIndex(rootNode, patches.a, indices)
-    var ownerDocument, renderOptions
+    var ownerDocument = rootNode.ownerDocument
+    var renderOptions
 
-    if (typeof document === "undefined" ||
-        (ownerDocument = rootNode.ownerDocument) !== document) {
+    if (ownerDocument !== document) {
         renderOptions = {
-            document: ownerDocument || rootNode.ownerDocument
+            document: ownerDocument
         }
     }
 
