@@ -487,6 +487,11 @@ test("dom node dataset", function (assert) {
 })
 
 test("dom node attributes", function (assert) {
+    if (!setAttributes()) {
+        assert.skip("No support for setting attributes array directly")
+        return assert.end()
+    }
+
     var a = h("div", { attributes: { foo: "bar", bar: "oops" } })
     var b = h("div", { attributes: { foo: "baz", bar: "oops" } })
     var rootNode = render(a)
@@ -919,4 +924,19 @@ function patchCount(patch) {
     }
 
     return count
+}
+
+function setAttributes() {
+    var node = render(h())
+    var attr = "foo"
+    try {
+        if (!("attributes" in node)) {
+            node.attributes = {}
+        }
+
+        node.attributes[attr] = "bar"
+        return true
+    } catch (e) {
+        return false
+    }
 }
