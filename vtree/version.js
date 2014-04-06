@@ -1,3 +1,1 @@
-var semver = require("semver")
-
-module.exports = semver.clean("0.1.0")
+module.exports = "1"

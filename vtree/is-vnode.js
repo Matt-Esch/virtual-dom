@@ -1,5 +1,4 @@
 var version = require("./version")
-var major = version[0]
 
 module.exports = isVirtualNode
 
@@ -8,5 +7,5 @@ function isVirtualNode(x) {
         return false;
     }
 
-    return x.type === "VirtualNode" && x.version[0] === major
+    return x.type === "VirtualNode" && x.version === version
 }

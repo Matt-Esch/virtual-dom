@@ -4,6 +4,7 @@ var h = require("../h")
 var diff = require("../diff")
 var patch = require("../patch")
 var Node = require("../vtree/vnode")
+var TextNode = require("../vtree/vtext")
 var render = require("../vdom/create-element")
 var version = require("../vtree/version")
 
@@ -16,7 +17,18 @@ test("Node is a function", function (assert) {
 
 test("Node type and version are set", function (assert) {
     assert.equal(Node.prototype.type, "VirtualNode")
-    assert.deepEqual(Node.prototype.version, version.split("."))
+    assert.deepEqual(Node.prototype.version, version)
+    assert.end()
+})
+
+test("TextNode is a function", function (assert) {
+    assert.equal(typeof TextNode, "function")
+    assert.end()
+})
+
+test("TextNode type and version are set", function (assert) {
+    assert.equal(TextNode.prototype.type, "VirtualText")
+    assert.deepEqual(TextNode.prototype.version, version)
     assert.end()
 })
 

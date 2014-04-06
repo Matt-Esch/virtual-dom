@@ -12,7 +12,7 @@ function VirtualNode(tagName, properties, children) {
     this.hasWidgets = hasWidgets(children)
 }
 
-VirtualNode.prototype.version = version.split(".")
+VirtualNode.prototype.version = version
 VirtualNode.prototype.type = "VirtualNode"
 
 function countDescendants(children) {
