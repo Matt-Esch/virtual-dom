@@ -420,19 +420,22 @@ test("dom node remove", function (assert) {
 })
 
 test("dom node style", function (assert) {
-    var a = h("div", { style: { foo: "bar", bar: "oops" } })
-    var b = h("div", { style: { foo: "baz", bar: "oops" } })
+    var a = h("div", { style: { foo: "bar", bar: "oops", display: "none" } })
+    var b = h("div", { style: { foo: "baz", bar: "oops", display: "" } })
     var rootNode = render(a)
     assert.equal(rootNode.style.foo, "bar")
     assert.equal(rootNode.style.bar, "oops")
+    assert.equal(rootNode.style.display, "none")
     var s1 = rootNode.style
     var equalNode = render(b)
     assert.equal(equalNode.style.foo, "baz")
+    assert.equal(equalNode.style.display, "")
     var newRoot = patch(rootNode, diff(a, b))
     var s2 = newRoot.style
     assertEqualDom(assert, newRoot, equalNode)
     assert.equal(newRoot.style.foo, "baz")
     assert.equal(newRoot.style.bar, "oops")
+    assert.equal(newRoot.style.display, "")
     assert.equal(s1, s2)
     assert.end()
 })

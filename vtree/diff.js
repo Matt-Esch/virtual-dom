@@ -63,7 +63,7 @@ function diffProps(a, b) {
 
     for (var aKey in a) {
         var aValue = a[aKey]
-        var bValue = b[aKey] || nullProps
+		var bValue = aKey in b ? b[aKey] : nullProps
 
         if (isObject(aValue)) {
             if (getPrototype(bValue) !== getPrototype(aValue)) {
