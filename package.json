@@ -48,10 +48,10 @@
     "phantom": "run-browser test/index.js -b | tap-spec"
   },
   "testling": {
-    "files": "test/index.js",
+    "files": "test/*.js",
     "browsers": [
       "ie/8..latest",
-      "firefox/16..latest",
+      "firefox/17..latest",
       "firefox/nightly",
       "chrome/22..latest",
       "chrome/canary",
