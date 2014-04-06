@@ -21,6 +21,7 @@
     "cuid": "^1.2.1",
     "extend": "~1.2.1",
     "global": "^3.0.0",
+    "tape": "^2.12.3",
     "x-is-array": "^0.1.0",
     "x-is-object": "^0.1.0",
     "x-is-string": "^0.1.0"
@@ -30,7 +31,7 @@
     "run-browser": "git://github.com/Raynos/run-browser",
     "tap-dot": "^0.2.1",
     "tap-spec": "^0.1.8",
-    "tape": "^2.12.1"
+    "tape": "^2.12.3"
   },
   "licenses": [
     {

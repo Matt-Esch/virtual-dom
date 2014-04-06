@@ -1,11 +1,11 @@
 var test = require("tape")
 
-var h = require("../h")
-var diff = require("../diff")
-var patch = require("../patch")
+var h = require("../h.js")
+var diff = require("../diff.js")
+var patch = require("../patch.js")
+var render = require("../create-element.js")
 var Node = require("../vtree/vnode")
 var TextNode = require("../vtree/vtext")
-var render = require("../vdom/create-element")
 var version = require("../vtree/version")
 
 
@@ -135,7 +135,7 @@ function assertNode(assert, node, tagName, properties, children) {
     properties = properties || {}
     children = children || []
 
-    assert.true(node instanceof Node, "node is a VirtualNode")
+    assert.ok(node instanceof Node, "node is a VirtualNode")
     assert.equal(node.tagName, tagName, "tag names are equal")
     assert.deepEqual(node.properties, properties, "propeties are equal")
     assert.equal(node.children.length, children.length, "child count equal")
@@ -166,8 +166,8 @@ test("render text node", function (assert) {
     var vdom = h("span", "hello")
     var dom = render(vdom)
     assert.equal(dom.tagName, "SPAN")
-    assert.false(dom.id)
-    assert.false(dom.className)
+    assert.notOk(dom.id)
+    assert.notOk(dom.className)
     assert.equal(dom.childNodes.length, 1)
     assert.equal(dom.childNodes[0].data, "hello")
     assert.end()
@@ -176,8 +176,8 @@ test("render text node", function (assert) {
 test("render div", function (assert) {
     var vdom = h()
     var dom = render(vdom)
-    assert.false(dom.id)
-    assert.false(dom.className)
+    assert.notOk(dom.id)
+    assert.notOk(dom.className)
     assert.equal(dom.tagName, "DIV")
     assert.equal(dom.childNodes.length, 0)
     assert.end()
@@ -187,7 +187,7 @@ test("node id is applied correctly", function (assert) {
     var vdom = h("#important")
     var dom = render(vdom)
     assert.equal(dom.id, "important")
-    assert.false(dom.className)
+    assert.notOk(dom.className)
     assert.equal(dom.tagName, "DIV")
     assert.equal(dom.childNodes.length, 0)
     assert.end()
@@ -196,7 +196,7 @@ test("node id is applied correctly", function (assert) {
 test("node class name is applied correctly", function (assert) {
     var vdom = h(".pretty")
     var dom = render(vdom)
-    assert.false(dom.id)
+    assert.notOk(dom.id)
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
     assert.equal(dom.childNodes.length, 0)
@@ -222,8 +222,8 @@ test("style object is applied correctly", function (assert) {
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.style.border, "1px solid rgb(0, 0, 0)")
-    assert.equal(dom.style.padding, "2px")
+    assert.equal(dom.style.border, style("border", "1px solid rgb(0, 0, 0)"))
+    assert.equal(dom.style.padding, style("padding", "2px"))
     assert.equal(dom.childNodes.length, 0)
     assert.end()
 })
@@ -277,7 +277,7 @@ test("incompatible children are ignored", function (assert) {
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.style.cssText.trim(), "color: red;")
+    assert.equal(dom.style.cssText, style("cssText", "color: red;"))
     assert.equal(dom.childNodes.length, 0)
     assert.end()
 })
@@ -336,7 +336,7 @@ test("injected warning is used", function (assert) {
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.style.cssText.trim(), "color: red;")
+    assert.equal(dom.style.cssText, style("cssText", "color: red;"))
     assert.equal(dom.childNodes.length, 0)
     assert.equal(i, 2)
     assert.end()
@@ -432,22 +432,39 @@ test("dom node remove", function (assert) {
 })
 
 test("dom node style", function (assert) {
-    var a = h("div", { style: { foo: "bar", bar: "oops", display: "none" } })
-    var b = h("div", { style: { foo: "baz", bar: "oops", display: "" } })
+
+
+    var a = h("div", {
+        style: {
+            border: "none",
+            className: "oops",
+            display: "none"
+        }
+    })
+
+    var b = h("div", {
+        style: {
+            border: "1px solid #000",
+            className: "oops",
+            display: ""
+        }
+    })
+
     var rootNode = render(a)
-    assert.equal(rootNode.style.foo, "bar")
-    assert.equal(rootNode.style.bar, "oops")
-    assert.equal(rootNode.style.display, "none")
+    assert.equal(rootNode.style.border, style("border", "none"))
+    assert.equal(rootNode.style.className, style("className", "oops"))
+    assert.equal(rootNode.style.display, style("display", "none"))
     var s1 = rootNode.style
     var equalNode = render(b)
-    assert.equal(equalNode.style.foo, "baz")
-    assert.equal(equalNode.style.display, "")
+    assert.equal(equalNode.style.border, style("border", "1px solid #000"))
+    assert.equal(equalNode.style.className, style("className", "oops"))
+    assert.equal(equalNode.style.display, style("display", ""))
     var newRoot = patch(rootNode, diff(a, b))
     var s2 = newRoot.style
     assertEqualDom(assert, newRoot, equalNode)
-    assert.equal(newRoot.style.foo, "baz")
-    assert.equal(newRoot.style.bar, "oops")
-    assert.equal(newRoot.style.display, "")
+    assert.equal(newRoot.style.border, style("border", "1px solid #000"))
+    assert.equal(newRoot.style.className, style("className", "oops"))
+    assert.equal(newRoot.style.display, style("display", ""))
     assert.equal(s1, s2)
     assert.end()
 })
@@ -598,7 +615,7 @@ test("Patch widgets at the root", function (assert) {
     assert.equal(updateCount, 0, "updateCount after left render")
 
     var patches = diff(leftTree, rightTree)
-    assert.equal(Object.keys(patches).length, 2)
+    assert.equal(patchCount(patches), 1)
     assert.equal(initCount, 1, "initCount after diff")
     assert.equal(updateCount, 0, "updateCount after diff")
 
@@ -666,7 +683,7 @@ test("Patch nested widgets", function (assert) {
     assert.equal(updateCount, 0, "updateCount after left render")
 
     var patches = diff(leftTree, rightTree)
-    assert.equal(Object.keys(patches).length, 2)
+    assert.equal(patchCount(patches), 1)
     assert.equal(initCount, 1, "initCount after diff")
     assert.equal(updateCount, 0, "updateCount after diff")
 
@@ -696,8 +713,8 @@ test("VNode indicates stateful sibling", function (assert) {
     var stateful = h("div", [statefulWidget])
     var pure = h("div", [pureWidget])
 
-    assert.true(stateful.hasWidgets)
-    assert.false(pure.hasWidgets)
+    assert.ok(stateful.hasWidgets)
+    assert.notOk(pure.hasWidgets)
     assert.end()
 })
 
@@ -822,6 +839,13 @@ test("Patching parent destroys stateful sibling", function (assert) {
     assert.end()
 })
 
+// Safely translates style values using the DOM in the browser
+function style(name, value) {
+    var node = render(h())
+    node.style[name] = value
+    return node.style[name]
+}
+
 function assertEqualDom(assert, a, b) {
     assert.ok(areEqual(a, b) && areEqual(b, a), "Dom structures are equal")
 }
@@ -846,6 +870,7 @@ function areEqual(a, b) {
             key !== "innerHTML"
         ) {
             if (key === "ownerDocument") return a[key] === b[key]
+            if (key === "style") return equalStyle(a[key], b[key])
             if (typeof a === "object" || typeof a === "function") {
                 if (!areEqual(a[key], b[key])) {
                     return false
@@ -859,4 +884,39 @@ function areEqual(a, b) {
     }
 
     return true
+}
+
+// CssStyleDeclaration indexes the styles, which could be out of order
+// This is a left sided check. Note that we call equal(a, b) and equal(b, a)
+function equalStyle(a, b) {
+    var keys = []
+    for (var key in a) {
+        if ("" + parseInt(key, 10) === key) {
+            continue
+        } else {
+            keys.push(key)
+        }
+    }
+
+    keys.sort()
+
+    for (var i = 0; i < keys.length; i++) {
+        if (a[key] !== b[key]) {
+            return false
+        }
+    }
+
+    return true
+}
+
+function patchCount(patch) {
+    var count = 0
+
+    for (var key in patch) {
+        if (key !== "a" && patch.hasOwnProperty(key)) {
+            count++
+        }
+    }
+
+    return count
 }

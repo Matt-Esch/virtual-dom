@@ -1,3 +1,3 @@
-var h = require("./h/")
+var h = require("./h/index.js")
 
 module.exports = h
