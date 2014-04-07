@@ -4,10 +4,12 @@ var isWidget = require("./is-widget")
 
 module.exports = VirtualNode
 
-function VirtualNode(tagName, properties, children) {
+function VirtualNode(tagName, properties, children, key, namespace) {
     this.tagName = tagName
     this.properties = properties
     this.children = children
+    this.key = (typeof key === "string") ? key : null
+    this.namespace = (typeof namespace === "string") ? namespace : null
     this.count = countDescendants(children)
     this.hasWidgets = hasWidgets(children)
 }

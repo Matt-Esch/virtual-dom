@@ -22,7 +22,10 @@ function createElement(vnode, opts) {
         return null
     }
 
-    var node = doc.createElement(vnode.tagName)
+    var node = (vnode.namespace === null) ?
+        doc.createElement(vnode.tagName) :
+        doc.createElementNS(vnode.namespace, vnode.tagName)
+
     applyProperties(node, vnode.properties)
     var children = vnode.children
 

@@ -844,6 +844,16 @@ test("Patching parent destroys stateful sibling", function (assert) {
     assert.end()
 })
 
+test("Create element respects namespace", function (assert) {
+    var svgURI = "http://www.w3.org/2000/svg"
+    var vnode = new Node("svg", {}, [], null, svgURI)
+    var node = render(vnode)
+
+    assert.equal(node.tagName, "svg")
+    assert.equal(node.namespaceURI, svgURI)
+    assert.end()
+})
+
 // Safely translates style values using the DOM in the browser
 function style(name, value) {
     var node = render(h())
