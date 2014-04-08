@@ -854,6 +854,25 @@ test("Create element respects namespace", function (assert) {
     assert.end()
 })
 
+test("Different namespaces creates a patch", function (assert) {
+    var leftNode = new Node("div", {}, [], null, "testing")
+    var rightNode = new Node("div", {}, [], null, "undefined")
+
+    var rootNode = render(leftNode)
+    assert.equal(rootNode.tagName, "div")
+    assert.equal(rootNode.namespaceURI, "testing")
+
+    var patches = diff(leftNode, rightNode)
+    assert.equal(patchCount(patches), 1)
+
+    rootNode = patch(rootNode, patches)
+
+    assert.equal(rootNode.tagName, "div")
+    assert.equal(rootNode.namespaceURI, "undefined")
+
+    assert.end()
+})
+
 // Safely translates style values using the DOM in the browser
 function style(name, value) {
     var node = render(h())

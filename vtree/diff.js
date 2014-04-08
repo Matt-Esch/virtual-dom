@@ -16,7 +16,7 @@ function diff(a, b) {
 
 function walk(a, b, patch, index) {
     if (a === b) {
-        return b
+        return
     }
 
     var apply = patch[index]
@@ -32,7 +32,9 @@ function walk(a, b, patch, index) {
         if (a.text !== b.text) {
             apply = appendPatch(apply, new VPatch(a.text, b.text))
         }
-    } else if (isVNode(a) && isVNode(b) && a.tagName === b.tagName) {
+    } else if (isVNode(a) && isVNode(b) &&
+        a.tagName === b.tagName &&
+        a.namespace === b.namespace) {
         // Update a VDOMNode
         var propsPatch = diffProps(a.properties, b.properties)
         if (propsPatch) {
@@ -46,7 +48,9 @@ function walk(a, b, patch, index) {
         // We must detect a remove/replace of widgets here so that
         // we can add patch records for any stateful widgets
         if (isVNode(a) && a.hasWidgets &&
-            (!isVNode(b) || a.tagName !== b.tagName)) {
+            (!isVNode(b) ||
+                a.tagName !== b.tagName ||
+                a.namespace !== b.namespace)) {
             destroyWidgets(a, patch, index)
         }
     }
