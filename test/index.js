@@ -873,6 +873,40 @@ test("Different namespaces creates a patch", function (assert) {
     assert.end()
 })
 
+test("Hooks are added to a hooks array on a node", function (assert) {
+    function Prop() {}
+    Prop.prototype.hook = function () {}
+
+    var node = new Node("div", {
+        "id": new Prop(),
+        "value": "not a hook"
+    }, [], null, null)
+
+    assert.equal(node.hooks.length, 1)
+    assert.equal(node.hooks[0], "id")
+    assert.end()
+})
+
+test("Node child hooks are identified", function (assert) {
+    function Prop() {}
+    Prop.prototype.hook = function () {}
+
+    var node = new Node("div", {
+        "id": new Prop(),
+        "value": "not a hook"
+    }, [], null, null)
+
+    var parentNode = new Node("div", {
+        "id": "not a hook"
+    }, [node], null, null)
+
+    assert.equal(node.hooks.length, 1)
+    assert.equal(node.hooks[0], "id")
+    assert.equal(parentNode.hooks, null)
+    assert.ok(parentNode.descendantHooks)
+    assert.end()
+})
+
 // Safely translates style values using the DOM in the browser
 function style(name, value) {
     var node = render(h())

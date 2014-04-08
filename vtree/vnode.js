@@ -1,6 +1,7 @@
 var version = require("./version")
 var isVNode = require("./is-vnode")
 var isWidget = require("./is-widget")
+var isVHook = require("./is-vhook")
 
 module.exports = VirtualNode
 
@@ -10,48 +11,50 @@ function VirtualNode(tagName, properties, children, key, namespace) {
     this.children = children
     this.key = (typeof key === "string") ? key : null
     this.namespace = (typeof namespace === "string") ? namespace : null
-    this.count = countDescendants(children)
-    this.hasWidgets = hasWidgets(children)
-}
 
-VirtualNode.prototype.version = version
-VirtualNode.prototype.type = "VirtualNode"
-
-function countDescendants(children) {
-    if (!children) {
-        return 0
-    }
-
-    var count = children.length || 0
+    var count = (children && children.length) || 0
     var descendants = 0
+    var hasWidgets = false
+    var hooks = null
+    var descendantHooks = false
+
+    for (var propName in properties) {
+        if (properties.hasOwnProperty(propName)) {
+            var val = properties[propName]
+            if (isVHook(val)) {
+                if (!hooks) {
+                    hooks = []
+                }
+
+                hooks.push(propName)
+            }
+        }
+    }
 
     for (var i = 0; i < count; i++) {
         var child = children[i]
         if (isVNode(child)) {
             descendants += child.count || 0
-        }
-    }
 
-    return count + descendants
-}
-
-function hasWidgets(children) {
-    if (!children) {
-        return false
-    }
-
-    var count = children.length
-
-    for (var i = 0; i < count; i++) {
-        var child = children[i]
-        if (isWidget(child)) {
-            if (typeof child.destroy === "function") {
-                return true
+            if (!hasWidgets && child.hasWidgets) {
+                hasWidgets = true
             }
-        } else if (isVNode(child) && child.hasWidgets) {
-            return true
+
+            if (!descendantHooks && (child.hooks || child.descendantHooks)) {
+                descendantHooks = true
+            }
+        } else if (!hasWidgets && isWidget(child)) {
+            if (typeof child.destroy === "function") {
+                hasWidgets = true
+            }
         }
     }
 
-    return false
+    this.count = count + descendants
+    this.hasWidgets = hasWidgets
+    this.hooks = hooks
+    this.descendantHooks = descendantHooks
 }
+
+VirtualNode.prototype.version = version
+VirtualNode.prototype.type = "VirtualNode"
