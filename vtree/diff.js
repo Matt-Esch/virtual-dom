@@ -74,6 +74,9 @@ function diffProps(a, b) {
             if (getPrototype(bValue) !== getPrototype(aValue)) {
                 diff = diff || {}
                 diff[aKey] = bValue
+            } else if (bValue === nullProps) {
+                diff = diff || {}
+                diff[aKey] = undefined
             } else {
                 var objectDiff = diffProps(aValue, bValue || nullProps)
                 if (objectDiff) {

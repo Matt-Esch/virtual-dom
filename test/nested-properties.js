@@ -97,7 +97,21 @@ test("deleting properties", function (assert) {
     var elem = createAndPatch(prev, curr)
 
     assert.equal(elem.propA, undefined)
+    assert.ok("propA" in elem)
     assert.equal(elem.propB, "apples")
+
+    assert.end()
+})
+
+test("removing objects", function (assert) {
+    var prev = h("div", { propA: { foo: "bar" } })
+    var curr = h("div", { propB: { baz: "apples" } })
+
+    var elem = createAndPatch(prev, curr)
+
+    assert.equal(elem.propA, undefined)
+    assert.ok("propA" in elem)
+    assert.equal(elem.propB.baz, "apples")
 
     assert.end()
 })
