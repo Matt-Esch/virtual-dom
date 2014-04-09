@@ -1,3 +1,4 @@
+/*jshint maxcomplexity: 20 */
 var isArray = require("x-is-array")
 var isObject = require("is-object")
 
@@ -99,10 +100,12 @@ function diffProps(a, b) {
 }
 
 function getPrototype(value) {
+    var proto = "__proto__"
+
     if (Object.getPrototypeOf) {
         return Object.getPrototypeOf(value)
-    } else if (value.__proto__) {
-        return value.__proto__
+    } else if (value[proto]) {
+        return value[proto]
     } else if (value.constructor) {
         return value.constructor.prototype
     }

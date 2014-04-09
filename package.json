@@ -26,6 +26,7 @@
     "x-is-string": "^0.1.0"
   },
   "devDependencies": {
+    "jshint": "^2.5.0",
     "min-document": "^2.3.0",
     "pre-commit": "0.0.5",
     "run-browser": "git://github.com/Raynos/run-browser",
@@ -40,7 +41,8 @@
     }
   ],
   "scripts": {
-    "test": "node ./test/index.js | tap-spec",
+    "jshint": "jshint --verbose .",
+    "test": "npm run jshint --silent && node ./test/index.js | tap-spec",
     "dot": "node ./test/index.js | tap-dot",
     "start": "node ./index.js",
     "cover": "istanbul cover --report none --print detail ./test/index.js",

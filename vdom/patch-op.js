@@ -13,9 +13,9 @@ function applyPatch(vpatch, domNode, renderOptions) {
     var vNode = vpatch.vNode
     var patch = vpatch.patch
 
-    if (patch == null) {
+    if (patch === null || patch === undefined) {
         return removeNode(domNode, vNode)
-    } else if (vNode == null) {
+    } else if (vNode === null || vNode === undefined) {
         return insertNode(domNode, patch, renderOptions)
     } else if (isString(patch)) {
         return stringPatch(domNode, vNode, patch, renderOptions)
