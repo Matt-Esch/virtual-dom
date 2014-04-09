@@ -96,6 +96,22 @@ test("hook get called in patch", function (assert) {
     assert.end()
 })
 
+test("functions are not hooks in render", function (assert) {
+    var counter = 0
+    var fakeHook = function () {
+        counter++
+    }
+
+    var prev = h("div")
+    var curr = h("div", { someProp: fakeHook })
+
+    var elem = createAndPatch(prev, curr)
+    assert.equal(elem.someProp, fakeHook)
+    assert.equal(counter, 0)
+
+    assert.end()
+})
+
 function createAndPatch(prev, curr) {
     var elem = create(prev)
     var patches = diff(prev, curr)

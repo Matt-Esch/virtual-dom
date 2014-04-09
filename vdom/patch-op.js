@@ -118,8 +118,6 @@ function propPatch(domNode, patch) {
             for (var key in patchValue) {
                 domValue[key] = patchValue[key]
             }
-        } else if (typeof patchValue === "function") {
-            patchValue(domNode, prop)
         } else {
             domNode[prop] = patchValue
         }
