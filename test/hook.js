@@ -3,6 +3,8 @@ var test = require("tape")
 var h = require("../h.js")
 var Node = require("../vtree/vnode.js")
 var create = require("../create-element.js")
+var diff = require("../diff.js")
+var patch = require("../patch.js")
 
 test("Hooks are added to a hooks array on a node", function (assert) {
     function Prop() {}
@@ -73,6 +75,34 @@ test("functions are not hooks in render", function (assert) {
 
     assert.end()
 })
+
+test("hook get called in patch", function (assert) {
+    var counter = 0
+    var prev = h("div")
+    var curr = h("div", {
+        "some-key": hook(function (elem, prop) {
+            counter++
+            assert.equal(prop, "some-key")
+            assert.equal(elem.tagName, "DIV")
+
+            elem.className = "bar"
+        })
+    })
+
+    var elem = createAndPatch(prev, curr)
+    assert.equal(elem.className, "bar")
+    assert.equal(counter, 1)
+
+    assert.end()
+})
+
+function createAndPatch(prev, curr) {
+    var elem = create(prev)
+    var patches = diff(prev, curr)
+    elem = patch(elem, patches)
+
+    return elem
+}
 
 function hook(fn) {
     function Type() {}

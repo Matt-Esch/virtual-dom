@@ -3,6 +3,7 @@ var isObject = require("is-object")
 
 var isWidget = require("../vtree/is-widget")
 var isVNode = require("../vtree/is-vnode")
+var isHook = require("../vtree/is-vhook")
 
 var render = require("./create-element")
 var updateWidget = require("./update-widget")
@@ -105,7 +106,9 @@ function propPatch(domNode, patch) {
     for (var prop in patch) {
         var patchValue = patch[prop]
 
-        if (isObject(patchValue)) {
+        if (isHook(patchValue)) {
+            patchValue.hook(domNode, prop)
+        } else if (isObject(patchValue)) {
             var domValue = domNode[prop]
 
             if (!domValue) {
