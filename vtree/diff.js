@@ -73,7 +73,7 @@ function diffProps(a, b) {
         if (isObject(aValue)) {
             if (getPrototype(bValue) !== getPrototype(aValue)) {
                 diff = diff || {}
-                diff[aKey] = bValue
+                diff[aKey] = bValue === nullProps ? undefined : bValue
             } else if (bValue === nullProps) {
                 diff = diff || {}
                 diff[aKey] = undefined
@@ -87,7 +87,7 @@ function diffProps(a, b) {
         } else {
             if (typeof aValue === "function" || aValue !== bValue) {
                 diff = diff || {}
-                diff[aKey] = bValue === nullProps ? undefined: bValue
+                diff[aKey] = bValue === nullProps ? undefined : bValue
             }
         }
     }

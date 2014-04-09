@@ -112,6 +112,24 @@ test("functions are not hooks in render", function (assert) {
     assert.end()
 })
 
+test("two different hooks", function (assert) {
+    var counters = { a: 0, b: 0 }
+    var prev = h("div", { propA: hook(function () {
+        counters.a++
+    }) })
+    var curr = h("div", { propB: hook(function () {
+        counters.b++
+    }) })
+
+    var elem = createAndPatch(prev, curr)
+    assert.equal(elem.propA, undefined)
+    assert.equal(elem.propB, undefined)
+    assert.equal(counters.a, 1)
+    assert.equal(counters.b, 1)
+
+    assert.end()
+})
+
 function createAndPatch(prev, curr) {
     var elem = create(prev)
     var patches = diff(prev, curr)
