@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "min-document": "^2.3.0",
+    "pre-commit": "0.0.5",
     "run-browser": "git://github.com/Raynos/run-browser",
     "tap-dot": "^0.2.1",
     "tap-spec": "^0.1.8",

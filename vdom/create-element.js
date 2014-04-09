@@ -4,6 +4,7 @@ var isObject = require("x-is-object")
 var isVNode = require("../vtree/is-vnode")
 var isVText = require("../vtree/is-vtext")
 var isWidget = require("../vtree/is-widget")
+var isHook = require("../vtree/is-vhook")
 
 module.exports = createElement
 
@@ -45,6 +46,8 @@ function applyProperties(node, props) {
 
         if (typeof propValue === "function") {
             propValue(node, propName)
+        } else if (isHook(propValue)) {
+            propValue.hook(node, propName)
         } else if (isObject(propValue)) {
             if (!node[propName]) {
                 node[propName] = {}
