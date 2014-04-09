@@ -1,5 +1,5 @@
 var document = require("global/document")
-var isObject = require("x-is-object")
+var isObject = require("is-object")
 
 var isVNode = require("../vtree/is-vnode")
 var isVText = require("../vtree/is-vtext")

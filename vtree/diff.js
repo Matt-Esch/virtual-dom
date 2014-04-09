@@ -1,5 +1,5 @@
 var isArray = require("x-is-array")
-var isObject = require("x-is-object")
+var isObject = require("is-object")
 
 var VPatch = require("./vpatch")
 var isVNode = require("./is-vnode")

@@ -1,5 +1,5 @@
 var isString = require("x-is-string")
-var isObject = require("x-is-object")
+var isObject = require("is-object")
 
 var isWidget = require("../vtree/is-widget")
 var isVNode = require("../vtree/is-vnode")
