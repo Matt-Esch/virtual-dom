@@ -79,6 +79,23 @@ test("dom node attributes", function (assert) {
     assert.end()
 })
 
+test("patch nested properties in right only", function (assert) {
+    var prev = h("div")
+    var curr = h("div", { attributes: { foo: "bar" } })
+
+    var elem = createAndPatch(prev, curr)
+
+    assert.equal(elem.attributes.foo, "bar")
+
+    assert.end()
+})
+
+function createAndPatch(prev, curr) {
+    var elem = render(prev)
+    var patches = diff(prev, curr)
+    return patch(elem, patches)
+}
+
 // Safely translates style values using the DOM in the browser
 function style(name, value) {
     var node = render(h())

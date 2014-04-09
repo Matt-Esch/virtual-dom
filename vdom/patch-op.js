@@ -107,6 +107,11 @@ function propPatch(domNode, patch) {
 
         if (isObject(patchValue)) {
             var domValue = domNode[prop]
+
+            if (!domValue) {
+                domValue = domNode[prop] = {}
+            }
+
             for (var key in patchValue) {
                 domValue[key] = patchValue[key]
             }
