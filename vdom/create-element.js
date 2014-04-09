@@ -44,9 +44,7 @@ function applyProperties(node, props) {
     for (var propName in props) {
         var propValue = props[propName]
 
-        if (typeof propValue === "function") {
-            propValue(node, propName)
-        } else if (isHook(propValue)) {
+        if (isHook(propValue)) {
             propValue.hook(node, propName)
         } else if (isObject(propValue)) {
             if (!node[propName]) {

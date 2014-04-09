@@ -58,6 +58,22 @@ test("hooks get called in render", function (assert) {
     assert.end()
 })
 
+test("functions are not hooks in render", function (assert) {
+    var counter = 0
+    var fakeHook = function () {
+        counter++
+    }
+    var vtree = h("div", {
+        "someProp": fakeHook
+    })
+
+    var elem = create(vtree)
+    assert.equal(elem.someProp, fakeHook)
+    assert.equal(counter, 0)
+
+    assert.end()
+})
+
 function hook(fn) {
     function Type() {}
     Type.prototype.hook = fn
