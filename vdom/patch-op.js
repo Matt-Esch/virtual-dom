@@ -1,8 +1,9 @@
 var isString = require("x-is-string")
-var isObject = require("x-is-object")
+var isObject = require("is-object")
 
 var isWidget = require("../vtree/is-widget")
 var isVNode = require("../vtree/is-vnode")
+var isHook = require("../vtree/is-vhook")
 
 var render = require("./create-element")
 var updateWidget = require("./update-widget")
@@ -13,9 +14,9 @@ function applyPatch(vpatch, domNode, renderOptions) {
     var vNode = vpatch.vNode
     var patch = vpatch.patch
 
-    if (patch == null) {
+    if (patch === null || patch === undefined) {
         return removeNode(domNode, vNode)
-    } else if (vNode == null) {
+    } else if (vNode === null || vNode === undefined) {
         return insertNode(domNode, patch, renderOptions)
     } else if (isString(patch)) {
         return stringPatch(domNode, vNode, patch, renderOptions)
@@ -105,13 +106,18 @@ function propPatch(domNode, patch) {
     for (var prop in patch) {
         var patchValue = patch[prop]
 
-        if (isObject(patchValue)) {
+        if (isHook(patchValue)) {
+            patchValue.hook(domNode, prop)
+        } else if (isObject(patchValue)) {
             var domValue = domNode[prop]
+
+            if (!domValue) {
+                domValue = domNode[prop] = {}
+            }
+
             for (var key in patchValue) {
                 domValue[key] = patchValue[key]
             }
-        } else if (typeof patchValue === "function") {
-            patchValue(domNode, prop)
         } else {
             domNode[prop] = patchValue
         }

@@ -27,7 +27,7 @@ function h(tagName, properties, children) {
     tag = parseTag(tagName, props)
 
 
-    if (children != null) {
+    if (children !== null && children !== undefined) {
         if (isArray(children)) {
             for (var i = 0; i < children.length; i++) {
                 addChild(children[i], childNodes)

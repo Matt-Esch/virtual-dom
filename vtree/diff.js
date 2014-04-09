@@ -1,10 +1,12 @@
+/*jshint maxcomplexity: 25 */
 var isArray = require("x-is-array")
-var isObject = require("x-is-object")
+var isObject = require("is-object")
 
 var VPatch = require("./vpatch")
 var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")
+var isHook = require("./is-vhook")
 
 module.exports = diff
 
@@ -67,12 +69,18 @@ function diffProps(a, b) {
 
     for (var aKey in a) {
         var aValue = a[aKey]
-		var bValue = aKey in b ? b[aKey] : nullProps
+        var bValue = aKey in b ? b[aKey] : nullProps
 
-        if (isObject(aValue)) {
+        if (isHook(bValue)) {
+            diff = diff || {}
+            diff[aKey] = bValue
+        } else if (isObject(aValue)) {
             if (getPrototype(bValue) !== getPrototype(aValue)) {
                 diff = diff || {}
-                diff[aKey] = bValue
+                diff[aKey] = bValue === nullProps ? undefined : bValue
+            } else if (bValue === nullProps) {
+                diff = diff || {}
+                diff[aKey] = undefined
             } else {
                 var objectDiff = diffProps(aValue, bValue || nullProps)
                 if (objectDiff) {
@@ -83,7 +91,7 @@ function diffProps(a, b) {
         } else {
             if (typeof aValue === "function" || aValue !== bValue) {
                 diff = diff || {}
-                diff[aKey] = bValue
+                diff[aKey] = bValue === nullProps ? undefined : bValue
             }
         }
     }
@@ -99,10 +107,12 @@ function diffProps(a, b) {
 }
 
 function getPrototype(value) {
+    var proto = "__proto__"
+
     if (Object.getPrototypeOf) {
         return Object.getPrototypeOf(value)
-    } else if (value.__proto__) {
-        return value.__proto__
+    } else if (value[proto]) {
+        return value[proto]
     } else if (value.constructor) {
         return value.constructor.prototype
     }

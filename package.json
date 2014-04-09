@@ -21,12 +21,14 @@
     "cuid": "^1.2.1",
     "extend": "~1.2.1",
     "global": "git+https://github.com/Matt-Esch/global",
+    "is-object": "^0.1.2",
     "x-is-array": "^0.1.0",
-    "x-is-object": "^0.1.0",
     "x-is-string": "^0.1.0"
   },
   "devDependencies": {
+    "jshint": "^2.5.0",
     "min-document": "^2.3.0",
+    "pre-commit": "0.0.5",
     "run-browser": "git://github.com/Raynos/run-browser",
     "tap-dot": "^0.2.1",
     "tap-spec": "^0.1.8",
@@ -39,7 +41,8 @@
     }
   ],
   "scripts": {
-    "test": "node ./test/index.js | tap-spec",
+    "jshint": "jshint --verbose .",
+    "test": "npm run jshint --silent && node ./test/index.js | tap-spec",
     "dot": "node ./test/index.js | tap-dot",
     "start": "node ./index.js",
     "cover": "istanbul cover --report none --print detail ./test/index.js",
