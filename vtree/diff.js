@@ -84,7 +84,7 @@ function diffProps(a, b) {
         } else {
             if (typeof aValue === "function" || aValue !== bValue) {
                 diff = diff || {}
-                diff[aKey] = bValue
+                diff[aKey] = bValue === nullProps ? undefined: bValue
             }
         }
     }

@@ -90,6 +90,18 @@ test("patch nested properties in right only", function (assert) {
     assert.end()
 })
 
+test("deleting properties", function (assert) {
+    var prev = h("div", { propA: "bar" })
+    var curr = h("div", { propB: "apples" })
+
+    var elem = createAndPatch(prev, curr)
+
+    assert.equal(elem.propA, undefined)
+    assert.equal(elem.propB, "apples")
+
+    assert.end()
+})
+
 function createAndPatch(prev, curr) {
     var elem = render(prev)
     var patches = diff(prev, curr)
