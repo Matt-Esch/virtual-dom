@@ -147,6 +147,26 @@ test("two hooks on same property", function (assert) {
     assert.end()
 })
 
+test("two hooks of same interface", function (assert) {
+    function Hook(key) {
+        this.key = key
+    }
+    Hook.prototype.hook = function () {
+        counters[this.key]++
+    }
+
+    var counters = { a: 0, b: 0 }
+    var prev = h("div", { propA: new Hook("a") })
+    var curr = h("div", { propA: new Hook("b") })
+
+    var elem = createAndPatch(prev, curr)
+    assert.equal(elem.propA, undefined)
+    assert.equal(counters.a, 1)
+    assert.equal(counters.b, 1)
+
+    assert.end()
+})
+
 function createAndPatch(prev, curr) {
     var elem = create(prev)
     var patches = diff(prev, curr)

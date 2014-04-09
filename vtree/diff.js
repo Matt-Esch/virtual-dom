@@ -1,4 +1,4 @@
-/*jshint maxcomplexity: 20 */
+/*jshint maxcomplexity: 25 */
 var isArray = require("x-is-array")
 var isObject = require("is-object")
 
@@ -6,6 +6,7 @@ var VPatch = require("./vpatch")
 var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")
+var isHook = require("./is-vhook")
 
 module.exports = diff
 
@@ -68,9 +69,12 @@ function diffProps(a, b) {
 
     for (var aKey in a) {
         var aValue = a[aKey]
-		var bValue = aKey in b ? b[aKey] : nullProps
+        var bValue = aKey in b ? b[aKey] : nullProps
 
-        if (isObject(aValue)) {
+        if (isHook(bValue)) {
+            diff = diff || {}
+            diff[aKey] = bValue
+        } else if (isObject(aValue)) {
             if (getPrototype(bValue) !== getPrototype(aValue)) {
                 diff = diff || {}
                 diff[aKey] = bValue === nullProps ? undefined : bValue
