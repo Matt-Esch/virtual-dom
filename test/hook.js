@@ -5,6 +5,7 @@ var Node = require("../vtree/vnode.js")
 var create = require("../create-element.js")
 var diff = require("../diff.js")
 var patch = require("../patch.js")
+var noop = require("../vtree/noop")
 
 test("Hooks are added to a hooks array on a node", function (assert) {
     function Prop() {}
@@ -39,6 +40,10 @@ test("Node child hooks are identified", function (assert) {
     assert.equal(parentNode.hooks, null)
     assert.ok(parentNode.descendantHooks)
     assert.end()
+})
+
+test("Noop is ignored", function (assert) {
+
 })
 
 test("hooks get called in render", function (assert) {
