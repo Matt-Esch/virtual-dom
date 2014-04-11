@@ -1,4 +1,4 @@
-var extend = require("extend")
+var extend = require("xtend")
 var isArray = require("x-is-array")
 var isString = require("x-is-string")
 
