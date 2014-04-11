@@ -2,6 +2,7 @@ var version = require("./version")
 var isVNode = require("./is-vnode")
 var isWidget = require("./is-widget")
 var isVHook = require("./is-vhook")
+var noop = require("./noop")
 
 module.exports = VirtualNode
 
@@ -21,7 +22,7 @@ function VirtualNode(tagName, properties, children, key, namespace) {
     for (var propName in properties) {
         if (properties.hasOwnProperty(propName)) {
             var property = properties[propName]
-            if (isVHook(property)) {
+            if (isVHook(property) && property !== noop) {
                 if (!hooks) {
                     hooks = []
                 }
