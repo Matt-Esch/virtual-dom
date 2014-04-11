@@ -5,6 +5,7 @@ var Node = require("../vtree/vnode.js")
 var create = require("../create-element.js")
 var diff = require("../diff.js")
 var patch = require("../patch.js")
+var patchCount = require("./lib/patch-count.js")
 
 test("Hooks are added to a hooks array on a node", function (assert) {
     function Prop() {}
@@ -139,8 +140,6 @@ test("two hooks on same property", function (assert) {
         counters.b++
     }) })
 
-    debugger
-
     var elem = createAndPatch(prev, curr)
     assert.equal(elem.propA, undefined)
     assert.equal(counters.a, 1)
@@ -166,6 +165,38 @@ test("two hooks of same interface", function (assert) {
     assert.equal(counters.a, 1)
     assert.equal(counters.b, 1)
 
+    assert.end()
+})
+
+test("all hooks are called", function (assert) {
+    var counters = {
+        a: 0,
+        b: 0,
+        c: 0
+    }
+
+    var vnode = h("div", {
+        test: hook(function () {
+            counters.a++
+        })
+    }, [
+        h("div", { test: hook(function () { counters.b++ }) }),
+        h("div", { test: hook(function () { counters.c++ }) })
+    ])
+
+    var rootNode = create(vnode)
+    assert.equal(counters.a, 1)
+    assert.equal(counters.a, 1)
+    assert.equal(counters.a, 1)
+
+    var patches = diff(vnode, vnode)
+    assert.equal(patchCount(patches), 0)
+
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot, rootNode)
+    assert.equal(counters.a, 2)
+    assert.equal(counters.a, 2)
+    assert.equal(counters.a, 2)
     assert.end()
 })
 

@@ -8,6 +8,7 @@ var Node = require("../vtree/vnode")
 var TextNode = require("../vtree/vtext")
 var version = require("../vtree/version")
 var assertEqualDom = require("./lib/assert-equal-dom.js")
+var patchCount = require("./lib/patch-count.js")
 
 require("./hook.js")
 require("./nested-properties.js")
@@ -801,19 +802,6 @@ test("Different namespaces creates a patch", function (assert) {
 
     assert.end()
 })
-
-
-function patchCount(patch) {
-    var count = 0
-
-    for (var key in patch) {
-        if (key !== "a" && patch.hasOwnProperty(key)) {
-            count++
-        }
-    }
-
-    return count
-}
 
 // Safely translates style values using the DOM in the browser
 function style(name, value) {
