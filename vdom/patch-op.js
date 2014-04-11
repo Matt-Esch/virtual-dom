@@ -1,5 +1,6 @@
 var isString = require("x-is-string")
-var isObject = require("x-is-object")
+
+var applyProperties = require("./apply-properties")
 
 var isWidget = require("../vtree/is-widget")
 var isVNode = require("../vtree/is-vnode")
@@ -24,7 +25,8 @@ function applyPatch(vpatch, domNode, renderOptions) {
     } else if (isVNode(patch)) {
         return vNodePatch(domNode, vNode, patch, renderOptions)
     } else {
-        return propPatch(domNode, patch)
+        applyProperties(domNode, patch, vNode.propeties)
+        return domNode
     }
 }
 
@@ -100,26 +102,6 @@ function vNodePatch(domNode, leftVNode, rightVNode, renderOptions) {
 
     return newNode
 }
-
-function propPatch(domNode, patch) {
-    for (var prop in patch) {
-        var patchValue = patch[prop]
-
-        if (isObject(patchValue)) {
-            var domValue = domNode[prop]
-            for (var key in patchValue) {
-                domValue[key] = patchValue[key]
-            }
-        } else if (typeof patchValue === "function") {
-            patchValue(domNode, prop)
-        } else {
-            domNode[prop] = patchValue
-        }
-    }
-
-    return domNode
-}
-
 
 function destroyWidget(domNode, w) {
     if (typeof w.destroy === "function" && isWidget(w)) {

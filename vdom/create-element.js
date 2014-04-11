@@ -1,5 +1,6 @@
 var document = require("global/document")
-var isObject = require("x-is-object")
+
+var applyProperties = require("./apply-properties")
 
 var isVNode = require("../vtree/is-vnode")
 var isVText = require("../vtree/is-vtext")
@@ -26,7 +27,9 @@ function createElement(vnode, opts) {
         doc.createElement(vnode.tagName) :
         doc.createElementNS(vnode.namespace, vnode.tagName)
 
-    applyProperties(node, vnode.properties)
+    var props = vnode.properties
+    applyProperties(node, props)
+
     var children = vnode.children
 
     for (var i = 0; i < children.length; i++) {
@@ -37,25 +40,4 @@ function createElement(vnode, opts) {
     }
 
     return node
-}
-
-function applyProperties(node, props) {
-    for (var propName in props) {
-        var propValue = props[propName]
-
-        if (typeof propValue === "function") {
-            propValue(node, propName)
-        } else if (isObject(propValue)) {
-            if (!node[propName]) {
-                node[propName] = {}
-            }
-
-            var nodeValue = node[propName]
-            for (var k in propValue) {
-                nodeValue[k] = propValue[k]
-            }
-        } else {
-            node[propName] = propValue
-        }
-    }
 }

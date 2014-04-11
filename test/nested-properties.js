@@ -90,29 +90,25 @@ test("patch nested properties in right only", function (assert) {
     assert.end()
 })
 
-test("deleting properties", function (assert) {
+test("loose properties", function (assert) {
     var prev = h("div", { propA: "bar" })
     var curr = h("div", { propB: "apples" })
 
     var elem = createAndPatch(prev, curr)
 
-    assert.equal(elem.propA, undefined)
-    assert.ok("propA" in elem)
+    assert.equal(elem.propA, "bar")
     assert.equal(elem.propB, "apples")
 
     assert.end()
 })
 
-test("removing objects", function (assert) {
+test("replace object with value", function (assert) {
     var prev = h("div", { propA: { foo: "bar" } })
-    var curr = h("div", { propB: { baz: "apples" } })
+    var curr = h("div", { propA: null })
 
     var elem = createAndPatch(prev, curr)
 
-    assert.equal(elem.propA, undefined)
-    assert.ok("propA" in elem)
-    assert.equal(elem.propB.baz, "apples")
-
+    assert.equal(elem.propA, null)
     assert.end()
 })
 

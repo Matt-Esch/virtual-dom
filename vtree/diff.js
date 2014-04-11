@@ -1,10 +1,11 @@
 var isArray = require("x-is-array")
-var isObject = require("x-is-object")
+var isObject = require("is-object")
 
 var VPatch = require("./vpatch")
 var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")
+var isHook = require("./is-vhook")
 
 module.exports = diff
 
@@ -21,11 +22,8 @@ function walk(a, b, patch, index) {
 
     var apply = patch[index]
 
-    if (isWidget(a)) {
-        // Update a widget
-        apply = appendPatch(apply, new VPatch(a, b))
-    } else if (isWidget(b)) {
-        // Patch in a new widget
+    if (isWidget(a) || isWidget(b)) {
+        // Update/patch a widget
         apply = appendPatch(apply, new VPatch(a, b))
     } else if (isVText(a) && isVText(b)) {
         // Update a text node
@@ -60,28 +58,33 @@ function walk(a, b, patch, index) {
     }
 }
 
-var nullProps = {}
-
 function diffProps(a, b) {
     var diff
 
     for (var aKey in a) {
-        var aValue = a[aKey]
-        var bValue = aKey in b ? b[aKey] : nullProps
+        if (!(aKey in b)) {
+            continue
+        }
 
-        if (isObject(aValue)) {
-            if (getPrototype(bValue) !== getPrototype(aValue)) {
-                diff = diff || {}
-                diff[aKey] = bValue
-            } else {
-                var objectDiff = diffProps(aValue, bValue || nullProps)
-                if (objectDiff) {
-                    diff = diff || {}
-                    diff[aKey] = objectDiff
-                }
-            }
+        var aValue = a[aKey]
+        var bValue = b[aKey]
+
+        if (isHook(bValue)) {
+            diff = diff || {}
+            diff[aKey] = bValue
         } else {
-            if (typeof aValue === "function" || aValue !== bValue) {
+            if (isObject(aValue) && isObject(bValue)) {
+                if (getPrototype(bValue) !== getPrototype(aValue)) {
+                    diff = diff || {}
+                    diff[aKey] = bValue
+                } else {
+                    var objectDiff = diffProps(aValue, bValue)
+                    if (objectDiff) {
+                        diff = diff || {}
+                        diff[aKey] = objectDiff
+                    }
+                }
+            } else if (aValue !== bValue) {
                 diff = diff || {}
                 diff[aKey] = bValue
             }

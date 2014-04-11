@@ -7,11 +7,8 @@ var VText = require("../vtree/vtext.js")
 var isVNode = require("../vtree/is-vnode")
 var isVText = require("../vtree/is-vtext")
 var isWidget = require("../vtree/is-widget")
-var noop = require("../vtree/noop")
 
 var parseTag = require("./parse-tag")
-
-h.noop = noop
 
 module.exports = h
 

@@ -5,7 +5,6 @@ var Node = require("../vtree/vnode.js")
 var create = require("../create-element.js")
 var diff = require("../diff.js")
 var patch = require("../patch.js")
-var noop = require("../vtree/noop")
 
 test("Hooks are added to a hooks array on a node", function (assert) {
     function Prop() {}
@@ -39,16 +38,6 @@ test("Node child hooks are identified", function (assert) {
     assert.equal(node.hooks[0], "id")
     assert.equal(parentNode.hooks, null)
     assert.ok(parentNode.descendantHooks)
-    assert.end()
-})
-
-test("Noop is ignored", function (assert) {
-    var node = new Node("div", {
-        "id": noop,
-        "value": "not a hook"
-    }, [], null, null)
-
-    assert.equal(node.hooks, null)
     assert.end()
 })
 
@@ -150,6 +139,8 @@ test("two hooks on same property", function (assert) {
         counters.b++
     }) })
 
+    debugger
+
     var elem = createAndPatch(prev, curr)
     assert.equal(elem.propA, undefined)
     assert.equal(counters.a, 1)
@@ -186,9 +177,14 @@ function createAndPatch(prev, curr) {
     return elem
 }
 
-function hook(fn) {
-    function Type() {}
-    Type.prototype.hook = fn
+function Type(fn) {
+    this.fn = fn
+}
 
-    return new Type()
+Type.prototype.hook = function () {
+    this.fn.apply(this, arguments)
+}
+
+function hook(fn) {
+    return new Type(fn)
 }
