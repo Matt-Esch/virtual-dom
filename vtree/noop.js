@@ -1,4 +1,4 @@
 function NoOp() {}
-NoOp.protytpe.hook = function () {}
+NoOp.prototype.hook = function () {}
 
 module.exports = new NoOp()

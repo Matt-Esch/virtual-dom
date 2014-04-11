@@ -43,7 +43,13 @@ test("Node child hooks are identified", function (assert) {
 })
 
 test("Noop is ignored", function (assert) {
+    var node = new Node("div", {
+        "id": noop,
+        "value": "not a hook"
+    }, [], null, null)
 
+    assert.equal(node.hooks, null)
+    assert.end()
 })
 
 test("hooks get called in render", function (assert) {
