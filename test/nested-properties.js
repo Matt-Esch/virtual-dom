@@ -112,6 +112,16 @@ test("replace object with value", function (assert) {
     assert.end()
 })
 
+test("create object on node for nested properties", function (assert) {
+    var prev = h("div", { propA: null })
+    var curr = h("div", { propA: { nested: true } })
+
+    var elem = createAndPatch(prev, curr)
+
+    assert.equal(elem.propA.nested, true)
+    assert.end()
+})
+
 function createAndPatch(prev, curr) {
     var elem = render(prev)
     var patches = diff(prev, curr)
