@@ -84,7 +84,7 @@ function diffProps(a, b, hooks) {
                         diff[aKey] = objectDiff
                     }
                 }
-            } else if (aValue !== bValue) {
+            } else if (aValue !== bValue && bValue !== undefined) {
                 diff = diff || {}
                 diff[aKey] = bValue
             }
