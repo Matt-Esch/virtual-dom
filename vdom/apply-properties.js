@@ -14,7 +14,7 @@ function applyProperties(node, props, previous) {
                 previous ? previous[propName] : undefined)
         } else {
             if (isObject(propValue)) {
-                if (typeof node[propName] !== "object") {
+                if (!isObject(node[propName])) {
                     node[propName] = {}
                 }
 
