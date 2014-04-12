@@ -88,7 +88,6 @@ test("defaults to div when using selectors", function (assert) {
 })
 
 test("second argument can be children", function (assert) {
-    debugger
     var node1 = h("#important.pretty", "test")
     var node2 = h("#important.pretty", ["test"])
     var node3 = h("#important.pretty", h("p", "testing"))
@@ -171,7 +170,6 @@ test("render div", function (assert) {
 })
 
 test("node id is applied correctly", function (assert) {
-    debugger
     var vdom = h("#important")
     var dom = render(vdom)
     assert.equal(dom.id, "important")
