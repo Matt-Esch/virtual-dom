@@ -12,6 +12,7 @@ var patchCount = require("./lib/patch-count.js")
 
 require("./hook.js")
 require("./nested-properties.js")
+require("./undefined-properties.js")
 
 // VirtualNode tests
 test("Node is a function", function (assert) {
