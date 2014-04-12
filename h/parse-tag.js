@@ -10,7 +10,7 @@ function parseTag(tag, props) {
         return "div"
     }
 
-    var noId = !("id" in props)
+    var noId = !props || !("id" in props)
 
     var tagParts = split(tag, classIdSplit)
     var tagName = null
@@ -19,7 +19,7 @@ function parseTag(tag, props) {
         tagName = "div"
     }
 
-    var classes, part, type, i
+    var id, classes, part, type, i
     for (i = 0; i < tagParts.length; i++) {
         part = tagParts[i]
 
@@ -35,17 +35,44 @@ function parseTag(tag, props) {
             classes = classes || []
             classes.push(part.substring(1, part.length))
         } else if (type === "#" && noId) {
-            props.id = part.substring(1, part.length)
+            id = part.substring(1, part.length)
         }
     }
 
-    if (classes) {
-        if (props.className) {
-            classes.push(props.className)
+    var parsedTags
+
+    if (props) {
+        if (id !== undefined && !("id" in props)) {
+            props.id = id
         }
 
-        props.className = classes.join(" ")
+        if (classes) {
+            if (props.className) {
+                classes.push(props.className)
+            }
+
+            props.className = classes.join(" ")
+        }
+
+        parsedTags = tagName
+    } else if (classes || id !== undefined) {
+        var properties = {}
+
+        if (id !== undefined) {
+            properties.id = id
+        }
+
+        if (classes) {
+            properties.className = classes.join(" ")
+        }
+
+        parsedTags = {
+            tagName: tagName,
+            properties: properties
+        }
+    } else {
+        parsedTags = tagName
     }
 
-    return tagName ? tagName.toLowerCase() : "div"
+    return parsedTags
 }

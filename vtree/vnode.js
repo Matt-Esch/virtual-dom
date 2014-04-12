@@ -5,10 +5,13 @@ var isVHook = require("./is-vhook")
 
 module.exports = VirtualNode
 
+var noProperties = {}
+var noChildren = []
+
 function VirtualNode(tagName, properties, children, key, namespace) {
     this.tagName = tagName
-    this.properties = properties
-    this.children = children
+    this.properties = properties || noProperties
+    this.children = children || noChildren
     this.key = (typeof key === "string") ? key : null
     this.namespace = (typeof namespace === "string") ? namespace : null
 

@@ -1,4 +1,3 @@
-var extend = require("xtend")
 var isArray = require("x-is-array")
 var isString = require("x-is-string")
 
@@ -13,39 +12,42 @@ var parseTag = require("./parse-tag")
 module.exports = h
 
 function h(tagName, properties, children) {
-    var childNodes = []
-    var tag, props
+    var tag, props, childNodes
 
     if (!children) {
         if (isChildren(properties)) {
             children = properties
-            props = {}
+            properties = undefined
         }
     }
 
-    props = props || extend({}, properties)
-    tag = parseTag(tagName, props)
+    tag = parseTag(tagName, properties)
 
+    if (!isString(tag)) {
+        props = tag.properties
+        tag = tag.tagName
+    } else {
+        props = properties
+    }
 
-    if (children != null) {
-        if (isArray(children)) {
-            for (var i = 0; i < children.length; i++) {
-                addChild(children[i], childNodes)
+    if (isArray(children)) {
+        var len = children.length
+
+        for (var i = 0; i < len; i++) {
+            var child = children[i]
+            if (isString(child)) {
+                children[i] = new VText(child)
             }
-        } else {
-            addChild(children, childNodes)
         }
+
+        childNodes = children
+    } else if (isString(children)) {
+        childNodes = [new VText(children)]
+    } else if (isChild(children)) {
+        childNodes = [children]
     }
 
     return new VNode(tag, props, childNodes)
-}
-
-function addChild(c, childNodes) {
-    if (isString(c)) {
-        childNodes.push(new VText(c))
-    } else if (isVNode(c) || isWidget(c)) {
-        childNodes.push(c)
-    }
 }
 
 function isChild(x) {
@@ -53,5 +55,5 @@ function isChild(x) {
 }
 
 function isChildren(x) {
-    return isChild(x) || isArray(x) || isString(x)
+    return isArray(x) || isString(x) || isChild(x)
 }
