@@ -7,17 +7,17 @@ var diff = require("../diff.js")
 var patch = require("../patch.js")
 var patchCount = require("./lib/patch-count.js")
 
-test("Hooks are added to a hooks array on a node", function (assert) {
+test("Hooks are added to a hooks object on a node", function (assert) {
     function Prop() {}
     Prop.prototype.hook = function () {}
+    var propValue = new Prop()
 
     var node = new Node("div", {
-        "id": new Prop(),
+        "id": propValue,
         "value": "not a hook"
     }, [], null, null)
 
-    assert.equal(node.hooks.length, 1)
-    assert.equal(node.hooks[0], "id")
+    assert.equal(node.hooks.id, propValue)
     assert.equal(node.descendantHooks, false)
     assert.end()
 })
@@ -25,9 +25,10 @@ test("Hooks are added to a hooks array on a node", function (assert) {
 test("Node child hooks are identified", function (assert) {
     function Prop() {}
     Prop.prototype.hook = function () {}
+    var propValue = new Prop()
 
     var node = new Node("div", {
-        "id": new Prop(),
+        "id": propValue,
         "value": "not a hook"
     }, [], null, null)
 
@@ -35,8 +36,7 @@ test("Node child hooks are identified", function (assert) {
         "id": "not a hook"
     }, [node], null, null)
 
-    assert.equal(node.hooks.length, 1)
-    assert.equal(node.hooks[0], "id")
+    assert.equal(node.hooks.id, propValue)
     assert.equal(parentNode.hooks, null)
     assert.ok(parentNode.descendantHooks)
     assert.end()
@@ -186,17 +186,17 @@ test("all hooks are called", function (assert) {
 
     var rootNode = create(vnode)
     assert.equal(counters.a, 1)
-    assert.equal(counters.a, 1)
-    assert.equal(counters.a, 1)
+    assert.equal(counters.b, 1)
+    assert.equal(counters.c, 1)
 
     var patches = diff(vnode, vnode)
-    assert.equal(patchCount(patches), 0)
+    assert.equal(patchCount(patches), 3)
 
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
     assert.equal(counters.a, 2)
-    assert.equal(counters.a, 2)
-    assert.equal(counters.a, 2)
+    assert.equal(counters.b, 2)
+    assert.equal(counters.c, 2)
     assert.end()
 })
 

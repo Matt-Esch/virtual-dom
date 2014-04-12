@@ -26,10 +26,10 @@ function VirtualNode(tagName, properties, children, key, namespace) {
             var property = properties[propName]
             if (isVHook(property)) {
                 if (!hooks) {
-                    hooks = []
+                    hooks = {}
                 }
 
-                hooks.push(propName)
+                hooks[propName] = property
             }
         }
     }

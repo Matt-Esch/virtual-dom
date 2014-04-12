@@ -5,7 +5,6 @@ var VPatch = require("./vpatch")
 var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")
-var isHook = require("./is-vhook")
 
 module.exports = diff
 
@@ -17,6 +16,7 @@ function diff(a, b) {
 
 function walk(a, b, patch, index) {
     if (a === b) {
+        hooks(b, patch, index)
         return
     }
 
@@ -34,7 +34,7 @@ function walk(a, b, patch, index) {
         a.tagName === b.tagName &&
         a.namespace === b.namespace) {
         // Update a VDOMNode
-        var propsPatch = diffProps(a.properties, b.properties)
+        var propsPatch = diffProps(a.properties, b.properties, b.hooks)
         if (propsPatch) {
             apply = appendPatch(apply, new VPatch(a.properties, propsPatch))
         }
@@ -58,7 +58,7 @@ function walk(a, b, patch, index) {
     }
 }
 
-function diffProps(a, b) {
+function diffProps(a, b, hooks) {
     var diff
 
     for (var aKey in a) {
@@ -69,7 +69,7 @@ function diffProps(a, b) {
         var aValue = a[aKey]
         var bValue = b[aKey]
 
-        if (isHook(bValue)) {
+        if (hooks && aKey in hooks) {
             diff = diff || {}
             diff[aKey] = bValue
         } else {
@@ -168,6 +168,30 @@ function destroyWidgets(vNode, patch, index) {
 
             if (isVNode(child) && child.count) {
                 index += child.count
+            }
+        }
+    }
+}
+
+// Execute hooks when two nodes are identical
+function hooks(vNode, patch, index) {
+    if (isVNode(vNode)) {
+        if (vNode.hooks) {
+            patch[index] = new VPatch(vNode.hooks, vNode.hooks)
+        }
+
+        if (vNode.descendantHooks) {
+            var children = vNode.children
+            var len = children.length
+            for (var i = 0; i < len; i++) {
+                var child = children[i]
+                index += 1
+
+                hooks(child, patch, index)
+
+                if (isVNode(child) && child.count) {
+                    index += child.count
+                }
             }
         }
     }
