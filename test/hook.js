@@ -30,14 +30,14 @@ test("Node child hooks are identified", function (assert) {
     var node = new Node("div", {
         "id": propValue,
         "value": "not a hook"
-    }, [], null, null)
+    }, [], undefined, undefined)
 
     var parentNode = new Node("div", {
         "id": "not a hook"
-    }, [node], null, null)
+    }, [node], undefined, undefined)
 
     assert.equal(node.hooks.id, propValue)
-    assert.equal(parentNode.hooks, null)
+    assert.equal(parentNode.hooks, undefined)
     assert.ok(parentNode.descendantHooks)
     assert.end()
 })
