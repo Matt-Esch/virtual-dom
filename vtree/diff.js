@@ -116,35 +116,33 @@ function diffChildren(a, b, patch, apply, index) {
     var bChildren = b.children
     var aLen = aChildren.length
     var bLen = bChildren.length
-    var len = aLen < bLen ? aLen : bLen
+    var len = aLen > bLen ? aLen : bLen
+
+    var ordered = reorder(aChildren, bChildren, len)
 
     for (var i = 0; i < len; i++) {
         var leftNode = aChildren[i]
-        var rightNode = bChildren[i]
+        var rightNode = ordered[i]
         index += 1
-        walk(leftNode, rightNode, patch, index)
+
+        if (!leftNode) {
+            if (rightNode) {
+                // Excess nodes in b need to be added
+                apply = appendPatch(apply, new VPatch(null, rightNode))
+            }
+        } else if (!rightNode) {
+            if (leftNode) {
+                // Excess nodes in a need to be removed
+                patch[index] = new VPatch(leftNode, null)
+                destroyWidgets(leftNode, patch, index)
+            }
+        } else {
+            walk(leftNode, rightNode, patch, index)
+        }
 
         if (isVNode(leftNode) && leftNode.count) {
             index += leftNode.count
         }
-    }
-
-    // Excess nodes in a need to be removed
-    for (; i < aLen; i++) {
-        var excess = aChildren[i]
-        index += 1
-        patch[index] = new VPatch(excess, null)
-        destroyWidgets(excess, patch, index)
-
-        if (isVNode(excess) && excess.count) {
-            index += excess.count
-        }
-    }
-
-    // Excess nodes in b need to be added
-    for (; i < bLen; i++) {
-        var addition = bChildren[i]
-        apply = appendPatch(apply, new VPatch(null, addition))
     }
 
     return apply
@@ -195,6 +193,73 @@ function hooks(vNode, patch, index) {
             }
         }
     }
+}
+
+// List diff
+function reorder(aChildren, bChildren, len) {
+    var aKeys = keyIndex(aChildren) // O(N)
+
+    if (!aKeys) {
+        return bChildren
+    }
+
+    var bKeys = keyIndex(bChildren) // O(M)
+
+    if (!bKeys) {
+        return bChildren
+    }
+
+    var aMatch, bMatch
+
+    for (var key in aKeys) { // O(N)
+        if (key in bKeys) {
+            if (!aMatch) {
+                aMatch = {}
+                bMatch = {}
+            }
+
+            var aIndex = aKeys[key]
+            var bIndex = bKeys[key]
+            aMatch[aIndex] = bIndex
+            bMatch[bIndex] = aIndex
+        }
+    }
+
+    if (!aMatch) {
+        return bChildren
+    }
+
+    var shuffle = []
+    var freeIndex = 0
+
+    for (var i = 0; i < len; i++) {
+        var move = aMatch[i]
+        if (move !== undefined) {
+            shuffle[i] = bChildren[move]
+        } else {
+            while (freeIndex in bMatch) {
+                freeIndex++
+            }
+            shuffle[i] = bChildren[freeIndex++]
+        }
+    }
+
+    return shuffle
+}
+
+function keyIndex(children) {
+    var i, keys
+
+    for (i = 0; i < children.length; i++) {
+        var child = children[i]
+
+        if (child.key !== undefined) {
+            keys = keys || {}
+            keys[child.key] = i
+        }
+    }
+
+    return keys
 }
 
 function appendPatch(apply, patch) {
