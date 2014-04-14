@@ -12,7 +12,7 @@ var parseTag = require("./parse-tag")
 module.exports = h
 
 function h(tagName, properties, children) {
-    var tag, props, childNodes
+    var tag, props, childNodes, key
 
     if (!children) {
         if (isChildren(properties)) {
@@ -47,7 +47,12 @@ function h(tagName, properties, children) {
         childNodes = [children]
     }
 
-    return new VNode(tag, props, childNodes)
+    if (props && "key" in props) {
+        key = props.key
+        delete props.key
+    }
+
+    return new VNode(tag, props, childNodes, key)
 }
 
 function isChild(x) {

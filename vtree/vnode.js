@@ -12,14 +12,14 @@ function VirtualNode(tagName, properties, children, key, namespace) {
     this.tagName = tagName
     this.properties = properties || noProperties
     this.children = children || noChildren
-    this.key = (typeof key === "string") ? key : null
+    this.key = key != null ? String(key) : undefined
     this.namespace = (typeof namespace === "string") ? namespace : null
 
     var count = (children && children.length) || 0
     var descendants = 0
     var hasWidgets = false
-    var hooks = null
     var descendantHooks = false
+    var hooks
 
     for (var propName in properties) {
         if (properties.hasOwnProperty(propName)) {

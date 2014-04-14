@@ -1,9 +1,7 @@
-var isString = require("x-is-string")
-
 var applyProperties = require("./apply-properties")
 
 var isWidget = require("../vtree/is-widget")
-var isVNode = require("../vtree/is-vnode")
+var VPatch = require("../vtree/vpatch")
 
 var render = require("./create-element")
 var updateWidget = require("./update-widget")
@@ -11,22 +9,29 @@ var updateWidget = require("./update-widget")
 module.exports = applyPatch
 
 function applyPatch(vpatch, domNode, renderOptions) {
+    var type = vpatch.type
     var vNode = vpatch.vNode
     var patch = vpatch.patch
 
-    if (patch == null) {
-        return removeNode(domNode, vNode)
-    } else if (vNode == null) {
-        return insertNode(domNode, patch, renderOptions)
-    } else if (isString(patch)) {
-        return stringPatch(domNode, vNode, patch, renderOptions)
-    } else if (isWidget(patch)) {
-        return widgetPatch(domNode, vNode, patch, renderOptions)
-    } else if (isVNode(patch)) {
-        return vNodePatch(domNode, vNode, patch, renderOptions)
-    } else {
-        applyProperties(domNode, patch, vNode.propeties)
-        return domNode
+    switch (type) {
+        case VPatch.REMOVE:
+            return removeNode(domNode, vNode)
+        case VPatch.INSERT:
+            return insertNode(domNode, patch, renderOptions)
+        case VPatch.VTEXT:
+            return stringPatch(domNode, vNode, patch, renderOptions)
+        case VPatch.WIDGET:
+            return widgetPatch(domNode, vNode, patch, renderOptions)
+        case VPatch.VNODE:
+            return vNodePatch(domNode, vNode, patch, renderOptions)
+        case VPatch.ORDER:
+            reorderChildren(domNode, patch)
+            return domNode
+        case VPatch.PROPS:
+            applyProperties(domNode, patch, vNode.propeties)
+            return domNode
+        default:
+            return domNode
     }
 }
 
@@ -52,17 +57,19 @@ function insertNode(parentNode, vNode, renderOptions) {
     return parentNode
 }
 
-function stringPatch(domNode, leftVNode, newString, renderOptions) {
+function stringPatch(domNode, leftVNode, vText, renderOptions) {
+    var newNode
+
     if (domNode.nodeType === 3) {
-        domNode.replaceData(0, domNode.length, newString)
-        return domNode
-    }
+        domNode.replaceData(0, domNode.length, vText.text)
+        newNode = domNode
+    } else {
+        var parentNode = domNode.parentNode
+        newNode = render(vText, renderOptions)
 
-    var parentNode = domNode.parentNode
-    var newNode = render(newString, renderOptions)
-
-    if (parentNode) {
-        parentNode.replaceChild(newNode, domNode)
+        if (parentNode) {
+            parentNode.replaceChild(newNode, domNode)
+        }
     }
 
     destroyWidget(domNode, leftVNode)
@@ -70,16 +77,13 @@ function stringPatch(domNode, leftVNode, newString, renderOptions) {
     return newNode
 }
 
-function widgetPatch(domNode, leftVNode, widgetUpdate, renderOptions) {
-    if (isWidget(leftVNode)) {
-        if (updateWidget(leftVNode, widgetUpdate)) {
-            var updatedNode = widgetUpdate.update(leftVNode, domNode)
-            return updatedNode || domNode
-        }
+function widgetPatch(domNode, leftVNode, widget, renderOptions) {
+    if (updateWidget(leftVNode, widget)) {
+        return widget.update(leftVNode, domNode) || domNode
     }
 
     var parentNode = domNode.parentNode
-    var newWidget = render(widgetUpdate, renderOptions)
+    var newWidget = render(widget, renderOptions)
 
     if (parentNode) {
         parentNode.replaceChild(newWidget, domNode)
@@ -90,9 +94,9 @@ function widgetPatch(domNode, leftVNode, widgetUpdate, renderOptions) {
     return newWidget
 }
 
-function vNodePatch(domNode, leftVNode, rightVNode, renderOptions) {
+function vNodePatch(domNode, leftVNode, vNode, renderOptions) {
     var parentNode = domNode.parentNode
-    var newNode = render(rightVNode, renderOptions)
+    var newNode = render(vNode, renderOptions)
 
     if (parentNode) {
         parentNode.replaceChild(newNode, domNode)
@@ -106,5 +110,23 @@ function vNodePatch(domNode, leftVNode, rightVNode, renderOptions) {
 function destroyWidget(domNode, w) {
     if (typeof w.destroy === "function" && isWidget(w)) {
         w.destroy(domNode)
+    }
+}
+
+function reorderChildren(domNode, bIndex) {
+    var children = []
+    var childNodes = domNode.childNodes
+    var len = childNodes.length
+    var i
+
+    for (i = 0; i < len; i++) {
+        children.push(domNode.childNodes[i])
+    }
+
+    for (i = 0; i < len; i++) {
+        var move = bIndex[i]
+        if (move !== undefined) {
+            domNode.insertBefore(children[move], childNodes[i])
+        }
     }
 }

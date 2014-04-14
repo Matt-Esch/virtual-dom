@@ -30,14 +30,14 @@ test("Node child hooks are identified", function (assert) {
     var node = new Node("div", {
         "id": propValue,
         "value": "not a hook"
-    }, [], null, null)
+    }, [], undefined, undefined)
 
     var parentNode = new Node("div", {
         "id": "not a hook"
-    }, [node], null, null)
+    }, [node], undefined, undefined)
 
     assert.equal(node.hooks.id, propValue)
-    assert.equal(parentNode.hooks, null)
+    assert.equal(parentNode.hooks, undefined)
     assert.ok(parentNode.descendantHooks)
     assert.end()
 })
@@ -77,7 +77,7 @@ test("functions are not hooks in render", function (assert) {
     assert.end()
 })
 
-test("hook get called in patch", function (assert) {
+test("hooks get called in patch", function (assert) {
     var counter = 0
     var prev = h("div")
     var curr = h("div", {
