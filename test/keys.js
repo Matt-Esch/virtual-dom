@@ -8,7 +8,6 @@ var render = require("../create-element.js")
 var patchCount = require("./lib/patch-count.js")
 
 test("keys get reordered", function (assert) {
-    debugger
     var leftNode = h("div", [
         h("div", { key: 1 }),
         h("div", { key: 2 }),
