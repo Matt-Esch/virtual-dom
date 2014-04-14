@@ -77,7 +77,7 @@ test("functions are not hooks in render", function (assert) {
     assert.end()
 })
 
-test("hook get called in patch", function (assert) {
+test("hooks get called in patch", function (assert) {
     var counter = 0
     var prev = h("div")
     var curr = h("div", {
