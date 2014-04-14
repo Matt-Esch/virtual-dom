@@ -22,35 +22,40 @@ function walk(a, b, patch, index) {
 
     var apply = patch[index]
 
-    if (isWidget(a) || isWidget(b)) {
-        // Update/patch a widget
-        apply = appendPatch(apply, new VPatch(a, b))
-    } else if (isVText(a) && isVText(b)) {
-        // Update a text node
-        if (a.text !== b.text) {
-            apply = appendPatch(apply, new VPatch(a.text, b.text))
-        }
-    } else if (isVNode(a) && isVNode(b) &&
-        a.tagName === b.tagName &&
-        a.namespace === b.namespace) {
-        // Update a VDOMNode
-        var propsPatch = diffProps(a.properties, b.properties, b.hooks)
-        if (propsPatch) {
-            apply = appendPatch(apply, new VPatch(a.properties, propsPatch))
-        }
+    if (isWidget(b)) {
+        apply = appendPatch(apply, new VPatch(VPatch.WIDGET, a, b))
 
-        apply = diffChildren(a, b, patch, apply, index)
-    } else if (a !== b) {
-        apply = appendPatch(apply, new VPatch(a, b))
-
-        // We must detect a remove/replace of widgets here so that
-        // we can add patch records for any stateful widgets
-        if (isVNode(a) && a.hasWidgets &&
-            (!isVNode(b) ||
-                a.tagName !== b.tagName ||
-                a.namespace !== b.namespace)) {
+        if (!isWidget(a)) {
             destroyWidgets(a, patch, index)
         }
+    } else if (isVText(b)) {
+        if (!isVText(a)) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+            destroyWidgets(a, patch, index)
+        } else if (a.text !== b.text) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+        }
+    } else if (isVNode(b)) {
+        if (isVNode(a)) {
+            if (a.tagName === b.tagName && a.namespace === b.namespace) {
+                var propsPatch = diffProps(a.properties, b.properties, b.hooks)
+                if (propsPatch) {
+                    apply = appendPatch(apply,
+                        new VPatch(VPatch.PROPS, a, propsPatch))
+                }
+            } else {
+                apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
+                destroyWidgets(a, patch, index)
+            }
+
+            apply = diffChildren(a, b, patch, apply, index)
+        } else {
+            apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
+            destroyWidgets(a, patch, index)
+        }
+    } else if (b == null) {
+        apply = appendPatch(apply, new VPatch(VPatch.REMOVE, a, b))
+        destroyWidgets(a, patch, index)
     }
 
     if (apply) {
@@ -118,22 +123,22 @@ function diffChildren(a, b, patch, apply, index) {
     var bLen = bChildren.length
     var len = aLen > bLen ? aLen : bLen
 
-    var ordered = reorder(aChildren, bChildren, len)
+    aChildren = reorder(aChildren, bChildren, len)
 
     for (var i = 0; i < len; i++) {
         var leftNode = aChildren[i]
-        var rightNode = ordered[i]
+        var rightNode = bChildren[i]
         index += 1
 
         if (!leftNode) {
             if (rightNode) {
                 // Excess nodes in b need to be added
-                apply = appendPatch(apply, new VPatch(null, rightNode))
+                apply = appendPatch(apply, new VPatch(VPatch.INSERT, null, rightNode))
             }
         } else if (!rightNode) {
             if (leftNode) {
                 // Excess nodes in a need to be removed
-                patch[index] = new VPatch(leftNode, null)
+                patch[index] = new VPatch(VPatch.REMOVE, leftNode, null)
                 destroyWidgets(leftNode, patch, index)
             }
         } else {
@@ -145,6 +150,11 @@ function diffChildren(a, b, patch, apply, index) {
         }
     }
 
+    if (aChildren.moves) {
+        // Reorder nodes last
+        apply = appendPatch(apply, new VPatch(VPatch.ORDER, a, aChildren.moves))
+    }
+
     return apply
 }
 
@@ -153,7 +163,7 @@ function diffChildren(a, b, patch, apply, index) {
 function destroyWidgets(vNode, patch, index) {
     if (isWidget(vNode)) {
         if (typeof vNode.destroy === "function") {
-            patch[index] = new VPatch(vNode, null)
+            patch[index] = new VPatch(VPatch.REMOVE, vNode, null)
         }
     } else if (isVNode(vNode) && vNode.hasWidgets) {
         var children = vNode.children
@@ -175,7 +185,7 @@ function destroyWidgets(vNode, patch, index) {
 function hooks(vNode, patch, index) {
     if (isVNode(vNode)) {
         if (vNode.hooks) {
-            patch[index] = new VPatch(vNode.hooks, vNode.hooks)
+            patch[index] = new VPatch(VPatch.PROPS, vNode.hooks, vNode.hooks)
         }
 
         if (vNode.descendantHooks) {
@@ -195,23 +205,23 @@ function hooks(vNode, patch, index) {
     }
 }
 
-// List diff
+// List diff, naive left to right reordering
 function reorder(aChildren, bChildren, len) {
-    var aKeys = keyIndex(aChildren) // O(N)
+    var aKeys = keyIndex(aChildren)
 
     if (!aKeys) {
-        return bChildren
+        return aChildren
     }
 
-    var bKeys = keyIndex(bChildren) // O(M)
+    var bKeys = keyIndex(bChildren)
 
     if (!bKeys) {
-        return bChildren
+        return aChildren
     }
 
     var aMatch, bMatch
 
-    for (var key in aKeys) { // O(N)
+    for (var key in aKeys) {
         if (key in bKeys) {
             if (!aMatch) {
                 aMatch = {}
@@ -232,15 +242,17 @@ function reorder(aChildren, bChildren, len) {
     var shuffle = []
     var freeIndex = 0
 
+    shuffle.moves = bMatch
+
     for (var i = 0; i < len; i++) {
-        var move = aMatch[i]
+        var move = bMatch[i]
         if (move !== undefined) {
-            shuffle[i] = bChildren[move]
+            shuffle[i] = aChildren[move]
         } else {
-            while (freeIndex in bMatch) {
+            while (freeIndex in aMatch) {
                 freeIndex++
             }
-            shuffle[i] = bChildren[freeIndex++]
+            shuffle[i] = aChildren[freeIndex++]
         }
     }
 

@@ -12,7 +12,7 @@ function VirtualNode(tagName, properties, children, key, namespace) {
     this.tagName = tagName
     this.properties = properties || noProperties
     this.children = children || noChildren
-    this.key = (typeof key === "string") ? key : undefined
+    this.key = key != null ? String(key) : undefined
     this.namespace = (typeof namespace === "string") ? namespace : null
 
     var count = (children && children.length) || 0
