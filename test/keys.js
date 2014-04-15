@@ -104,3 +104,53 @@ test("mix keys without keys", function (assert) {
     assert.equal(newRoot.childNodes[7], childNodes[0])
     assert.end()
 })
+
+
+test("missing key gets replaced", function (assert) {
+        var leftNode = h("div", [
+        h("div", { key: 1 }),
+        h("div"),
+        h("div"),
+        h("div"),
+        h("div"),
+        h("div"),
+        h("div"),
+        h("div")
+    ])
+
+    var rightNode = h("div", [
+        h("div"),
+        h("div"),
+        h("div"),
+        h("div"),
+        h("div"),
+        h("div"),
+        h("div"),
+        h("div")
+    ])
+
+    var rootNode = render(leftNode)
+
+    var childNodes = []
+    for (var i = 0; i < rootNode.childNodes.length; i++) {
+        childNodes.push(rootNode.childNodes[i])
+    }
+
+    var patches = diff(leftNode, rightNode)
+    assert.equal(patchCount(patches), 1)
+
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot, rootNode)
+
+    assert.equal(rootNode.childNodes.length, newRoot.childNodes.length)
+
+    assert.notEqual(newRoot.childNodes[0], childNodes[0])
+    assert.equal(newRoot.childNodes[1], childNodes[1])
+    assert.equal(newRoot.childNodes[2], childNodes[2])
+    assert.equal(newRoot.childNodes[3], childNodes[3])
+    assert.equal(newRoot.childNodes[4], childNodes[4])
+    assert.equal(newRoot.childNodes[5], childNodes[5])
+    assert.equal(newRoot.childNodes[6], childNodes[6])
+    assert.equal(newRoot.childNodes[7], childNodes[7])
+    assert.end()
+})

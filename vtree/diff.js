@@ -37,7 +37,9 @@ function walk(a, b, patch, index) {
         }
     } else if (isVNode(b)) {
         if (isVNode(a)) {
-            if (a.tagName === b.tagName && a.namespace === b.namespace) {
+            if (a.tagName === b.tagName &&
+                a.namespace === b.namespace &&
+                a.key === b.key) {
                 var propsPatch = diffProps(a.properties, b.properties, b.hooks)
                 if (propsPatch) {
                     apply = appendPatch(apply,
