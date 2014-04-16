@@ -21,7 +21,7 @@ function applyProperties(node, props, previous) {
                 for (var k in propValue) {
                     node[propName][k] = propValue[k]
                 }
-            } else {
+            } else if (propValue !== undefined) {
                 node[propName] = propValue
             }
         }
