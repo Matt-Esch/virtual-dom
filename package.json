@@ -18,13 +18,13 @@
   },
   "dependencies": {
     "browser-split": "0.0.1",
-    "global": "^3.0.1",
+    "global": "^3.0.2",
     "is-object": "^0.1.2",
     "x-is-array": "^0.1.0",
     "x-is-string": "^0.1.0"
   },
   "devDependencies": {
-    "min-document": "^2.3.0",
+    "min-document": "^2.6.1",
     "run-browser": "git://github.com/Raynos/run-browser",
     "tap-dot": "^0.2.1",
     "tap-spec": "^0.1.8",
