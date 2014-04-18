@@ -57,7 +57,7 @@ test("keys get reordered", function (assert) {
 })
 
 test("mix keys without keys", function (assert) {
-        var leftNode = h("div", [
+    var leftNode = h("div", [
         h("div", { key: 1 }),
         h("div"),
         h("div"),
@@ -80,11 +80,7 @@ test("mix keys without keys", function (assert) {
     ])
 
     var rootNode = render(leftNode)
-
-    var childNodes = []
-    for (var i = 0; i < rootNode.childNodes.length; i++) {
-        childNodes.push(rootNode.childNodes[i])
-    }
+    var childNodes = childNodesArray(rootNode)
 
     var patches = diff(leftNode, rightNode)
     assert.equal(patchCount(patches), 1)
@@ -107,7 +103,7 @@ test("mix keys without keys", function (assert) {
 
 
 test("missing key gets replaced", function (assert) {
-        var leftNode = h("div", [
+    var leftNode = h("div", [
         h("div", { key: 1 }),
         h("div"),
         h("div"),
@@ -184,11 +180,7 @@ test("widgets can be keyed", function (assert) {
     ])
 
     var rootNode = render(leftNode)
-
-    var childNodes = []
-    for (var i = 0; i < rootNode.childNodes.length; i++) {
-        childNodes.push(rootNode.childNodes[i])
-    }
+    var childNodes = childNodesArray(rootNode)
 
 
     var patches = diff(leftNode, rightNode)
@@ -204,3 +196,40 @@ test("widgets can be keyed", function (assert) {
     assert.equal(newRoot.childNodes[2], childNodes[0])
     assert.end()
 })
+
+test("delete key at the start", function (assert) {
+    var leftNode = h("div", [
+        h("div", { key: "a" }, "a"),
+        h("div", { key: "b" }, "b"),
+        h("div", { key: "c" }, "c")
+    ])
+
+    var rightNode = h("div", [
+        h("div", { key: "b" }, "b"),
+        h("div", { key: "c" }, "c")
+    ])
+
+    var rootNode = render(leftNode)
+    var childNodes = childNodesArray(rootNode)
+
+    var patches = diff(leftNode, rightNode)
+    assert.equal(patchCount(patches), 2)
+
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot, rootNode)
+
+    assert.equal(newRoot.childNodes.length, 2)
+
+    assert.equal(newRoot.childNodes[0], childNodes[1])
+    assert.equal(newRoot.childNodes[1], childNodes[2])
+    assert.end()
+})
+
+
+function childNodesArray(node) {
+    var childNodes = []
+    for (var i = 0; i < node.childNodes.length; i++) {
+        childNodes.push(node.childNodes[i])
+    }
+    return childNodes
+}

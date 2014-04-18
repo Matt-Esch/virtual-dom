@@ -125,7 +125,7 @@ function diffChildren(a, b, patch, apply, index) {
     var bLen = bChildren.length
     var len = aLen > bLen ? aLen : bLen
 
-    aChildren = reorder(aChildren, bChildren, len)
+    bChildren = reorder(aChildren, bChildren, len)
 
     for (var i = 0; i < len; i++) {
         var leftNode = aChildren[i]
@@ -152,9 +152,9 @@ function diffChildren(a, b, patch, apply, index) {
         }
     }
 
-    if (aChildren.moves) {
+    if (bChildren.moves) {
         // Reorder nodes last
-        apply = appendPatch(apply, new VPatch(VPatch.ORDER, a, aChildren.moves))
+        apply = appendPatch(apply, new VPatch(VPatch.ORDER, a, bChildren.moves))
     }
 
     return apply
@@ -209,53 +209,53 @@ function hooks(vNode, patch, index) {
 
 // List diff, naive left to right reordering
 function reorder(aChildren, bChildren, len) {
-    var aKeys = keyIndex(aChildren)
-
-    if (!aKeys) {
-        return aChildren
-    }
-
     var bKeys = keyIndex(bChildren)
 
     if (!bKeys) {
-        return aChildren
+        return bChildren
     }
 
-    var aMatch, bMatch
+    var aKeys = keyIndex(aChildren)
+
+    if (!aKeys) {
+        return bChildren
+    }
+
+    var bMatch = {}, aMatch = {}
+
+    for (var key in bKeys) {
+        bMatch[bKeys[key]] = aKeys[key]
+    }
 
     for (var key in aKeys) {
-        if (key in bKeys) {
-            if (!aMatch) {
-                aMatch = {}
-                bMatch = {}
-            }
-
-            var aIndex = aKeys[key]
-            var bIndex = bKeys[key]
-            aMatch[aIndex] = bIndex
-            bMatch[bIndex] = aIndex
-        }
-    }
-
-    if (!aMatch) {
-        return bChildren
+        aMatch[aKeys[key]] = bKeys[key]
     }
 
     var shuffle = []
     var freeIndex = 0
+    var i = 0
+    var moveIndex = 0
+    var moves = shuffle.moves = {}
 
-    shuffle.moves = bMatch
-
-    for (var i = 0; i < len; i++) {
-        var move = bMatch[i]
+    while (freeIndex < len) {
+        var move = aMatch[i]
         if (move !== undefined) {
-            shuffle[i] = aChildren[move]
+            shuffle[i] = bChildren[move]
+            moves[move] = moveIndex++
+        } else if (i in aMatch) {
+            shuffle[i] = undefined
         } else {
-            while (freeIndex in aMatch) {
+            while (freeIndex in bMatch) {
                 freeIndex++
             }
-            shuffle[i] = aChildren[freeIndex++]
+
+            if (freeIndex < len) {
+                moves[freeIndex] = moveIndex++
+                shuffle[i] = bChildren[freeIndex]
+                freeIndex++
+            }
         }
+        i++
     }
 
     return shuffle
