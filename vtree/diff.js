@@ -120,12 +120,11 @@ function getPrototype(value) {
 
 function diffChildren(a, b, patch, apply, index) {
     var aChildren = a.children
-    var bChildren = b.children
+    var bChildren = reorder(aChildren, b.children)
+
     var aLen = aChildren.length
     var bLen = bChildren.length
     var len = aLen > bLen ? aLen : bLen
-
-    bChildren = reorder(aChildren, bChildren, len)
 
     for (var i = 0; i < len; i++) {
         var leftNode = aChildren[i]
@@ -208,7 +207,8 @@ function hooks(vNode, patch, index) {
 }
 
 // List diff, naive left to right reordering
-function reorder(aChildren, bChildren, len) {
+function reorder(aChildren, bChildren) {
+
     var bKeys = keyIndex(bChildren)
 
     if (!bKeys) {
@@ -231,6 +231,9 @@ function reorder(aChildren, bChildren, len) {
         aMatch[aKeys[key]] = bKeys[key]
     }
 
+    var aLen = aChildren.length
+    var bLen = bChildren.length
+    var len = aLen > bLen ? aLen : bLen
     var shuffle = []
     var freeIndex = 0
     var i = 0
@@ -245,7 +248,7 @@ function reorder(aChildren, bChildren, len) {
         } else if (i in aMatch) {
             shuffle[i] = undefined
         } else {
-            while (freeIndex in bMatch) {
+            while (bMatch[freeIndex] !== undefined) {
                 freeIndex++
             }
 

@@ -225,6 +225,90 @@ test("delete key at the start", function (assert) {
     assert.end()
 })
 
+test("add key to start", function (assert) {
+    var leftNode = h("div", [
+        h("div", { key: "b" }, "b"),
+        h("div", { key: "c" }, "c")
+    ])
+
+    var rightNode = h("div", [
+        h("div", { key: "a" }, "a"),
+        h("div", { key: "b" }, "b"),
+        h("div", { key: "c" }, "c")
+    ])
+
+    var rootNode = render(leftNode)
+    var childNodes = childNodesArray(rootNode)
+
+    var patches = diff(leftNode, rightNode)
+    assert.equal(patchCount(patches), 1)
+
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot, rootNode)
+
+    assert.equal(newRoot.childNodes.length, 3)
+
+    assert.equal(newRoot.childNodes[1], childNodes[0])
+    assert.equal(newRoot.childNodes[2], childNodes[1])
+    assert.end()
+})
+
+test("delete key at the end", function (assert) {
+    var leftNode = h("div", [
+        h("div", { key: "a" }, "a"),
+        h("div", { key: "b" }, "b"),
+        h("div", { key: "c" }, "c")
+    ])
+
+    var rightNode = h("div", [
+        h("div", { key: "a" }, "a"),
+        h("div", { key: "b" }, "b")
+    ])
+
+    var rootNode = render(leftNode)
+    var childNodes = childNodesArray(rootNode)
+
+    var patches = diff(leftNode, rightNode)
+    assert.equal(patchCount(patches), 2)
+
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot, rootNode)
+
+    assert.equal(newRoot.childNodes.length, 2)
+
+    assert.equal(newRoot.childNodes[0], childNodes[0])
+    assert.equal(newRoot.childNodes[1], childNodes[1])
+    assert.end()
+})
+
+test("add key to end", function (assert) {
+    var leftNode = h("div", [
+        h("div", { key: "a" }, "a"),
+        h("div", { key: "b" }, "b")
+    ])
+
+    var rightNode = h("div", [
+        h("div", { key: "a" }, "a"),
+        h("div", { key: "b" }, "b"),
+        h("div", { key: "c" }, "c")
+    ])
+
+    var rootNode = render(leftNode)
+    var childNodes = childNodesArray(rootNode)
+
+    var patches = diff(leftNode, rightNode)
+    assert.equal(patchCount(patches), 1)
+
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot, rootNode)
+
+    assert.equal(newRoot.childNodes.length, 3)
+
+    assert.equal(newRoot.childNodes[0], childNodes[0])
+    assert.equal(newRoot.childNodes[1], childNodes[1])
+    assert.end()
+})
+
 
 function childNodesArray(node) {
     var childNodes = []
