@@ -225,6 +225,48 @@ test("delete key at the start", function (assert) {
     assert.end()
 })
 
+test("adding multiple widgets", function (assert) {
+    function FooWidget(foo) {
+        this.foo = foo
+        this.counter = 0
+        this.key = foo
+    }
+
+    FooWidget.prototype.init = function () {
+        return render(h("div", String(this.foo)))
+    }
+
+    FooWidget.prototype.update = function (prev, elem) {
+        this.counter = prev.counter + 1
+        elem.textContent = this.foo + this.counter
+    }
+
+    var firstTree = h("div", [])
+    var rootNode = render(firstTree)
+
+    assert.equal(rootNode.tagName, "DIV")
+
+    var secondTree = h("div", [
+        new FooWidget("foo")
+    ])
+    rootNode = patch(rootNode, diff(firstTree, secondTree))
+
+    assert.equal(rootNode.tagName, "DIV")
+    assert.equal(rootNode.childNodes.length, 1)
+    assert.equal(rootNode.childNodes[0].tagName, "DIV")
+    assert.equal(rootNode.childNodes[0].childNodes[0].data, "foo")
+
+    var thirdTree = h("div", [
+        new FooWidget("foo"),
+        new FooWidget("bar")
+    ])
+    rootNode = patch(rootNode, diff(secondTree, thirdTree))
+
+    assert.equal(rootNode.tagName, "DIV")
+    assert.equal(rootNode.childNodes.length, 2)
+
+    assert.end()
+})
 
 function childNodesArray(node) {
     var childNodes = []
