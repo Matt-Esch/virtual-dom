@@ -167,6 +167,8 @@ test("widgets can be keyed", function (assert) {
         }
     }
 
+    DivWidget.prototype.type = "Widget"
+
     var leftNode = h("div", [
         new DivWidget("1", "a"),
         new DivWidget("2", "b"),
@@ -324,6 +326,8 @@ test("adding multiple widgets", function (assert) {
         this.counter = prev.counter + 1
         elem.textContent = this.foo + this.counter
     }
+
+    FooWidget.prototype.type = "Widget"
 
     var firstTree = h("div", [])
     var rootNode = render(firstTree)

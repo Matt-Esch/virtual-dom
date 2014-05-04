@@ -4,8 +4,8 @@ module.exports = updateWidget
 
 function updateWidget(a, b) {
     if (isWidget(a) && isWidget(b)) {
-        if ("type" in a && "type" in b) {
-            return a.type === b.type
+        if ("name" in a && "name" in b) {
+            return a.id === b.id
         } else {
             return a.init === b.init
         }
