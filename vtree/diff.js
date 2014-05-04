@@ -5,6 +5,7 @@ var VPatch = require("./vpatch")
 var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")
+var isThunk = require("./is-thunk")
 
 module.exports = diff
 
@@ -15,6 +16,15 @@ function diff(a, b) {
 }
 
 function walk(a, b, patch, index) {
+    if (isThunk(b)) {
+        if (isThunk(a)) {
+            b = b.vnode = b.render(a)
+            a = a.vnode
+        } else {
+            b = b.vnode = b.render(null)
+        }
+    }
+
     if (a === b) {
         hooks(b, patch, index)
         return
@@ -22,19 +32,9 @@ function walk(a, b, patch, index) {
 
     var apply = patch[index]
 
-    if (isWidget(b)) {
-        apply = appendPatch(apply, new VPatch(VPatch.WIDGET, a, b))
-
-        if (!isWidget(a)) {
-            destroyWidgets(a, patch, index)
-        }
-    } else if (isVText(b)) {
-        if (!isVText(a)) {
-            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
-            destroyWidgets(a, patch, index)
-        } else if (a.text !== b.text) {
-            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
-        }
+    if (b == null) {
+        apply = appendPatch(apply, new VPatch(VPatch.REMOVE, a, b))
+        destroyWidgets(a, patch, index)
     } else if (isVNode(b)) {
         if (isVNode(a)) {
             if (a.tagName === b.tagName &&
@@ -55,9 +55,19 @@ function walk(a, b, patch, index) {
             apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
             destroyWidgets(a, patch, index)
         }
-    } else if (b == null) {
-        apply = appendPatch(apply, new VPatch(VPatch.REMOVE, a, b))
-        destroyWidgets(a, patch, index)
+    } else if (isVText(b)) {
+        if (!isVText(a)) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+            destroyWidgets(a, patch, index)
+        } else if (a.text !== b.text) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+        }
+    } else if (isWidget(b)) {
+        apply = appendPatch(apply, new VPatch(VPatch.WIDGET, a, b))
+
+        if (!isWidget(a)) {
+            destroyWidgets(a, patch, index)
+        }
     }
 
     if (apply) {

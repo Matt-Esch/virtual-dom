@@ -14,6 +14,7 @@ require("./hook.js")
 require("./nested-properties.js")
 require("./undefined-properties.js")
 require("./keys.js")
+require("./thunk.js")
 
 // VirtualNode tests
 test("Node is a function", function (assert) {
