@@ -311,6 +311,37 @@ test("add key to end", function (assert) {
     assert.end()
 })
 
+test("add to end and delete from center & reverse", function (assert) {
+    var leftNode = h("div", [
+        h("div", { key: "a" }, "a"),
+        h("div", { key: "b" }, "b"),
+        h("div", { key: "c" }, "c"),
+        h("div", { key: "d" }, "d"),
+    ])
+
+    var rightNode = h("div", [
+        h("div", { key: "e" }, "e"),
+        h("div", { key: "d" }, "d"),
+        h("div", { key: "c" }, "c"),
+        h("div", { key: "a" }, "a")
+    ])
+
+    var rootNode = render(leftNode)
+    var childNodes = childNodesArray(rootNode)
+    var patches = diff(leftNode, rightNode)
+    assert.equal(patchCount(patches), 2)
+
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot, rootNode)
+
+    assert.equal(newRoot.childNodes.length, 4)
+
+    assert.equal(newRoot.childNodes[1], childNodes[3])
+    assert.equal(newRoot.childNodes[2], childNodes[2])
+    assert.equal(newRoot.childNodes[3], childNodes[0])
+    assert.end()
+})
+
 test("adding multiple widgets", function (assert) {
     function FooWidget(foo) {
         this.foo = foo
