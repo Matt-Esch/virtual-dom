@@ -26,7 +26,7 @@ test("is thunk", function (assert) {
 
     assert.notOk(isThunk(notThunk))
     assert.ok(isThunk(thunkLiteral))
-    assert.ok(new Thunk("div"))
+    assert.ok(isThunk(new Thunk("div")))
     assert.end()
 })
 
