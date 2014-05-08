@@ -269,7 +269,7 @@ test("delete key at the end", function (assert) {
 
     var rootNode = render(leftNode)
     var childNodes = childNodesArray(rootNode)
-    debugger;
+
     var patches = diff(leftNode, rightNode)
     assert.equal(patchCount(patches), 2)
 
