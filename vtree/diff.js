@@ -257,14 +257,18 @@ function reorder(aChildren, bChildren) {
             moves[move] = moveIndex++
         } else if (i in aMatch) {
             shuffle[i] = undefined
+            moves[move] = moveIndex++
         } else {
             while (bMatch[freeIndex] !== undefined) {
                 freeIndex++
             }
 
             if (freeIndex < len) {
-                moves[freeIndex] = moveIndex++
-                shuffle[i] = bChildren[freeIndex]
+                var freeChild = bChildren[freeIndex]
+                if (freeChild) {
+                    moves[freeIndex] = moveIndex++
+                    shuffle[i] = freeChild
+                }
                 freeIndex++
             }
         }
