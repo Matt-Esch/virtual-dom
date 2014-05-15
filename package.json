@@ -43,7 +43,8 @@
     "cover": "istanbul cover --report none --print detail ./test/index.js",
     "view-cover": "istanbul report html && google-chrome ./coverage/index.html",
     "browser": "run-browser test/index.js",
-    "phantom": "run-browser test/index.js -b | tap-spec"
+    "phantom": "run-browser test/index.js -b | tap-spec",
+    "dist": "browserify --standalone virtual-dom index.js > dist/virtual-dom.js"
   },
   "testling": {
     "files": "test/*.js",
