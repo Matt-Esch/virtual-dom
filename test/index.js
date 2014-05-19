@@ -119,9 +119,18 @@ test("third argument can be child or children", function (assert) {
     assert.end()
 })
 
+test("className is empty string by default", function (assert) {
+    var node = h("div")
+    assertNode(assert, node, "div", { className: "" })
+    assert.end()
+})
+
 function assertNode(assert, node, tagName, properties, children) {
     properties = properties || {}
     children = children || []
+
+    // parse-tag always sets the className
+    properties.className = properties.className || ''
 
     assert.ok(node instanceof Node, "node is a VirtualNode")
     assert.equal(node.tagName, tagName, "tag names are equal")
