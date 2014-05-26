@@ -80,7 +80,8 @@ function diffProps(a, b, hooks) {
 
     for (var aKey in a) {
         if (!(aKey in b)) {
-            continue
+            diff = diff || {}
+            diff[aKey] = undefined
         }
 
         var aValue = a[aKey]
