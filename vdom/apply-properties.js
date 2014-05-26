@@ -9,7 +9,7 @@ function applyProperties(node, props, previous) {
         var propValue = props[propName]
 
         if (propValue === undefined) {
-            removeProperty(node, props, propName);
+            removeProperty(node, props, previous, propName);
         } else if (isHook(propValue)) {
             propValue.hook(node,
                 propName,
