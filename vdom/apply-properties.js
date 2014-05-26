@@ -8,22 +8,42 @@ function applyProperties(node, props, previous) {
     for (var propName in props) {
         var propValue = props[propName]
 
-        if (isHook(propValue)) {
+        if (propValue === "undefined") {
+            removeProperty(node, props, propName);
+        } else if (isHook(propValue)) {
             propValue.hook(node,
                 propName,
                 previous ? previous[propName] : undefined)
         } else {
             if (isObject(propValue)) {
-                if (!isObject(node[propName])) {
-                    node[propName] = {}
-                }
-
-                for (var k in propValue) {
-                    node[propName][k] = propValue[k]
-                }
+                patchObject(node, props, previous, propName, propValue);
             } else if (propValue !== undefined) {
                 node[propName] = propValue
             }
         }
+    }
+}
+
+function removeProperty(node, props, previous, propName) {
+    if (propName === "style") {
+        var previousStyle = previous[propName]
+        for (var i in previousStyle) {
+            node.style[i] = ""
+        }
+    } else {
+        node[propName] = null
+    }
+}
+
+function patchObject(node, props, previous, propName, propValue) {
+    if (!isObject(node[propName])) {
+        node[propName] = {}
+    }
+
+    var replacer = propName === "style" ? "" : undefined
+
+    for (var k in propValue) {
+        var value = propValue[k]
+        node[propName][k] = (value === undefined) ? replacer : value
     }
 }
