@@ -8,7 +8,7 @@ function applyProperties(node, props, previous) {
     for (var propName in props) {
         var propValue = props[propName]
 
-        if (propValue === "undefined") {
+        if (propValue === undefined) {
             removeProperty(node, props, propName);
         } else if (isHook(propValue)) {
             propValue.hook(node,
