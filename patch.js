@@ -1,3 +1,3 @@
-var patch = require("./vdom/patch")
+var patch = require("vdom/patch")
 
 module.exports = patch
