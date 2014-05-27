@@ -2,9 +2,9 @@ var document = require("global/document")
 
 var applyProperties = require("./apply-properties")
 
-var isVNode = require("../vtree/is-vnode")
-var isVText = require("../vtree/is-vtext")
-var isWidget = require("../vtree/is-widget")
+var isVNode = require("vtree/is-vnode")
+var isVText = require("vtree/is-vtext")
+var isWidget = require("vtree/is-widget")
 
 module.exports = createElement
 

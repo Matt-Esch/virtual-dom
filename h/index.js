@@ -1,11 +1,11 @@
 var isArray = require("x-is-array")
 var isString = require("x-is-string")
 
-var VNode = require("../vtree/vnode.js")
-var VText = require("../vtree/vtext.js")
-var isVNode = require("../vtree/is-vnode")
-var isVText = require("../vtree/is-vtext")
-var isWidget = require("../vtree/is-widget")
+var VNode = require("vtree/vnode.js")
+var VText = require("vtree/vtext.js")
+var isVNode = require("vtree/is-vnode")
+var isVText = require("vtree/is-vtext")
+var isWidget = require("vtree/is-widget")
 
 var parseTag = require("./parse-tag")
 

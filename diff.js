@@ -1,3 +1,3 @@
-var diff = require("./vtree/diff")
+var diff = require("vtree/diff")
 
 module.exports = diff
