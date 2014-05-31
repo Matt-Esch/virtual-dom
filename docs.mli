@@ -12,7 +12,7 @@ type VNode := {
     properties: Object,
     children: Array<VTree>,
     key: String | undefined,
-    namespace: String | undefined,
+    namespace: String | null,
     type: 'VirtualNode',
     version: String,
 
