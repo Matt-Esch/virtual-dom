@@ -90,13 +90,13 @@ test("patch nested properties in right only", function (assert) {
     assert.end()
 })
 
-test("loose properties", function (assert) {
+test("null properties", function (assert) {
     var prev = h("div", { propA: "bar" })
     var curr = h("div", { propB: "apples" })
 
     var elem = createAndPatch(prev, curr)
 
-    assert.equal(elem.propA, "bar")
+    assert.equal(elem.propA, null)
     assert.equal(elem.propB, "apples")
 
     assert.end()
