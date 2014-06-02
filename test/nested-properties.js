@@ -91,12 +91,13 @@ test("patch nested properties in right only", function (assert) {
 })
 
 test("null properties", function (assert) {
-    var prev = h("div", { propA: "bar" })
+    var prev = h("div", { propA: "bar", propC: {} })
     var curr = h("div", { propB: "apples" })
 
     var elem = createAndPatch(prev, curr)
 
-    assert.equal(elem.propA, null)
+    assert.equal(elem.propA, "")
+    assert.equal(elem.propC, null)
     assert.equal(elem.propB, "apples")
 
     assert.end()
