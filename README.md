@@ -2,7 +2,7 @@
 
 (Please note this is currently work in progress)
 
-There was a [great article][1] about how react implements it's
+There was a [great article][1] about how react implements its
   virtual DOM. There are some really interesting ideas in there
   but they are deeply buried in the implementation of the React
   framework.
@@ -14,10 +14,10 @@ However, it's possible to implement just the virtual DOM and
 
 The reason we want a diff engine is so that we can write our
   templates as plain javascript functions that take in our
-  current application state and returns a visual representation
+  current application state and return a visual representation
   of the view for that state.
 
-However normally when you do this, you would have to re-create
+However, normally when you do this, you would have to re-create
   the entire DOM for that view each time the state changed and
   swap out the root node for your view. This is terrible for
   performance but also blows away temporary state like user input
@@ -31,7 +31,7 @@ A virtual DOM approach allows you to re-create a virtual DOM
 
 One important part of the virtual DOM approach is that it is a
   **module** and it **should do one thing well**. The virtual DOM
-  is only concerned with representing the virtual DOM. The `diff`
+  is only concerned with representing the virtual DOM. The `diff`,
   `batch` and `patch` functions are only concerned with the
   relevant algorithms for the virtual dom.
 
