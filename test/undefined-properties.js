@@ -1,27 +1,54 @@
 var test = require("tape")
+var isObject = require("is-object")
 
 var h = require("../h.js")
 var diff = require("../diff.js")
 var patch = require("../patch.js")
 var render = require("../create-element.js")
 
-test("undefined ignored for value", function (assert) {
+test("undefined props are not set in create-element", function (assert) {
+    var node = h("div", { special: undefined })
+    var rootNode = render(node)
+    assert.ok(!("special" in rootNode))
+    assert.end()
+})
+
+test("undefined defaults string prop to empty string", function (assert) {
     var leftNode = h("input", { value: "hello" })
     var rightNode = h("input", { value: undefined })
 
     var rootNode = createAndPatch(leftNode, rightNode)
 
-    assert.equal(rootNode.value, "hello")
+    assert.equal(rootNode.value, "")
     assert.end()
 })
 
-test("undefined ignored for objects", function (assert) {
+test("undefined removes all previous styles", function (assert) {
+    var leftNode = h("div", {
+        style: {
+            display: "none",
+            border: "1px solid #000"
+        }
+    })
+
+    var rightNode = h("div", {
+        style: undefined
+    })
+
+    var rootNode = createAndPatch(leftNode, rightNode)
+
+    assert.equal(rootNode.style.display, style("display", ""))
+    assert.equal(rootNode.style.border, style("border", ""))
+    assert.end();
+})
+
+test("undefined style removes individual styles", function (assert) {
     var leftNode = h("div", { "style": { "display": "none" }})
     var rightNode = h("div", { "style": undefined })
 
     var rootNode = createAndPatch(leftNode, rightNode)
 
-    assert.equal(rootNode.style.display, style("display", "none"))
+    assert.equal(rootNode.style.display, style("display", ""))
     assert.end()
 })
 
@@ -31,8 +58,8 @@ test("undefined ignored for hooks", function (assert) {
     }
     CheckNodeBeforeSet.prototype.hook = function (rootNode, propName) {
         var value = this.value
-        if (value !== rootNode.value) {
-            rootNode.value = value
+        if (value !== rootNode[propName]) {
+            rootNode[propName] = value
         }
     }
 
@@ -44,6 +71,20 @@ test("undefined ignored for hooks", function (assert) {
 
     var newRoot = patch(rootNode, diff(leftNode, rightNode))
     assert.equal(newRoot.value, "hello")
+
+    assert.end()
+})
+
+test("undefined nulls other complex types", function (assert) {
+    var leftNode = h("input", { special: {} })
+    var rightNode = h("input", { special: null })
+
+    var rootNode = render(leftNode)
+    assert.ok(isObject(rootNode.special))
+
+
+    newRoot = patch(rootNode, diff(leftNode, rightNode))
+    assert.equal(newRoot.special, null)
 
     assert.end()
 })
@@ -74,7 +115,7 @@ test("null not ignored for hooks", function (assert) {
     }
     CheckNodeBeforeSet.prototype.hook = function (rootNode, propName) {
         var value = this.value
-        if (value !== rootNode.value) {
+        if (value !== rootNode[propName]) {
             rootNode.value = value
         }
     }
@@ -104,7 +145,7 @@ function style(name, value) {
     return node.style[name]
 }
 
-// Safely transaltes node property using the DOM in the brosert
+// Safely transaltes node property using the DOM in the browser
 function property(tag, prop, value) {
     var node = render(h(tag))
     node[prop] = value
