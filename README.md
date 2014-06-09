@@ -1,229 +1,101 @@
-# Virtual DOM and diffing algorithm
+# virtual-dom
 
-(Please note this is currently work in progress)
-
-There was a [great article][1] about how react implements its
-  virtual DOM. There are some really interesting ideas in there
-  but they are deeply buried in the implementation of the React
-  framework.
-
-However, it's possible to implement just the virtual DOM and
-  diff algorithm on it's own as a set of independent modules.
+A JavaScript [DOM model](#dom-model) supporting [element creation](#element-creation), [diff computation](#diff-computation) and [patch operations](#patch-operations) for efficient re-rendering
 
 ## Motivation
 
-The reason we want a diff engine is so that we can write our
-  templates as plain javascript functions that take in our
-  current application state and return a visual representation
-  of the view for that state.
+Manual DOM manipulation is messy and keeping track of the previous DOM state is hard. A solution to this problem is to write your code as if you were recreating the entire DOM whenever state changes. Of course, if you actually recreated the entire DOM every time your application state changed, your app would be very slow and your input fields would lose focus.
 
-However, normally when you do this, you would have to re-create
-  the entire DOM for that view each time the state changed and
-  swap out the root node for your view. This is terrible for
-  performance but also blows away temporary state like user input
-  focus.
+`virtual-dom` is a collection of modules designed to provide a declarative way of representing the DOM for your app. So instead of updating the DOM when your application state changes, you simply create a virtual tree or `VTree`, which looks like the DOM state that you want. `virtual-dom` will then figure out how to make the DOM look like this efficiently without recreating all of the DOM nodes.
 
-A virtual DOM approach allows you to re-create a virtual DOM
-  for the view each time the state changes. Creating a virtual
-  DOM in JavaScript is cheap compared to DOM operations. You can
-  then use the 60 fps batched DOM writer to apply differences
-  between the current DOM state and the new virtual DOM state.
-
-One important part of the virtual DOM approach is that it is a
-  **module** and it **should do one thing well**. The virtual DOM
-  is only concerned with representing the virtual DOM. The `diff`,
-  `batch` and `patch` functions are only concerned with the
-  relevant algorithms for the virtual dom.
-
-The virtual DOM has nothing to do with events or representing
-  application state. The below example demonstrates the usage
-  of state with `observ` and events with `dom-delegator`. It
-  could just as well have used `knockout` or `backbone` for state
-  and used `jQuery` or `component/events` for events.
+`virtual-dom` allows you to update a view whenever state changes by creating a full `VTree` of the view and then patching the DOM efficiently to look exactly as you described it. This results in keeping manual DOM manipulation and previous state tracking out of your application code, promoting clean and maintainable rendering logic for web applications.
 
 ## Example
 
-**Warning:** Vaporware. The `virtual-dom` is not implemented yet.
+```javascript
+var h = require('virtual-dom/h');
+var diff = require('virtual-dom/diff');
+var patch = require('virtual-dom/patch');
+var createElement = require('virtual-dom/create-element');
 
-```js
-var h = require("virtual-dom/h")
-var createElement = require("virtual-dom/create-element")
-var raf = require("raf").polyfill
-var Observ = require("observ")
-var ObservArray = require("observ-array")
-var computed = require("observ/computed")
-var Delegator = require("dom-delegator")
-var diff = require("virtual-dom-diff")
-var patch require("virtual-dom-patch")
-var batch = require("virtual-dom-batch")
-
-// logic that takes state and renders your view.
-function TodoList(items) {
-    return h("ul", items.map(function (text) {
-        return h("li", text)
-    }))
+// 1: Create a function that declares what the DOM should look like
+function render(count)  {
+    return h('div', {
+        style: {
+            textAlign: 'center',
+            verticalAlign: 'center',
+            lineHeight: (100 + count) + 'px',
+            border: '1px solid red',
+            width: (100 + count) + 'px',
+            height: (100 + count) + 'px'
+        }
+    }, [String(count)]);
 }
 
-function TodoApp(state) {
-    return h("div", [
-        h("h3", "TODO"),
-        { render: TodoList, data: state.items },
-        h("div", { "data-submit": "addTodo" }, [
-            h("input", { value: state.text, name: "text" }),
-            h("button", "Add # " + state.items.length + 1)
-        ])
-    ])
-}
+// 2: Initialise the document
+var count = 0;      // We need some app data. Here we just store a count.
 
-// model the state of your app
-var state = {
-    text: Observ(""),
-    items: ObservArray([])
-}
+var tree = render(count);               // We need an initial tree
+var rootNode = createElement(tree);     // Create an initial root DOM node ...
+document.body.appendChild(rootNode);    // ... and it should be in the document
 
-// react to inputs and change state
-var delegator = Delegator(document.body)
-delegator.on("addTodo", function (ev) {
-    state.items.push(ev.currentValue.text)
-    state.text.set("")
-})
+// 3: Wire up the update logic
+setInterval(function () {
+      count++;
 
-// render initial state
-var currTree = TodoApp({ text: state.text(), items: state.items().value })
-var elem = createElement(currTree)
+      var newTree = render(count);
+      var patches = diff(tree, newTree);
+      rootNode = patch(rootNode, patches);
+      tree = newTree;
+}, 1000);
+```
+[View on RequireBin](http://requirebin.com/?gist=5492847b9a9025e64bab)
 
-document.body.appendChild(elem)
+## DOM model
 
-// when state changes diff the state
-var diffQueue = []
-var applyUpdate = false
-computed([state.text, state.items], function () {
-    // only call `update()` in next tick.
-    // this allows for multiple synchronous changes to the state
-    // in the current tick without re-rendering the virtual DOM
-    if (applyUpdate === false) {
-        applyUpdate = true
-        setImmediate(function () {
-            update()
-            applyUpdate = false
-        })
-    }
-})
+`virtual-dom` exposes a set of objects designed for representing DOM nodes. A "Document Object Model Model" might seem like a strange term, but it is exactly that. It's a native JavaScript tree structure that represents a native DOM node tree. We call this a **VTree**
 
-function update() {
-    var newTree = TodoApp({ text: state.text(), items: state.items().value })
+We can create a VTree using the objects directly in a verbose manner, or we can use virtual-hyperscript, which reduces terseness of the syntax.
 
-    // calculate the diff from currTree to newTree
-    var patches = diff(currTree, newTree)
-    diffQueue = diffQueue.concat(patches)
-    currTree = newTree
-}
+### Example - creating a VTree using the objects directly
 
-// at 60 fps, batch all the patches and then apply them
-raf(function renderDOM() {
-    var patches = batch(diffQueue)
-    elem = patch(elem, patches)
+### Example - creating a VTree using virtual-hyperscript
 
-    raf(renderDOM)
-})
+The DOM model is designed to be efficient to create and read from. The reason why we don't just create a real DOM tree is that creating DOM nodes and reading the node properties is an expensive operation which is what we are trying to avoid. Reading some DOM node properties even causes side effects, so recreating the entire DOM structure with real DOM nodes simply isn't suitable for high performance rendering and it is not easy to reason about either.
+
+A `VTree` is designed to be equivalent to an immutable data strucuture. While it's not actually immutable, you can reuse the nodes in multiple places and the functions we have exposed that take VTrees as arguments never mutate the trees. We could freeze the objects in the model but don't for efficiency. (The benefits of an immutable-equivalent data structure will be documented in vtree or blog post at some point)
+
+
+
+## Element creation
+
+```ocaml
+createElement(tree:VTree) -> DOMNode
 ```
 
-## Documentation
+Given that we have created a `VTree`, we need some way to translate this into a real DOM tree of some sort. This is provided by `create-element.js`. When rendering for the first time we would pass a complete `VTree` to create-element function to create the equivalent DOM node.
 
-### `var virtualDOM = h(tagName, props?, children?)`
-
-`h` creates a virtual DOM tree. You can give it a `tagName` and
-  optionally DOM properties & optionally an array of children.
-
-### `var elem = createElement(virtualDOM)`
-
-`createElement` takes a virtual DOM tree and turns it into a DOM element
-  that you can put in your DOM. Use this to render the initial
-  tree.
-
-### `var patches = diff(previousTree, currentTree)`
-
-`diff` takes two virtual DOM tree and returns an array of virtual
-  DOM patches that you would have to apply to the `previousTree`
-  to create the `currentTree`
-
-This function is used to determine what has changed in the
-  virtual DOM tree so that we can later apply a minimal set of
-  patches to the real DOM, since touching the real DOM is slow.
-
-### `var patches = batch(patches)`
-
-`batch` can be used to take a large array of patches, generally
-  more then what is returned by a single `diff` call and will
-  then use a set of global heuristics to produce a smaller more
-  optimal set of patches to apply to a DOM tree.
-
-Generally you want to call `batch` 60 or 30 times per second to
-  compute the optimal set of DOM mutations to apply. This is
-  great if your application has large spikes of state changes
-  that you want to condense into a smaller more optimal set of
-  DOM mutations.
-
-`batch` also does other useful things like re-ordering mutations
-  to avoid reflows.
-
-### `var elem = patch(elem, patches)`
-
-`patch` will take a real DOM element and apply the DOM mutations
-  in order. This is the only part that actually does the
-  expensive work of mutating the DOM. In case that the root node
-  needs to be replaced, the root is returned from the operation
-
-We recommend you do this in a `requestAnimationFrame` handler.
-
-## Concept
-
-The goal is to represent your template as plain old javascript
-  functions. Using actual `if` statements instead of
-  `{{#if }} ... {{/if}}` and all other flow control build into
-  javascript.
-
-One approach that works very well is [hyperscript][2] however
-  that will re-create a DOM node each time you re-render your
-  view which is expensive.
-
-A better solution is to have a `h` function that returns a
-  virtual DOM tree. Creating a virtual DOM in JavaScript is
-  cheap compared to manipulating the DOM directly.
-
-Once we have two virtual DOM trees. One for the current application
-  state and one for the previous we can use the `diff` function
-  to produce a minimal set of patches from the previous virtual
-  DOM to the current virtual DOM.
-
-Once you have a set of patches, you could apply them immediately
-  but it's better to queue them and flush this queue at a fixed
-  interval like 60 times per second. Only doing our DOM
-  manipulation with the callback to `requestAnimationFrame` will
-  give us a performance boost and minimize the number of DOM
-  operations we do. We also call `batch` in before we apply
-  our patches to squash our list of diffs to the minimal set of
-  operations.
-
-Another important thing to note is that our virtual DOM tree
-  contains a notion of a `Component` which is
-  `{ render: function (data) { return tree }, data: { ... } }`.
-
-This is an important part of making the virtual DOM fast. Calling
-  `render()` is cheap because it only renders a single layer and
-  embeds components for all it's child views. The `diff` engine
-  then has the option to compare the `data` key of a component
-  between the current and previous one, if the `data` hasn't
-  changed then it doesn't have to re-render that component.
-
-The `component` can also implement a `compare` function to
-  compare the data between the previous and current to tell us
-  whether or not the change requires a re-render.
-
-This means you only have to re-render the components that have
-  changed instead of re-rendering the entire virtual DOM tree
-  any time a piece of application state changes.
+### Example - rendering an entire VTree
 
 
-  [1]: http://calendar.perfplanet.com/2013/diff/
-  [2]: https://github.com/dominictarr/hyperscript
+
+## Diff computation
+
+```ocaml
+diff(previous:VTree, current:VTree) -> PatchObject
+```
+
+The primary motivation behind virtual-dom is to allow use to write code indepentent of previous state. So when our application state changes we will generate a new `VTree`. The `diff` function creates a set of DOM patches that, based on the difference between the previous `VTree` and the current `VTree`
+
+## Patch operations
+
+```ocaml
+patch(rootNode:DOMNode, patches:PatchObject) -> DOMNode newRootNode
+```
+
+Once we have computed the set of patches required to apply to the DOM, we need a function that can apply those patches. This is provided by the `patch` function. Given a DOM root node and a set of DOM patches, the `patch` function will update the DOM. After applying the patches to the DOM, the DOM should look like the new `VTree`.
+
+
+## Original motivation
+
+virtual-dom is heavily inspired by the inner workings of React by facebook. This project originated as a gist of ideas, which [we have linked to provide some background context](https://gist.github.com/Raynos/8414846).
