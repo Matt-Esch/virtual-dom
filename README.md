@@ -59,7 +59,31 @@ We can create a VTree using the objects directly in a verbose manner, or we can 
 
 ### Example - creating a VTree using the objects directly
 
+```javascript
+var VNode = require('vtree/vnode');
+var VText = require('vtree/vtext');
+
+function render(data) {
+    return new VNode('div', {
+        className: "greeting"
+    }, [
+        new VText("Hello " + String(data.name));
+    ]);
+}
+
+module.exports = render;
+```
 ### Example - creating a VTree using virtual-hyperscript
+
+```javascript
+var h = require('virtual-dom/h');
+
+function render(data) {
+    return h('.greeting', ['Hello ' + data.name]);
+}
+
+module.exports = render;
+```
 
 The DOM model is designed to be efficient to create and read from. The reason why we don't just create a real DOM tree is that creating DOM nodes and reading the node properties is an expensive operation which is what we are trying to avoid. Reading some DOM node properties even causes side effects, so recreating the entire DOM structure with real DOM nodes simply isn't suitable for high performance rendering and it is not easy to reason about either.
 
@@ -74,10 +98,6 @@ createElement(tree:VTree) -> DOMNode
 ```
 
 Given that we have created a `VTree`, we need some way to translate this into a real DOM tree of some sort. This is provided by `create-element.js`. When rendering for the first time we would pass a complete `VTree` to create-element function to create the equivalent DOM node.
-
-### Example - rendering an entire VTree
-
-
 
 ## Diff computation
 
