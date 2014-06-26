@@ -55,7 +55,7 @@ setInterval(function () {
 
 `virtual-dom` exposes a set of objects designed for representing DOM nodes. A "Document Object Model Model" might seem like a strange term, but it is exactly that. It's a native JavaScript tree structure that represents a native DOM node tree. We call this a **VTree**
 
-We can create a VTree using the objects directly in a verbose manner, or we can use virtual-hyperscript, which reduces terseness of the syntax.
+We can create a VTree using the objects directly in a verbose manner, or we can use the more terse virtual-hyperscript.
 
 ### Example - creating a VTree using the objects directly
 
