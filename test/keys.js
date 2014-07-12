@@ -9,25 +9,25 @@ var patchCount = require("./lib/patch-count.js")
 
 test("keys get reordered", function (assert) {
     var leftNode = h("div", [
-        h("div", { key: 1 }),
-        h("div", { key: 2 }),
-        h("div", { key: 3 }),
-        h("div", { key: 4 }),
-        h("div", { key: "test" }),
-        h("div", { key: 6 }),
-        h("div", { key: "good" }),
-        h("div", { key: "7" })
+        h("div", { key: 1 }, "1"),
+        h("div", { key: 2 }, "2"),
+        h("div", { key: 3 }, "3"),
+        h("div", { key: 4 }, "4"),
+        h("div", { key: "test" }, "test"),
+        h("div", { key: 6 }, "6"),
+        h("div", { key: "good" }, "good"),
+        h("div", { key: "7" }, "7")
     ])
 
     var rightNode = h("div", [
-        h("div", { key: "7" }),
-        h("div", { key: 4 }),
-        h("div", { key: 3 }),
-        h("div", { key: 2 }),
-        h("div", { key: 6 }),
-        h("div", { key: "test" }),
-        h("div", { key: "good" }),
-        h("div", { key: 1 })
+        h("div", { key: "7" }, "7"),
+        h("div", { key: 4 }, "4"),
+        h("div", { key: 3 }, "3"),
+        h("div", { key: 2 }, "2"),
+        h("div", { key: 6 }, "6"),
+        h("div", { key: "test" }, "test"),
+        h("div", { key: "good" }, "good"),
+        h("div", { key: 1 }, "1")
     ])
 
     var rootNode = render(leftNode)
@@ -101,6 +101,33 @@ test("mix keys without keys", function (assert) {
     assert.end()
 })
 
+test("avoid unnecessary reordering", function (assert) {
+    var leftNode = h("div", [
+        h("div"),
+        h("div", { key: 1 }),
+        h("div")
+    ])
+
+    var rightNode = h("div", [
+        h("div"),
+        h("div", { key: 1 }),
+        h("div")
+    ])
+
+    var rootNode = render(leftNode)
+    var childNodes = childNodesArray(rootNode)
+
+    var patches = diff(leftNode, rightNode)
+    assert.equal(patchCount(patches), 0)
+
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot, rootNode)
+
+    assert.equal(newRoot.childNodes[0], childNodes[0])
+    assert.equal(newRoot.childNodes[1], childNodes[1])
+    assert.equal(newRoot.childNodes[2], childNodes[2])
+    assert.end()
+})
 
 test("missing key gets replaced", function (assert) {
     var leftNode = h("div", [
