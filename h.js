@@ -1,3 +1,3 @@
-var h = require("./h/index.js")
+var h = require("virtual-hyperscript")
 
 module.exports = h
