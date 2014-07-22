@@ -87,7 +87,7 @@ module.exports = render;
 
 The DOM model is designed to be efficient to create and read from. The reason why we don't just create a real DOM tree is that creating DOM nodes and reading the node properties is an expensive operation which is what we are trying to avoid. Reading some DOM node properties even causes side effects, so recreating the entire DOM structure with real DOM nodes simply isn't suitable for high performance rendering and it is not easy to reason about either.
 
-A `VTree` is designed to be equivalent to an immutable data strucuture. While it's not actually immutable, you can reuse the nodes in multiple places and the functions we have exposed that take VTrees as arguments never mutate the trees. We could freeze the objects in the model but don't for efficiency. (The benefits of an immutable-equivalent data structure will be documented in vtree or blog post at some point)
+A `VTree` is designed to be equivalent to an immutable data structure. While it's not actually immutable, you can reuse the nodes in multiple places and the functions we have exposed that take VTrees as arguments never mutate the trees. We could freeze the objects in the model but don't for efficiency. (The benefits of an immutable-equivalent data structure will be documented in vtree or blog post at some point)
 
 
 
