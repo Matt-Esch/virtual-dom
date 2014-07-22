@@ -254,13 +254,13 @@ test("children are added", function (assert) {
     assert.end()
 })
 
-test("incompatible children are ignored", function (assert) {
+test("null children are ignored", function (assert) {
     var vdom = h("#important.pretty", {
         style: {
             "cssText": "color: red;"
         }
     }, [
-        {}, null
+        null
     ])
     var dom = render(vdom)
     assert.equal(dom.id, "important")
@@ -268,6 +268,19 @@ test("incompatible children are ignored", function (assert) {
     assert.equal(dom.tagName, "DIV")
     assert.equal(dom.style.cssText, style("cssText", "color: red;"))
     assert.equal(dom.childNodes.length, 0)
+    assert.end()
+})
+
+test("incompatible children throws", function (assert) {
+    assert.throws(function () {
+        h("#important.pretty", {
+            style: {
+                "cssText": "color: red;"
+            }
+        }, [
+            {}
+        ])
+    }, /Unexpected virtual child/)
     assert.end()
 })
 
