@@ -2,6 +2,14 @@
 
 A JavaScript [DOM model](#dom-model) supporting [element creation](#element-creation), [diff computation](#diff-computation) and [patch operations](#patch-operations) for efficient re-rendering
 
+[![build status][1]][2]
+[![NPM version][3]][4]
+[![Coverage Status][5]][6]
+[![Davis Dependency status][7]][8]
+
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/mattesch.svg)](https://saucelabs.com/u/mattesch)
+
 ## Motivation
 
 Manual DOM manipulation is messy and keeping track of the previous DOM state is hard. A solution to this problem is to write your code as if you were recreating the entire DOM whenever state changes. Of course, if you actually recreated the entire DOM every time your application state changed, your app would be very slow and your input fields would lose focus.
@@ -119,3 +127,12 @@ Once we have computed the set of patches required to apply to the DOM, we need a
 ## Original motivation
 
 virtual-dom is heavily inspired by the inner workings of React by facebook. This project originated as a gist of ideas, which [we have linked to provide some background context](https://gist.github.com/Raynos/8414846).
+
+[1]: https://secure.travis-ci.org/Matt-Esch/virtual-dom.svg
+[2]: https://travis-ci.org/Matt-Esch/virtual-dom
+[3]: https://badge.fury.io/js/virtual-dom.svg
+[4]: https://badge.fury.io/js/virtual-dom
+[5]: http://img.shields.io/coveralls/Matt-Esch/virtual-dom.svg
+[6]: https://coveralls.io/r/Matt-Esch/virtual-dom
+[7]: https://david-dm.org/Matt-Esch/virtual-dom.svg
+[8]: https://david-dm.org/Matt-Esch/virtual-dom
