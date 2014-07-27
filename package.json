@@ -30,7 +30,8 @@
     "run-browser": "git://github.com/Raynos/run-browser",
     "tap-dot": "^0.2.1",
     "tap-spec": "^0.2.0",
-    "tape": "^2.13.1"
+    "tape": "^2.13.4",
+    "zuul": "^1.10.0"
   },
   "licenses": [
     {
@@ -46,7 +47,8 @@
     "view-cover": "istanbul report html && google-chrome ./coverage/index.html",
     "browser": "run-browser test/index.js",
     "phantom": "run-browser test/index.js -b | tap-spec",
-    "dist": "browserify --standalone virtual-dom index.js > dist/virtual-dom.js"
+    "dist": "browserify --standalone virtual-dom index.js > dist/virtual-dom.js",
+    "travis-test": "npm run phantom && npm run cover && istanbul report lcov && ((cat coverage/lcov.info | coveralls) || exit 0) && zuul -- test/index.js"
   },
   "testling": {
     "files": "test/*.js",
