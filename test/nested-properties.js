@@ -60,32 +60,26 @@ test("dom node dataset", function (assert) {
 })
 
 test("dom node attributes", function (assert) {
-    if (!setAttributes()) {
-        assert.skip("No support for setting attributes array directly")
-        return assert.end()
-    }
-
     var a = h("div", { attributes: { foo: "bar", bar: "oops" } })
     var b = h("div", { attributes: { foo: "baz", bar: "oops" } })
     var rootNode = render(a)
-    var a1 = rootNode.attributes
     var equalNode = render(b)
+
     var newRoot = patch(rootNode, diff(a, b))
-    var a2 = newRoot.attributes
+
     assertEqualDom(assert, newRoot, equalNode)
-    assert.equal(newRoot.attributes.foo, "baz")
-    assert.equal(newRoot.attributes.bar, "oops")
-    assert.equal(a1, a2)
+    assert.equal(newRoot.getAttribute("foo"), "baz")
+    assert.equal(newRoot.getAttribute("bar"), "oops")
     assert.end()
 })
 
 test("patch nested properties in right only", function (assert) {
     var prev = h("div")
-    var curr = h("div", { attributes: { foo: "bar" } })
+    var curr = h("div", { style: { display: "none" } })
 
     var elem = createAndPatch(prev, curr)
 
-    assert.equal(elem.attributes.foo, "bar")
+    assert.equal(elem.style.display, style("display", "none"))
 
     assert.end()
 })
@@ -134,20 +128,4 @@ function style(name, value) {
     var node = render(h())
     node.style[name] = value
     return node.style[name]
-}
-
-
-function setAttributes() {
-    var node = render(h())
-    var attr = "foo"
-    try {
-        if (!("attributes" in node)) {
-            node.attributes = {}
-        }
-
-        node.attributes[attr] = "bar"
-        return true
-    } catch (e) {
-        return false
-    }
 }
