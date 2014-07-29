@@ -1,4 +1,5 @@
 ui: tape
+concurrency: 1
 browsers:
   - name: chrome
     version: [26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, latest]
@@ -10,7 +11,7 @@ browsers:
     version: 4.3..latest
   - name: ipad
     version: 4.3..latest
-  - name: android  
+  - name: android
     version: 4.0..latest
   - name: opera
     version: 11..latest
