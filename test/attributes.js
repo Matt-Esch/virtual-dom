@@ -40,7 +40,7 @@ test("individual attributes can be unset", function (assert) {
 
     assert.equal(newRootNode, rootNode)
     assert.equal(newRootNode.getAttribute("a"), "1")
-    assert.equal(newRootNode.getAttribute("b"), null)
+    assert.ok(newRootNode.getAttribute("b") == null)
     assert.equal(newRootNode.getAttribute("c"), "3")
     assert.end()
 })
@@ -59,11 +59,12 @@ test("attributes can be completely unset", function (assert) {
     var rootNode = createElement(leftTree)
     var patches = diff(leftTree, rightTree)
 
+
     var newRootNode = patch(rootNode, patches)
 
     assert.equal(newRootNode, rootNode)
-    assert.equal(newRootNode.getAttribute("a"), null)
-    assert.equal(newRootNode.getAttribute("b"), null)
-    assert.equal(newRootNode.getAttribute("c"), null)
+    assert.ok(newRootNode.getAttribute("a") == null)
+    assert.ok(newRootNode.getAttribute("b") == null)
+    assert.ok(newRootNode.getAttribute("c") == null)
     assert.end()
 })
