@@ -771,6 +771,11 @@ test("Patching parent destroys stateful sibling", function (assert) {
 })
 
 test("Create element respects namespace", function (assert) {
+    if (!supportsNamespace()) {
+        assert.skip("browser doesn't support namespaces");
+        return assert.end();
+    }
+
     var svgURI = "http://www.w3.org/2000/svg"
     var vnode = new Node("svg", {}, [], null, svgURI)
     var node = render(vnode)
@@ -781,6 +786,11 @@ test("Create element respects namespace", function (assert) {
 })
 
 test("Different namespaces creates a patch", function (assert) {
+    if (!supportsNamespace()) {
+        assert.skip("browser doesn't support namespaces");
+        return assert.end();
+    }
+
     var leftNode = new Node("div", {}, [], null, "testing")
     var rightNode = new Node("div", {}, [], null, "undefined")
 
@@ -805,3 +815,10 @@ function style(name, value) {
     node.style[name] = value
     return node.style[name]
 }
+
+// Determine if namespace is supported by the DOM
+function supportsNamespace() {
+    var node = render(h())
+    return 'namespaceURI' in node;
+}
+
