@@ -343,7 +343,7 @@ test("add to end and delete from center & reverse", function (assert) {
         h("div", { key: "a" }, "a"),
         h("div", { key: "b" }, "b"),
         h("div", { key: "c" }, "c"),
-        h("div", { key: "d" }, "d"),
+        h("div", { key: "d" }, "d")
     ])
 
     var rightNode = h("div", [
