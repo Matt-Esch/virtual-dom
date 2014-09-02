@@ -83,7 +83,7 @@ test("undefined nulls other complex types", function (assert) {
     assert.ok(isObject(rootNode.special))
 
 
-    newRoot = patch(rootNode, diff(leftNode, rightNode))
+    var newRoot = patch(rootNode, diff(leftNode, rightNode))
     assert.equal(newRoot.special, null)
 
     assert.end()
