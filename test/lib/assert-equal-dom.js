@@ -21,7 +21,8 @@ function areEqual(a, b) {
             key !== "parent" &&
             key !== "self" &&
             key !== "outerHTML" &&
-            key !== "innerHTML"
+            key !== "innerHTML" &&
+            "" + parseInt(key, 10) !== key
         ) {
             if (key === "ownerDocument") {
                 return a[key] === b[key]
