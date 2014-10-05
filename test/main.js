@@ -619,6 +619,63 @@ test("Patch nested widgets", function (assert) {
     assert.end()
 })
 
+test("Ensure children are not rendered more than once", function (assert) {
+    var initCount = 0
+    var updateCount = 0
+    var rightState = { a: 1 }
+    var domNode
+
+    function Widget(state) {
+        this.state = state
+        this.vdom = this.render(state)
+    }
+
+    Widget.prototype.init = function () {
+        initCount++
+        return render(this.vdom)
+    }
+
+    Widget.prototype.update = function (leftNode, dom) {
+        updateCount++
+        patch(dom, diff(leftNode.vdom, this.vdom))
+    }
+
+    Widget.prototype.render = function (state) {
+        return h("div", "" + state.a)
+    }
+
+    Widget.prototype.type = "Widget"
+
+    var rightWidget = new Widget(rightState)
+
+    var leftTree = h("div.container", [
+        h("div")
+    ])
+
+    var rightTree = h("div.container", [
+        h("section.widgetContainer", rightWidget)
+    ])
+
+    domNode = render(leftTree)
+    assert.equal(initCount, 0, "initCount after left render")
+    assert.equal(updateCount, 0, "updateCount after left render")
+
+    var patches = diff(leftTree, rightTree)
+    assert.equal(patchCount(patches), 1)
+    assert.equal(initCount, 0, "initCount after diff")
+    assert.equal(updateCount, 0, "updateCount after diff")
+
+    var newRoot = patch(domNode, patches)
+    assert.equal(initCount, 1, "initCount after patch")
+    assert.equal(updateCount, 0, "updateCount after patch")
+
+    // The patch should only update sibling value in this use case
+    var expectedNode = render(rightTree)
+    assert.equal(newRoot, domNode)
+    assertEqualDom(assert, newRoot, expectedNode)
+    assert.end()
+})
+
 test("VNode indicates stateful sibling", function (assert) {
     var statefulWidget  = {
         init: function () {},
