@@ -13,16 +13,6 @@ test("undefined props are not set in create-element", function (assert) {
     assert.end()
 })
 
-test("undefined defaults string prop to empty string", function (assert) {
-    var leftNode = h("input", { value: "hello" })
-    var rightNode = h("input", { value: undefined })
-
-    var rootNode = createAndPatch(leftNode, rightNode)
-
-    assert.equal(rootNode.value, "")
-    assert.end()
-})
-
 test("undefined removes all previous styles", function (assert) {
     var leftNode = h("div", {
         style: {
