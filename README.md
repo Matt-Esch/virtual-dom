@@ -6,7 +6,7 @@ A JavaScript [DOM model](#dom-model) supporting [element creation](#element-crea
 [![NPM version][3]][4]
 [![Coverage Status][5]][6]
 [![Davis Dependency status][7]][8]
-
+[![experimental](http://hughsk.github.io/stability-badges/dist/experimental.svg)](http://github.com/hughsk/stability-badges)
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/mattesch.svg)](https://saucelabs.com/u/mattesch)
 
