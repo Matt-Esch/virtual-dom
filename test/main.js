@@ -827,6 +827,47 @@ test("Patching parent destroys stateful sibling", function (assert) {
     assert.end()
 })
 
+test("Destroy widget nested in removed thunk", function (assert) {
+    var count = 0
+    var widgetRoot = render(h(".widget"))
+    var statefulWidget  = {
+        init: function () {
+            return widgetRoot
+        },
+        update: function () {
+            assert.error()
+        },
+        destroy: function (domNode) {
+            assert.equal(domNode, widgetRoot)
+            count++
+        },
+        type: "Widget"
+    }
+    var vnode = h(".wrapper", statefulWidget)
+
+    function Thunk() {}
+
+    Thunk.prototype.render = function () {
+        return vnode
+    }
+
+    Thunk.prototype.type = "Thunk"
+
+    var thunkTree = h(".page", [
+        h(".section", [
+            new Thunk()
+        ])
+    ])
+
+    var empty = h(".empty")
+
+    var rootNode = render(thunkTree)
+    patch(rootNode, diff(thunkTree, empty))
+    assert.equal(count, 1)
+
+    assert.end()
+})
+
 test("Create element respects namespace", function (assert) {
     if (!supportsNamespace()) {
         assert.skip("browser doesn't support namespaces");
