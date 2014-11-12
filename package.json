@@ -19,8 +19,8 @@
   "dependencies": {
     "browser-split": "0.0.1",
     "is-object": "0.1.2",
-    "vdom": "0.0.21",
-    "vtree": "0.0.21",
+    "vdom": "0.0.22",
+    "vtree": "0.0.22",
     "x-is-array": "0.1.0",
     "x-is-string": "0.1.0"
   },
