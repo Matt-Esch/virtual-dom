@@ -1,6 +1,6 @@
 {
   "name": "virtual-dom",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "A batched diff-based DOM rendering strategy",
   "keywords": [],
   "author": "Matt-Esch <matt@mattesch.info>",
