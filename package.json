@@ -17,7 +17,8 @@
     "email": "matt@mattesch.info"
   },
   "dependencies": {
-    "browser-split": "0.0.1",
+    "data-set": "^3.1.0",
+    "error": "^4.3.0",
     "is-object": "0.1.2",
     "vdom": "0.0.22",
     "vtree": "0.0.22",

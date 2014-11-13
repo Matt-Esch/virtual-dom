@@ -1,5 +1,3 @@
-var split = require("browser-split")
-
 var classIdSplit = /([\.#]?[a-zA-Z0-9_:-]+)/
 var notClassId = /^\.|#/
 
@@ -10,16 +8,16 @@ function parseTag(tag, props) {
         return "div"
     }
 
-    var noId = !props || !("id" in props)
+    var noId = !("id" in props)
 
-    var tagParts = split(tag, classIdSplit)
+    var tagParts = tag.split(classIdSplit)
     var tagName = null
 
-    if(notClassId.test(tagParts[1])) {
+    if (notClassId.test(tagParts[1])) {
         tagName = "div"
     }
 
-    var id, classes, part, type, i
+    var classes, part, type, i
     for (i = 0; i < tagParts.length; i++) {
         part = tagParts[i]
 
@@ -35,44 +33,17 @@ function parseTag(tag, props) {
             classes = classes || []
             classes.push(part.substring(1, part.length))
         } else if (type === "#" && noId) {
-            id = part.substring(1, part.length)
+            props.id = part.substring(1, part.length)
         }
     }
 
-    var parsedTags
-
-    if (props) {
-        if (id !== undefined && !("id" in props)) {
-            props.id = id
+    if (classes) {
+        if (props.className) {
+            classes.push(props.className)
         }
 
-        if (classes) {
-            if (props.className) {
-                classes.push(props.className)
-            }
-
-            props.className = classes.join(" ")
-        }
-
-        parsedTags = tagName
-    } else if (classes || id !== undefined) {
-        var properties = {}
-
-        if (id !== undefined) {
-            properties.id = id
-        }
-
-        if (classes) {
-            properties.className = classes.join(" ")
-        }
-
-        parsedTags = {
-            tagName: tagName,
-            properties: properties
-        }
-    } else {
-        parsedTags = tagName
+        props.className = classes.join(" ")
     }
 
-    return parsedTags
+    return tagName ? tagName.toLowerCase() : "div"
 }

@@ -255,7 +255,7 @@ test("incompatible children are ignored", function (assert) {
             "cssText": "color: red;"
         }
     }, [
-        {}, null
+        null
     ])
     var dom = render(vdom)
     assert.equal(dom.id, "important")
