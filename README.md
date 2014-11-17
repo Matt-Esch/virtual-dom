@@ -59,6 +59,19 @@ setInterval(function () {
 ```
 [View on RequireBin](http://requirebin.com/?gist=5492847b9a9025e64bab)
 
+## Documentation
+
+You can find the documentation for the seperate components
+  in their READMEs
+
+ - For `create-element.js` see the [vdom README](vdom/README.md)
+ - For `diff.js` see the [vtree README](vtree/README.md)
+ - For `h.js` see the [virtual-hyperscript README](virtual-hyperscript/README.md)
+ - For `patch.js` see the [vdom README](vdom/README.md)
+
+For information about the type signatures of these modules feel
+  free to read the [javascript signature definition](docs.jsig)
+
 ## DOM model
 
 `virtual-dom` exposes a set of objects designed for representing DOM nodes. A "Document Object Model Model" might seem like a strange term, but it is exactly that. It's a native JavaScript tree structure that represents a native DOM node tree. We call this a **VTree**
