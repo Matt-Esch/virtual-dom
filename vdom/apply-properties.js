@@ -41,10 +41,6 @@ function removeProperty(node, props, previous, propName) {
             } else {
                 node[propName] = null
             }
-        } else if (previousValue && previousValue.unhook) {
-            previousValue.unhook(node,
-                propName,
-                previousValue)
         }
     }
 }

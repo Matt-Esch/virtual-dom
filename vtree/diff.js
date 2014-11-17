@@ -6,7 +6,6 @@ var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")
 var isThunk = require("./is-thunk")
-var isHook = require("./is-vhook")
 var handleThunk = require("./handle-thunk")
 
 module.exports = diff
@@ -19,22 +18,27 @@ function diff(a, b) {
 
 function walk(a, b, patch, index) {
     if (a === b) {
+        if (isThunk(a) || isThunk(b)) {
+            thunks(a, b, patch, index)
+        } else {
+            hooks(b, patch, index)
+        }
         return
     }
 
     var apply = patch[index]
 
-    if (b == null) {
-        apply = appendPatch(apply, new VPatch(VPatch.REMOVE, a, b))
-        destroyWidgets(a, patch, index)
-    } else if (isThunk(a) || isThunk(b)) {
+    if (isThunk(a) || isThunk(b)) {
         thunks(a, b, patch, index)
+    } else if (b == null) {
+        patch[index] = new VPatch(VPatch.REMOVE, a, b)
+        destroyWidgets(a, patch, index)
     } else if (isVNode(b)) {
         if (isVNode(a)) {
             if (a.tagName === b.tagName &&
                 a.namespace === b.namespace &&
                 a.key === b.key) {
-                var propsPatch = diffProps(a.properties, b.properties)
+                var propsPatch = diffProps(a.properties, b.properties, b.hooks)
                 if (propsPatch) {
                     apply = appendPatch(apply,
                         new VPatch(VPatch.PROPS, a, propsPatch))
@@ -68,7 +72,7 @@ function walk(a, b, patch, index) {
     }
 }
 
-function diffProps(a, b) {
+function diffProps(a, b, hooks) {
     var diff
 
     for (var aKey in a) {
@@ -80,23 +84,25 @@ function diffProps(a, b) {
         var aValue = a[aKey]
         var bValue = b[aKey]
 
-        if (isObject(aValue) && isObject(bValue)) {
-            if (getPrototype(bValue) !== getPrototype(aValue)) {
-                diff = diff || {}
-                diff[aKey] = bValue
-            } else if (isHook(bValue)) {
-                diff = diff || {}
-                diff[aKey] = bValue
-            } else {
-                var objectDiff = diffProps(aValue, bValue)
-                if (objectDiff) {
-                    diff = diff || {}
-                    diff[aKey] = objectDiff
-                }
-            }
-        } else if (aValue !== bValue) {
+        if (hooks && aKey in hooks) {
             diff = diff || {}
             diff[aKey] = bValue
+        } else {
+            if (isObject(aValue) && isObject(bValue)) {
+                if (getPrototype(bValue) !== getPrototype(aValue)) {
+                    diff = diff || {}
+                    diff[aKey] = bValue
+                } else {
+                    var objectDiff = diffProps(aValue, bValue)
+                    if (objectDiff) {
+                        diff = diff || {}
+                        diff[aKey] = objectDiff
+                    }
+                }
+            } else if (aValue !== bValue) {
+                diff = diff || {}
+                diff[aKey] = bValue
+            }
         }
     }
 
@@ -139,12 +145,6 @@ function diffChildren(a, b, patch, apply, index) {
                 apply = appendPatch(apply,
                     new VPatch(VPatch.INSERT, null, rightNode))
             }
-        } else if (!rightNode) {
-            if (leftNode) {
-                // Excess nodes in a need to be removed
-                patch[index] = new VPatch(VPatch.REMOVE, leftNode, null)
-                destroyWidgets(leftNode, patch, index)
-            }
         } else {
             walk(leftNode, rightNode, patch, index)
         }
@@ -169,7 +169,7 @@ function destroyWidgets(vNode, patch, index) {
         if (typeof vNode.destroy === "function") {
             patch[index] = new VPatch(VPatch.REMOVE, vNode, null)
         }
-    } else if (isVNode(vNode) && vNode.hasWidgets) {
+    } else if (isVNode(vNode) && (vNode.hasWidgets || vNode.hasThunks)) {
         var children = vNode.children
         var len = children.length
         for (var i = 0; i < len; i++) {
@@ -182,6 +182,8 @@ function destroyWidgets(vNode, patch, index) {
                 index += child.count
             }
         }
+    } else if (isThunk(vNode)) {
+        thunks(vNode, null, patch, index)
     }
 }
 
@@ -202,6 +204,30 @@ function hasPatches(patch) {
     }
 
     return false;
+}
+
+// Execute hooks when two nodes are identical
+function hooks(vNode, patch, index) {
+    if (isVNode(vNode)) {
+        if (vNode.hooks) {
+            patch[index] = new VPatch(VPatch.PROPS, vNode.hooks, vNode.hooks)
+        }
+
+        if (vNode.descendantHooks) {
+            var children = vNode.children
+            var len = children.length
+            for (var i = 0; i < len; i++) {
+                var child = children[i]
+                index += 1
+
+                hooks(child, patch, index)
+
+                if (isVNode(child) && child.count) {
+                    index += child.count
+                }
+            }
+        }
+    }
 }
 
 // List diff, naive left to right reordering
