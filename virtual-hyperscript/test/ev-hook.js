@@ -6,7 +6,7 @@ var createElement = require("../../vdom/create-element")
 var patch = require("../../vdom/patch")
 var diff = require("../../vtree/diff")
 
-test.skip("h with events", function (assert) {
+test("h with events", function (assert) {
     function one() {}
 
     var left = h(".foo", {

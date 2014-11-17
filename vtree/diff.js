@@ -6,6 +6,7 @@ var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")
 var isThunk = require("./is-thunk")
+var isHook = require("./is-vhook")
 var handleThunk = require("./handle-thunk")
 
 module.exports = diff
@@ -18,11 +19,6 @@ function diff(a, b) {
 
 function walk(a, b, patch, index) {
     if (a === b) {
-        if (isThunk(a) || isThunk(b)) {
-            thunks(a, b, patch, index)
-        } else {
-            hooks(b, patch, index)
-        }
         return
     }
 
@@ -38,7 +34,7 @@ function walk(a, b, patch, index) {
             if (a.tagName === b.tagName &&
                 a.namespace === b.namespace &&
                 a.key === b.key) {
-                var propsPatch = diffProps(a.properties, b.properties, b.hooks)
+                var propsPatch = diffProps(a.properties, b.properties)
                 if (propsPatch) {
                     apply = appendPatch(apply,
                         new VPatch(VPatch.PROPS, a, propsPatch))
@@ -72,7 +68,7 @@ function walk(a, b, patch, index) {
     }
 }
 
-function diffProps(a, b, hooks) {
+function diffProps(a, b) {
     var diff
 
     for (var aKey in a) {
@@ -84,25 +80,23 @@ function diffProps(a, b, hooks) {
         var aValue = a[aKey]
         var bValue = b[aKey]
 
-        if (hooks && aKey in hooks) {
-            diff = diff || {}
-            diff[aKey] = bValue
-        } else {
-            if (isObject(aValue) && isObject(bValue)) {
-                if (getPrototype(bValue) !== getPrototype(aValue)) {
-                    diff = diff || {}
-                    diff[aKey] = bValue
-                } else {
-                    var objectDiff = diffProps(aValue, bValue)
-                    if (objectDiff) {
-                        diff = diff || {}
-                        diff[aKey] = objectDiff
-                    }
-                }
-            } else if (aValue !== bValue) {
+        if (isObject(aValue) && isObject(bValue)) {
+            if (getPrototype(bValue) !== getPrototype(aValue)) {
                 diff = diff || {}
                 diff[aKey] = bValue
+            } else if (isHook(bValue)) {
+                diff = diff || {}
+                diff[aKey] = bValue
+            } else {
+                var objectDiff = diffProps(aValue, bValue)
+                if (objectDiff) {
+                    diff = diff || {}
+                    diff[aKey] = objectDiff
+                }
             }
+        } else if (aValue !== bValue) {
+            diff = diff || {}
+            diff[aKey] = bValue
         }
     }
 
@@ -204,30 +198,6 @@ function hasPatches(patch) {
     }
 
     return false;
-}
-
-// Execute hooks when two nodes are identical
-function hooks(vNode, patch, index) {
-    if (isVNode(vNode)) {
-        if (vNode.hooks) {
-            patch[index] = new VPatch(VPatch.PROPS, vNode.hooks, vNode.hooks)
-        }
-
-        if (vNode.descendantHooks) {
-            var children = vNode.children
-            var len = children.length
-            for (var i = 0; i < len; i++) {
-                var child = children[i]
-                index += 1
-
-                hooks(child, patch, index)
-
-                if (isVNode(child) && child.count) {
-                    index += child.count
-                }
-            }
-        }
-    }
 }
 
 // List diff, naive left to right reordering
