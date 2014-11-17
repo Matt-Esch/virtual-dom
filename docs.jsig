@@ -1,0 +1,139 @@
+--  A VHook is an object with a hook and unhook method.
+--  A VHook can be used to define your own apply property logic.
+--
+--  When a hook is found in the VProperties object in either
+--      `patch()` or `createElement()`, instead of setting
+--      or unsetting the property we will invoke `hook()` or
+--      `unhook()` respectively so you can define what setting
+--      and unsetting a property means.
+type VHook : {
+    hook: (node: DOMElement, propertyName: String) => void,
+    unhook: (node: DOMElement, propertyName: String) => void
+}
+
+type VPropertyName : String
+type VPropertyValue : String | Boolean | Number
+
+--  A VProperties is a data structure that represents the
+--      set of properties that can be attached to a virtual node
+--
+--  Properties can be many things. The simplest case is a string
+--      property name and string or bool or number property value
+--
+--  You can also have hooks in your properties. You give a
+--      string hook name and a hook value. The hook will then
+--      be invoked as part of `patch()` and `createElement()`
+--      which allows you to set custom properties.
+--
+--  Next up, attributes and style are treated slightly
+--      differently. These keys are expected to have objects
+--      of string keys and string values and will have the
+--      correct `patch()` and `createElement()` logic for
+--      setting attributes and styles.
+--
+--  Finally properties can also have nested arbitrary objects
+--      of some key name to some value that is an object of
+--      string to bool or number or string.
+type VProperties :
+    Object<propName: VPropertyName, propValue: VPropertyValue> &
+    Object<hookName: String, hook: VHook> &
+    Object<"attributes",
+        Object<attrName: String, attrValue: String>> &
+    Object<"style",
+        Object<styleName: String, styleValue: String>> &
+    Object<String, Object<
+        nestedPropName: VPropertyName,
+        nestedPropValue: VPropertyValue
+    >
+
+--  A VNode is a data structure that represents a virtual node
+--      in a virtual tree.
+--
+--  A virtual node consists of a tagName, a set of properties
+--      and a list of children. It also has meta data attached,
+--      namely a key and a namespace.
+type VNode : {
+    tagName: String,
+    properties: VProperties
+    children: Array<VTree>,
+    key: String | undefined,
+    namespace: String | null
+}
+
+--  A VText is a data structure representing a text node in
+--      a virtual tree.
+type VText : {
+    text: String,
+    type: "VirtualText"
+}
+
+--  A Widget is a custom data structure for representing an
+--      object in a virtual tree.
+--
+--  A Widget allows you to fully specify the semantics of
+--      intitialization of the object, updating of the object
+--      and destruction of the object.
+--
+--  A Widget should generally be used for custom, performance
+--      critical code.
+type Widget : {
+    type: "Widget",
+    init: () => DOMElement,
+    update: (previous: Widget, domNode: DOMElement) => void,
+    destroy: (node: DOMElement) => void
+}
+
+--  A Thunk is a custom data structure for representing an
+--      unevaluated node in a virtual tree.
+--
+--  A Thunk allows you to overwrite the semantics of `diff()`
+--      by implementing your own render method that takes the
+--      previous node in the previous virtual tree.
+--
+--  Inside `render()` you can check whether the previous node
+--      is conceptually the same as the current node and return
+--      `previous.vnode` instead of re-computing and recreating
+--      an equivelant vnode.
+--
+--  This allows you to implement caching in the virtual tree
+--      and has significant performance improvements
+type Thunk : {
+    type: "Thunk",
+    vnode: VTree,
+    render: (previous: VTree | null) => VTree
+}
+
+--  A VTree is the union of all the types of nodes that can
+--      exist in a virtual tree.
+type VTree : VText | VNode | Widget | Thunk
+
+--  A VPatch represents a patch object that is returned from
+--      `diff()`. This patch object can be applied to an
+--      existing DOM element tree.
+type VPatch := {
+    type: Number,
+    vNode: VNode,
+    patch: Any,
+    type: 'VirtualPatch'
+}
+
+virtual-dom/create-element : (vnode: VTree, opts: {
+    document?: DOMDocument,
+    warn?: Boolean
+}) => DOMElement | DOMTextNode
+
+virtual-dom/diff : (left: VTree, right: VTree) => Array<VPatch>
+
+virtual-dom/h : (
+    tagSelector: String,
+    properties?: {
+        key: String,
+        namespace: String
+    } & VProperties,
+    children?: Array<VTree> | Vtree | textContent: String
+) => VNode
+
+virtual-dom/patch : (
+    rootNode: DOMElement,
+    patches: Array<VPatch>
+) => newRootNode: DOMElement
