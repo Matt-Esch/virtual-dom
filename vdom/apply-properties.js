@@ -1,5 +1,5 @@
 var isObject = require("is-object")
-var isHook = require("vtree/is-vhook")
+var isHook = require("../vtree/is-vhook.js")
 
 module.exports = applyProperties
 

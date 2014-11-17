@@ -1,7 +1,7 @@
 var applyProperties = require("./apply-properties")
 
-var isWidget = require("vtree/is-widget")
-var VPatch = require("vtree/vpatch")
+var isWidget = require("../vtree/is-widget.js")
+var VPatch = require("../vtree/vpatch.js")
 
 var render = require("./create-element")
 var updateWidget = require("./update-widget")

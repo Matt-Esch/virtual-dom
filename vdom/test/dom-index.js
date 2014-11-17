@@ -1,7 +1,7 @@
 var test = require("tape")
-var VNode = require("vtree/vnode")
-var VText = require("vtree/vtext")
-var diff = require("vtree/diff")
+var VNode = require("../../vtree/vnode")
+var VText = require("../../vtree/vtext")
+var diff = require("../../vtree/diff")
 
 var createElement = require("../create-element")
 var patch = require("../patch")
