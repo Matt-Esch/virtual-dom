@@ -11,11 +11,11 @@ the active DOM node structure in the browser.
 ## Example
 
 ```js
-var VNode = require("vtree/vnode")
-var diff = require("vtree/diff")
+var h = require("virtual-dom/h")
+var diff = require("virtual-dom/diff")
 
-var leftNode = new VNode("div")
-var rightNode = new VNode("text")
+var leftNode = h("div")
+var rightNode = h("text")
 
 var patches = diff(leftNode, rightNode)
 /*
@@ -28,7 +28,7 @@ var patches = diff(leftNode, rightNode)
 
 ## Installation
 
-`npm install vtree`
+`npm install virtual-dom`
 
 ## Contributors
 
