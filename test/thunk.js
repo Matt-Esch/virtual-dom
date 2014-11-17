@@ -1,9 +1,9 @@
 var test = require("tape")
 
-var isThunk = require("vtree/is-thunk")
-var isVNode = require("vtree/is-vnode")
-var VNode = require("vtree/vnode")
-var diff = require("vtree/diff")
+var isThunk = require("../vtree/is-thunk")
+var isVNode = require("../vtree/is-vnode")
+var VNode = require("../vtree/vnode")
+var diff = require("../vtree/diff")
 
 var patchCount = require("./lib/patch-count.js")
 
