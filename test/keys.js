@@ -6,6 +6,7 @@ var patch = require("../patch.js")
 var render = require("../create-element.js")
 
 var patchCount = require("./lib/patch-count.js")
+var assertEqualDom = require("./lib/assert-equal-dom.js")
 
 test("keys get reordered", function (assert) {
     var leftNode = h("div", [
@@ -220,9 +221,9 @@ test("widgets can be keyed", function (assert) {
 
     assert.equal(newRoot.childNodes.length, rootNode.childNodes.length)
 
-    assert.equal(newRoot.childNodes[0], childNodes[2])
-    assert.equal(newRoot.childNodes[1], childNodes[1])
-    assert.equal(newRoot.childNodes[2], childNodes[0])
+    assertEqualDom(assert, newRoot.childNodes[0], childNodes[2])
+    assertEqualDom(assert, newRoot.childNodes[1], childNodes[1])
+    assertEqualDom(assert, newRoot.childNodes[2], childNodes[0])
     assert.end()
 })
 
