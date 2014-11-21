@@ -827,6 +827,33 @@ test("Patching parent destroys stateful sibling", function (assert) {
     assert.end()
 })
 
+test("Widget update can replace domNode", function (assert) {
+    var widgetInit = render(h("span.init"))
+    var widgetUpdate = render(h("span.update"))
+
+    function Widget () {}
+    Widget.prototype.init = function () {
+        return widgetInit
+    }
+    Widget.prototype.update = function () {
+        return widgetUpdate
+    }
+    Widget.prototype.destroy = function () {}
+    Widget.prototype.type = "Widget"
+
+    var initTree = h("div.init", [new Widget])
+    var updateTree = h("div.update", [new Widget])
+    var rootNode
+
+    rootNode = render(initTree)
+    assert.equal(rootNode.childNodes[0], widgetInit)
+
+    patch(rootNode, diff(initTree, updateTree))
+
+    assert.equal(rootNode.childNodes[0], widgetUpdate)
+    assert.end()
+})
+
 test("Destroy widget nested in removed thunk", function (assert) {
     var count = 0
     var widgetRoot = render(h(".widget"))
