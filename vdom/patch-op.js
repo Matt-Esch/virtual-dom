@@ -82,11 +82,11 @@ function stringPatch(domNode, leftVNode, vText, renderOptions) {
 
 function widgetPatch(domNode, leftVNode, widget, renderOptions) {
     var updating = updateWidget(leftVNode, widget)
+    var newNode
 
     if (updating) {
-        var newNode = widget.update(leftVNode, domNode) || domNode
-    }
-    else {
+        newNode = widget.update(leftVNode, domNode) || domNode
+    } else {
         newNode = render(widget, renderOptions)
     }
 
