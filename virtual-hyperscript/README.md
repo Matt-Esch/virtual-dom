@@ -15,7 +15,7 @@ A DSL for creating virtual trees
 ## Example
 
 ```js
-var h = require('virtual-hyperscript')
+var h = require('virtual-dom/h')
 
 var tree = h('div.foo#some-id', [
     h('span', 'some text'),
@@ -87,7 +87,7 @@ This means that `dom-delegator` will recognise the event handler
 
 ## Installation
 
-`npm install virtual-hyperscript`
+`npm install virtual-dom`
 
 ## Contributors
 
