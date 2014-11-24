@@ -17,28 +17,7 @@ test("Hooks are added to a hooks object on a node", function (assert) {
         "value": "not a hook"
     }, [], null, null)
 
-    assert.equal(node.hooks.id, propValue)
-    assert.equal(node.descendantHooks, false)
-    assert.end()
-})
-
-test("Node child hooks are identified", function (assert) {
-    function Prop() {}
-    Prop.prototype.hook = function () {}
-    var propValue = new Prop()
-
-    var node = new Node("div", {
-        "id": propValue,
-        "value": "not a hook"
-    }, [], undefined, undefined)
-
-    var parentNode = new Node("div", {
-        "id": "not a hook"
-    }, [node], undefined, undefined)
-
-    assert.equal(node.hooks.id, propValue)
-    assert.equal(parentNode.hooks, undefined)
-    assert.ok(parentNode.descendantHooks)
+    assert.equal(node.properties.id, propValue)
     assert.end()
 })
 
@@ -168,7 +147,7 @@ test("two hooks of same interface", function (assert) {
     assert.end()
 })
 
-test("all hooks are called", function (assert) {
+test("hooks are not called on trivial diff", function (assert) {
     var counters = {
         a: 0,
         b: 0,
@@ -185,18 +164,18 @@ test("all hooks are called", function (assert) {
     ])
 
     var rootNode = create(vnode)
-    assert.equal(counters.a, 1)
-    assert.equal(counters.b, 1)
-    assert.equal(counters.c, 1)
+    assert.equal(counters.a, 1, "counters.a")
+    assert.equal(counters.b, 1, "counters.b")
+    assert.equal(counters.c, 1, "counters.c")
 
     var patches = diff(vnode, vnode)
-    assert.equal(patchCount(patches), 3)
+    assert.equal(patchCount(patches), 0, "patches")
 
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
-    assert.equal(counters.a, 2)
-    assert.equal(counters.b, 2)
-    assert.equal(counters.c, 2)
+    assert.equal(counters.a, 1, "counters.a patch")
+    assert.equal(counters.b, 1, "counters.b patch")
+    assert.equal(counters.c, 1, "counters.c patch")
     assert.end()
 })
 
