@@ -1,4 +1,4 @@
-var isWidget = require("../vtree/is-widget.js")
+var isWidget = require("../vnode/is-widget.js")
 
 module.exports = updateWidget
 

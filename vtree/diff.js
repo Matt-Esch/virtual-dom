@@ -1,12 +1,12 @@
 var isArray = require("x-is-array")
 var isObject = require("is-object")
 
-var VPatch = require("./vpatch")
-var isVNode = require("./is-vnode")
-var isVText = require("./is-vtext")
-var isWidget = require("./is-widget")
-var isThunk = require("./is-thunk")
-var handleThunk = require("./handle-thunk")
+var VPatch = require("../vnode/vpatch")
+var isVNode = require("../vnode/is-vnode")
+var isVText = require("../vnode/is-vtext")
+var isWidget = require("../vnode/is-widget")
+var isThunk = require("../vnode/is-thunk")
+var handleThunk = require("../vnode/handle-thunk")
 
 module.exports = diff
 
