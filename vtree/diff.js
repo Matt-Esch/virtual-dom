@@ -174,6 +174,7 @@ function diffChildren(a, b, patch, apply, index) {
 }
 
 function clearState(vNode, patch, index) {
+    // TODO: Make this a single walk, not two
     unhook(vNode, patch, index)
     destroyWidgets(vNode, patch, index)
 }
@@ -285,12 +286,12 @@ function reorder(aChildren, bChildren) {
 
     var bMatch = {}, aMatch = {}
 
-    for (var key in bKeys) {
-        bMatch[bKeys[key]] = aKeys[key]
+    for (var aKey in bKeys) {
+        bMatch[bKeys[aKey]] = aKeys[aKey]
     }
 
-    for (var key in aKeys) {
-        aMatch[aKeys[key]] = bKeys[key]
+    for (var bKey in aKeys) {
+        aMatch[aKeys[bKey]] = bKeys[bKey]
     }
 
     var aLen = aChildren.length
