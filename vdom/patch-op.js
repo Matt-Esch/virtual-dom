@@ -75,8 +75,6 @@ function stringPatch(domNode, leftVNode, vText, renderOptions) {
         }
     }
 
-    destroyWidget(domNode, leftVNode)
-
     return newNode
 }
 
@@ -110,8 +108,6 @@ function vNodePatch(domNode, leftVNode, vNode, renderOptions) {
     if (parentNode) {
         parentNode.replaceChild(newNode, domNode)
     }
-
-    destroyWidget(domNode, leftVNode)
 
     return newNode
 }
