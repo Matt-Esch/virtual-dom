@@ -46,7 +46,7 @@
     "test": "node ./test/index.js | tap-spec",
     "dot": "node ./test/index.js | tap-dot",
     "start": "node ./index.js",
-    "cover": "istanbul cover --report none --print detail ./test/index.js",
+    "cover": "istanbul cover --report html --print detail ./test/index.js",
     "view-cover": "istanbul report html && opn ./coverage/index.html",
     "browser": "run-browser test/index.js",
     "phantom": "run-browser test/index.js -b | tap-spec",
