@@ -19,9 +19,6 @@ function diff(a, b) {
 
 function walk(a, b, patch, index) {
     if (a === b) {
-        if (isThunk(a) || isThunk(b)) {
-            thunks(a, b, patch, index)
-        }
         return
     }
 
