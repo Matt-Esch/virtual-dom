@@ -29,6 +29,7 @@
   "devDependencies": {
     "global": "^4.2.1",
     "min-document": "^2.6.1",
+    "opn": "^1.0.0",
     "run-browser": "git://github.com/Raynos/run-browser",
     "tap-dot": "^0.2.1",
     "tap-spec": "^0.2.0",
@@ -45,8 +46,8 @@
     "test": "node ./test/index.js | tap-spec",
     "dot": "node ./test/index.js | tap-dot",
     "start": "node ./index.js",
-    "cover": "istanbul cover --no-default-excludes -x **/node_modules/vtree/node_modues/** -x **/node_modules/vdom/node_modules/** -x **/node_modules/b*/* -x **/node_modules/g*/* -x **/node_modules/i*/** -x **/node_modules/m*/** -x **/node_modules/r*/** -x **/node_modules/t*/** -x **/node_modules/x*/** -x **/node_modules/z*/** -x **/test/** -x **/tests/** --report none --print detail ./test/index.js",
-    "view-cover": "istanbul report html && open ./coverage/index.html",
+    "cover": "istanbul cover --report html --print detail ./test/index.js",
+    "view-cover": "istanbul report html && opn ./coverage/index.html",
     "browser": "run-browser test/index.js",
     "phantom": "run-browser test/index.js -b | tap-spec",
     "dist": "browserify --standalone virtual-dom index.js > dist/virtual-dom.js",
