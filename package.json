@@ -34,7 +34,9 @@
     "tap-dot": "^0.2.1",
     "tap-spec": "^0.2.0",
     "tape": "^2.13.4",
-    "zuul": "^1.10.0"
+    "zuul": "^1.10.0",
+    "semver": "^4.1.0",
+    "execSync": "^1.0.2"
   },
   "licenses": [
     {
@@ -51,7 +53,11 @@
     "browser": "run-browser test/index.js",
     "phantom": "run-browser test/index.js -b | tap-spec",
     "dist": "browserify --standalone virtual-dom index.js > dist/virtual-dom.js",
-    "travis-test": "npm run phantom && npm run cover && istanbul report lcov && ((cat coverage/lcov.info | coveralls) || exit 0)"
+    "travis-test": "npm run phantom && npm run cover && istanbul report lcov && ((cat coverage/lcov.info | coveralls) || exit 0)",
+    "release": "npm run release-patch",
+    "release-patch": "node ./scripts/release.js patch",
+    "release-minor": "node ./scripts/release.js minor",
+    "release-major": "node ./scripts/release.js major"
   },
   "testling": {
     "files": "test/*.js",
