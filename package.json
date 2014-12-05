@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "global": "^4.2.1",
+    "istanbul": "^0.3.4",
     "min-document": "^2.6.1",
     "opn": "^1.0.0",
     "run-browser": "git://github.com/Raynos/run-browser",
