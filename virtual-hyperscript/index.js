@@ -83,6 +83,11 @@ function h(tagName, properties, children) {
 
     if (children !== undefined && children !== null) {
         addChild(children, childNodes, tag, props)
+        if (arguments.length > 3) for (var i = 0,
+            args = [].slice.call(arguments, 3);
+                i < args.length; i++) {
+            addChild(args[i], childNodes, tag, props)
+        }
     }
 
 
