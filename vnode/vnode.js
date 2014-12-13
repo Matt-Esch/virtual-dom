@@ -10,7 +10,9 @@ var noProperties = {}
 var noChildren = []
 
 function VirtualNode(tagName, properties, children, key, namespace) {
-    this.tagName = tagName
+    // From the W3C Level One DOM spec: For HTML, the tagName must be mapped 
+    // to the canonical uppercase form
+    this.tagName = tagName.toUpperCase()
     this.properties = properties || noProperties
     this.children = children || noChildren
     this.key = key != null ? String(key) : undefined
