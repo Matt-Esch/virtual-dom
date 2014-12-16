@@ -14,6 +14,17 @@ test("h returns a vnode", function (assert) {
     assert.end()
 })
 
+test("h defaults tagName to uppercase", function (assert) {
+    assert.equal(h("").tagName, "DIV")
+    assert.equal(h("div").tagName, "DIV")
+    assert.end()
+})
+
+test("h preserves tagName case if namespace is given", function (assert) {
+    assert.equal(h("test", { namespace: "http://www.w3.org/XML/1998/namespace" }).tagName, "test")
+    assert.end()
+})
+
 test("h has props", function (assert) {
     assert.equal(h("div", {
         foo: "bar"
