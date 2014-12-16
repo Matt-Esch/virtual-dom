@@ -120,7 +120,7 @@ function assertNode(assert, node, tagName, properties, children) {
     children = children || []
 
     assert.ok(node instanceof Node, "node is a VirtualNode")
-    assert.equal(node.tagName, tagName.toUpperCase(), "tag names are equal")
+    assert.equal(node.tagName, tagName, "tag names are equal")
     assert.deepEqual(node.properties, properties, "propeties are equal")
     assert.equal(node.children.length, children.length, "child count equal")
     for (var i = 0; i < children.length; i++) {
@@ -271,7 +271,7 @@ test("injected document object is used", function (assert) {
     var count = 0
     var doc = {
         createElement: function createElement(tagName) {
-            assert.equal(tagName, "DIV")
+            assert.equal(tagName, "div")
             count++
             return { tagName: "div", appendChild: function (t) {
                 assert.equal(t, "hello")
@@ -905,7 +905,7 @@ test("Create element respects namespace", function (assert) {
     var vnode = new Node("svg", {}, [], null, svgURI)
     var node = render(vnode)
 
-    assert.equal(node.tagName, "SVG")
+    assert.equal(node.tagName, "svg")
     assert.equal(node.namespaceURI, svgURI)
     assert.end()
 })
@@ -920,7 +920,7 @@ test("Different namespaces creates a patch", function (assert) {
     var rightNode = new Node("div", {}, [], null, "undefined")
 
     var rootNode = render(leftNode)
-    assert.equal(rootNode.tagName, "DIV")
+    assert.equal(rootNode.tagName, "div")
     assert.equal(rootNode.namespaceURI, "testing")
 
     var patches = diff(leftNode, rightNode)
@@ -928,7 +928,7 @@ test("Different namespaces creates a patch", function (assert) {
 
     rootNode = patch(rootNode, patches)
 
-    assert.equal(rootNode.tagName, "DIV")
+    assert.equal(rootNode.tagName, "div")
     assert.equal(rootNode.namespaceURI, "undefined")
 
     assert.end()

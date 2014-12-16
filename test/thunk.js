@@ -38,8 +38,8 @@ test("null or undefined previous renders thunk", function (assert) {
 
     assert.ok(isVNode(n.vnode))
     assert.ok(isVNode(u.vnode))
-    assert.equal(n.vnode.tagName, "FIRST")
-    assert.equal(u.vnode.tagName, "SECOND")
+    assert.equal(n.vnode.tagName, "first")
+    assert.equal(u.vnode.tagName, "second")
     assert.equal(patchCount(nullPatches), 1)
     assert.equal(patchCount(undefPatches), 1)
     assert.end()
@@ -64,6 +64,6 @@ test("previous thunk passed to render", function (assert) {
     assert.equal(renderCount, 1)
     assert.equal(patchCount(patches), 1)
     assert.ok(isVNode(nextThunk.vnode))
-    assert.equal(nextThunk.vnode.tagName, "TEST")
+    assert.equal(nextThunk.vnode.tagName, "test")
     assert.end()
 })
