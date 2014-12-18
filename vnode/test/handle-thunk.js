@@ -1,5 +1,6 @@
 var test = require("tape")
 
+var nodeType = require("../vnodetype")
 var handleThunk = require("../handle-thunk")
 var VNode = require("../vnode")
 var VText = require("../vtext")
@@ -9,7 +10,7 @@ test("render a new thunk to vnode", function (assert) {
         render: function (previous) {
             assert.error("Render should not be called for cached thunk")
         },
-        type: "Thunk"
+        type: nodeType.Thunk
     }
 
     aNode.vnode = new VNode("div")
@@ -21,7 +22,7 @@ test("render a new thunk to vnode", function (assert) {
             assert.equal(previous, aNode)
             return renderedBNode
         },
-        type: "Thunk"
+        type: nodeType.Thunk
     }
 
     var result = handleThunk(aNode, bNode)
@@ -37,7 +38,7 @@ test("render a new thunk to vtext", function (assert) {
         render: function (previous) {
             assert.error("Render should not be called for cached thunk")
         },
-        type: "Thunk"
+        type: nodeType.Thunk
     }
 
     aNode.vnode = new VNode("div")
@@ -49,7 +50,7 @@ test("render a new thunk to vtext", function (assert) {
             assert.equal(previous, aNode)
             return renderedBNode
         },
-        type: "Thunk"
+        type: nodeType.Thunk
     }
 
     var result = handleThunk(aNode, bNode)
@@ -65,19 +66,19 @@ test("render a new thunk to a widget", function (assert) {
         render: function (previous) {
             assert.error("Render should not be called for cached thunk")
         },
-        type: "Thunk"
+        type: nodeType.Thunk
     }
 
     aNode.vnode = new VNode("div")
 
-    var renderedBNode = { type: "Widget" }
+    var renderedBNode = { type: nodeType.Widget }
 
     var bNode = {
         render: function (previous) {
             assert.equal(previous, aNode)
             return renderedBNode
         },
-        type: "Thunk"
+        type: nodeType.Thunk
     }
 
     var result = handleThunk(aNode, bNode)
@@ -93,7 +94,7 @@ test("render current thunk to a thunk throws exception", function (assert) {
         render: function (previous) {
             assert.error("Render should not be called for cached thunk")
         },
-        type: "Thunk"
+        type: nodeType.Thunk
     }
 
     aNode.vnode = new VNode("div")
@@ -101,9 +102,9 @@ test("render current thunk to a thunk throws exception", function (assert) {
     var bNode = {
         render: function (previous) {
             assert.equal(previous, aNode)
-            return { type: "Thunk" }
+            return { type: nodeType.Thunk }
         },
-        type: "Thunk"
+        type: nodeType.Thunk
     }
 
     var result
@@ -122,9 +123,9 @@ test("render previous thunk to a thunk throws exception", function (assert) {
     var aNode = {
         render: function (previous) {
             assert.equal(previous, null)
-            return { type: "Thunk" }
+            return { type: nodeType.Thunk }
         },
-        type: "Thunk"
+        type: nodeType.Thunk
     }
 
     var renderedBNode = new VNode("div")
@@ -134,7 +135,7 @@ test("render previous thunk to a thunk throws exception", function (assert) {
             assert.equal(previous, aNode)
             return renderedBNode
         },
-        type: "Thunk"
+        type: nodeType.Thunk
     }
 
     var result
