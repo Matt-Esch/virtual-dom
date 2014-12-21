@@ -41,20 +41,20 @@ function h(tagName, properties, children) {
     tag = parseTag(tagName, props)
 
     // support keys
-    if ("key" in props) {
+    if (props.hasOwnProperty("key")) {
         key = props.key
         props.key = undefined
     }
 
     // support namespace
-    if ("namespace" in props) {
+    if (props.hasOwnProperty("namespace")) {
         namespace = props.namespace
         props.namespace = undefined
     }
 
     // fix cursor bug
     if (tag === "INPUT" &&
-        "value" in props &&
+        props.hasOwnProperty("value") &&
         props.value !== undefined &&
         !isHook(props.value)
     ) {
