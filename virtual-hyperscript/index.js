@@ -54,6 +54,7 @@ function h(tagName, properties, children) {
 
     // fix cursor bug
     if (tag === "INPUT" &&
+        !props.namespace &&
         props.hasOwnProperty("value") &&
         props.value !== undefined &&
         !isHook(props.value)
