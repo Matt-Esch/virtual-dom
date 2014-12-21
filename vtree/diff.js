@@ -23,6 +23,7 @@ function walk(a, b, patch, index) {
     }
 
     var apply = patch[index]
+    var applyClear = false
 
     if (isThunk(a) || isThunk(b)) {
         thunks(a, b, patch, index)
@@ -49,27 +50,22 @@ function walk(a, b, patch, index) {
                 }
                 apply = diffChildren(a, b, patch, apply, index)
             } else {
-                clearState(a, patch, index)
-                apply = patch[index]
                 apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
+                applyClear = true
             }
         } else {
-            clearState(a, patch, index)
-            apply = patch[index]
             apply = appendPatch(apply, new VPatch(VPatch.VNODE, a, b))
+            applyClear = true
         }
     } else if (isVText(b)) {
         if (!isVText(a)) {
-            clearState(a, patch, index)
-            apply = patch[index]
-            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
+            applyClear = true
         } else if (a.text !== b.text) {
             apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
         }
     } else if (isWidget(b)) {
         if (!isWidget(a)) {
-            clearState(a, patch, index)
-            apply = patch[index]
+            applyClear = true;
         }
 
         apply = appendPatch(apply, new VPatch(VPatch.WIDGET, a, b))
@@ -77,6 +73,10 @@ function walk(a, b, patch, index) {
 
     if (apply) {
         patch[index] = apply
+    }
+
+    if (applyClear) {
+        clearState(a, patch, index)
     }
 }
 
