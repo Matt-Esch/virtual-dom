@@ -53,7 +53,7 @@ function h(tagName, properties, children) {
     }
 
     // fix cursor bug
-    if (tag === "input" &&
+    if (tag === "INPUT" &&
         "value" in props &&
         props.value !== undefined &&
         !isHook(props.value)

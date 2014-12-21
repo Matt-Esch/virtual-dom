@@ -5,7 +5,7 @@ module.exports = parseTag
 
 function parseTag(tag, props) {
     if (!tag) {
-        return "div"
+        return "DIV"
     }
 
     var noId = !("id" in props)
@@ -14,7 +14,7 @@ function parseTag(tag, props) {
     var tagName = null
 
     if (notClassId.test(tagParts[1])) {
-        tagName = "div"
+        tagName = "DIV"
     }
 
     var classes, part, type, i
@@ -45,5 +45,5 @@ function parseTag(tag, props) {
         props.className = classes.join(" ")
     }
 
-    return tagName ? tagName.toLowerCase() : "div"
+    return props.namespace ? tagName : tagName.toUpperCase()
 }

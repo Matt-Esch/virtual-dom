@@ -9,8 +9,19 @@ test("h is a function", function (assert) {
 })
 
 test("h returns a vnode", function (assert) {
-    assert.equal(h("div").tagName, "div")
+    assert.equal(h("div").tagName, "DIV")
 
+    assert.end()
+})
+
+test("h defaults tagName to uppercase", function (assert) {
+    assert.equal(h("").tagName, "DIV")
+    assert.equal(h("div").tagName, "DIV")
+    assert.end()
+})
+
+test("h preserves tagName case if namespace is given", function (assert) {
+    assert.equal(h("test", { namespace: "http://www.w3.org/XML/1998/namespace" }).tagName, "test")
     assert.end()
 })
 
@@ -79,7 +90,7 @@ test("input.value soft hook", function (assert) {
 test("h with child", function (assert) {
     var node = h("div", h("span"))
 
-    assert.equal(node.children[0].tagName, "span")
+    assert.equal(node.children[0].tagName, "SPAN")
 
     assert.end()
 })
@@ -87,7 +98,7 @@ test("h with child", function (assert) {
 test("h with children", function (assert) {
     var node = h("div", [h("span")])
 
-    assert.equal(node.children[0].tagName, "span")
+    assert.equal(node.children[0].tagName, "SPAN")
 
     assert.end()
 })
@@ -142,7 +153,7 @@ test("h with id", function (assert) {
 test("h with empty string", function (assert) {
     var node = h("")
 
-    assert.equal(node.tagName, "div")
+    assert.equal(node.tagName, "DIV")
 
     assert.end()
 })
