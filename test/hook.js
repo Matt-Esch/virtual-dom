@@ -240,8 +240,6 @@ test("all hooks are unhooked", function (assert) {
     }
 
     Hook.prototype.hook = function hook() {
-        console.log("HOOKING")
-
         var key = this.value
         if (key in hookCounts) {
             hookCounts[key]++
