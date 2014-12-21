@@ -1,4 +1,5 @@
 var version = require("./version")
+var nodeType = require("./vnodetype")
 var isVNode = require("./is-vnode")
 var isWidget = require("./is-widget")
 var isThunk = require("./is-thunk")
@@ -69,4 +70,4 @@ function VirtualNode(tagName, properties, children, key, namespace) {
 }
 
 VirtualNode.prototype.version = version
-VirtualNode.prototype.type = "VirtualNode"
+VirtualNode.prototype.type = nodeType.VirtualNode

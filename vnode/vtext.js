@@ -1,4 +1,5 @@
 var version = require("./version")
+var nodeType = require("./vnodetype")
 
 module.exports = VirtualText
 
@@ -7,4 +8,4 @@ function VirtualText(text) {
 }
 
 VirtualText.prototype.version = version
-VirtualText.prototype.type = "VirtualText"
+VirtualText.prototype.type = nodeType.VirtualText

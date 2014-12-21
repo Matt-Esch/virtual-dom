@@ -7,6 +7,7 @@ var render = require("../create-element.js")
 
 var patchCount = require("./lib/patch-count.js")
 var assertEqualDom = require("./lib/assert-equal-dom.js")
+var nodeType = require("../vnode/vnodetype")
 
 test("keys get reordered", function (assert) {
     var leftNode = h("div", [
@@ -195,7 +196,7 @@ test("widgets can be keyed", function (assert) {
         }
     }
 
-    DivWidget.prototype.type = "Widget"
+    DivWidget.prototype.type = nodeType.Widget
 
     var leftNode = h("div", [
         new DivWidget("1", "a"),
@@ -387,7 +388,7 @@ test("adding multiple widgets", function (assert) {
         elem.textContent = this.foo + this.counter
     }
 
-    FooWidget.prototype.type = "Widget"
+    FooWidget.prototype.type = nodeType.Widget
 
     var firstTree = h("div", [])
     var rootNode = render(firstTree)

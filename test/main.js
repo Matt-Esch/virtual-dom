@@ -7,6 +7,7 @@ var render = require("../create-element.js")
 var Node = require("../vnode/vnode")
 var TextNode = require("../vnode/vtext")
 var version = require("../vnode/version")
+var nodeType = require("../vnode/vnodetype")
 var assertEqualDom = require("./lib/assert-equal-dom.js")
 var patchCount = require("./lib/patch-count.js")
 
@@ -19,7 +20,7 @@ test("Node is a function", function (assert) {
 })
 
 test("Node type and version are set", function (assert) {
-    assert.equal(Node.prototype.type, "VirtualNode")
+    assert.equal(Node.prototype.type, nodeType.VirtualNode)
     assert.deepEqual(Node.prototype.version, version)
     assert.end()
 })
@@ -30,7 +31,7 @@ test("TextNode is a function", function (assert) {
 })
 
 test("TextNode type and version are set", function (assert) {
-    assert.equal(TextNode.prototype.type, "VirtualText")
+    assert.equal(TextNode.prototype.type, nodeType.VirtualText)
     assert.deepEqual(TextNode.prototype.version, version)
     assert.end()
 })
@@ -457,7 +458,7 @@ test("Widget is initialised on render", function (assert) {
         update: function () {
             initCount = 1000000
         },
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var result = render(Widget)
@@ -478,7 +479,7 @@ test("Nested widget is initialised on render", function (assert) {
         update: function () {
             initCount = 1000000
         },
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var vdom = h("div", [
@@ -525,7 +526,7 @@ test("Patch widgets at the root", function (assert) {
         return h("div", "" + state.a)
     }
 
-    Widget.prototype.type = "Widget"
+    Widget.prototype.type = nodeType.Widget
 
     var leftTree = new Widget(leftState)
     var rightTree = new Widget(rightState)
@@ -578,7 +579,7 @@ test("Patch nested widgets", function (assert) {
         return h("div", "" + state.a)
     }
 
-    Widget.prototype.type = "Widget"
+    Widget.prototype.type = nodeType.Widget
 
     var leftWidget = new Widget(leftState)
     var rightWidget = new Widget(rightState)
@@ -674,7 +675,7 @@ test("Ensure children are not rendered more than once", function (assert) {
         return h("div", "" + state.a)
     }
 
-    Widget.prototype.type = "Widget"
+    Widget.prototype.type = nodeType.Widget
 
     var rightWidget = new Widget(rightState)
 
@@ -711,13 +712,13 @@ test("VNode indicates stateful sibling", function (assert) {
         init: function () {},
         update: function () {},
         destroy: function () {},
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var pureWidget = {
         init: function () {},
         update: function () {},
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var stateful = h("div", [statefulWidget])
@@ -736,7 +737,7 @@ test("Replacing stateful widget with vnode calls destroy", function (assert) {
         destroy: function () {
             count++
         },
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var rootNode = render(h("div"))
@@ -753,7 +754,7 @@ test("Replacing stateful widget with stateful widget", function (assert) {
         destroy: function () {
             count++
         },
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var newWidget = {
@@ -762,7 +763,7 @@ test("Replacing stateful widget with stateful widget", function (assert) {
         destroy: function () {
             count = 10000000
         },
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var rootNode = render(h("div"))
@@ -780,13 +781,13 @@ test("Replacing stateful widget with pure widget", function (assert) {
         destroy: function () {
             count++
         },
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var newWidget = {
         init: function () {},
         update: function () {},
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var rootNode = render(h("div"))
@@ -803,7 +804,7 @@ test("Removing stateful widget calls destroy", function (assert) {
         destroy: function () {
             count++
         },
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var rootNode = render(h("div"))
@@ -826,7 +827,7 @@ test("Patching parent destroys stateful sibling", function (assert) {
             assert.equal(domNode, widgetRoot)
             count++
         },
-        type: "Widget"
+        type: nodeType.Widget
     }
 
     var deepTree = h("div", [
@@ -869,7 +870,7 @@ test("Widget update can replace domNode", function (assert) {
         return widgetUpdate
     }
     Widget.prototype.destroy = function () {}
-    Widget.prototype.type = "Widget"
+    Widget.prototype.type = nodeType.Widget
 
     var initTree = h("div.init", [new Widget])
     var updateTree = h("div.update", [new Widget])
@@ -898,7 +899,7 @@ test("Destroy widget nested in removed thunk", function (assert) {
             assert.equal(domNode, widgetRoot)
             count++
         },
-        type: "Widget"
+        type: nodeType.Widget
     }
     var vnode = h(".wrapper", statefulWidget)
 

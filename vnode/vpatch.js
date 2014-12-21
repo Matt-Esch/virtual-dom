@@ -1,4 +1,5 @@
 var version = require("./version")
+var nodeType = require("./vnodetype")
 
 VirtualPatch.NONE = 0
 VirtualPatch.VTEXT = 1
@@ -19,4 +20,4 @@ function VirtualPatch(type, vNode, patch) {
 }
 
 VirtualPatch.prototype.version = version
-VirtualPatch.prototype.type = "VirtualPatch"
+VirtualPatch.prototype.type = nodeType.VirtualPatch
