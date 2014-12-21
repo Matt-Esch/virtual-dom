@@ -62,25 +62,7 @@ function h(tagName, properties, children) {
         props.value = softSetHook(props.value)
     }
 
-    var keys = Object.keys(props)
-    var propName, value
-    for (var j = 0; j < keys.length; j++) {
-        propName = keys[j]
-        value = props[propName]
-        if (isHook(value)) {
-            continue
-        }
-
-        // add data-foo support
-        if (propName.substr(0, 5) === "data-") {
-            props[propName] = dataSetHook(value)
-        }
-
-        // add ev-foo support
-        if (propName.substr(0, 3) === "ev-") {
-            props[propName] = evHook(value)
-        }
-    }
+    transformProperties(props)
 
     if (children !== undefined && children !== null) {
         addChild(children, childNodes, tag, props)
@@ -116,6 +98,26 @@ function addChild(c, childNodes, tag, props) {
                 properties: props
             }
         })
+    }
+}
+
+function transformProperties(props) {
+    for (var propName in props) {
+        if (props.hasOwnProperty(propName)) {
+            var value = props[propName]
+
+            if (isHook(value)) {
+                continue
+            }
+
+            if (propName.substr(0, 5) === "data-") {
+                // add data-foo support
+                props[propName] = dataSetHook(value)
+            } else if (propName.substr(0, 3) === "ev-") {
+                // add ev-foo support
+                props[propName] = evHook(value)
+            }
+        }
     }
 }
 
