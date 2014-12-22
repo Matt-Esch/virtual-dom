@@ -59,6 +59,7 @@ function walk(a, b, patch, index) {
         }
     } else if (isVText(b)) {
         if (!isVText(a)) {
+            apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))
             applyClear = true
         } else if (a.text !== b.text) {
             apply = appendPatch(apply, new VPatch(VPatch.VTEXT, a, b))

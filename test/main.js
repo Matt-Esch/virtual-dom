@@ -444,6 +444,27 @@ test("Allow empty textnode", function (assert) {
     assert.end()
 })
 
+test("Can replace vnode with vtext", function (assert) {
+
+    var leftNode = h("div", h("div"))
+    var rightNode = h("div", "text")
+
+    var rootNode = render(leftNode)
+
+    assert.equal(rootNode.childNodes.length, 1)
+    assert.equal(rootNode.childNodes[0].nodeType, 1)
+
+    var patches = diff(leftNode, rightNode)
+
+    var newRoot = patch(rootNode, patches)
+
+    assert.equal(newRoot, rootNode)
+
+    assert.equal(newRoot.childNodes.length, 1)
+    assert.equal(newRoot.childNodes[0].nodeType, 3)
+
+    assert.end()
+})
 
 // Widget tests
 test("Widget is initialised on render", function (assert) {
