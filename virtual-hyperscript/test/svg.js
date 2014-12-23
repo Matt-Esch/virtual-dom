@@ -1,4 +1,5 @@
 var test = require("tape")
+var doc = require("global/document")
 
 var svg = require("../svg")
 
@@ -24,3 +25,27 @@ test("svg with properties", function (assert) {
 
     assert.end()
 })
+
+test("svg properties are set", function (assert) {
+    var node = svg("circle.test", {
+        style: {
+            border: "1px solid #000"
+        },
+        width: "40px"
+    })
+
+    assert.strictEqual(node.properties.attributes.width, "40px")
+    assert.strictEqual(node.properties.width, undefined)
+    assert.strictEqual(
+        node.properties.style.border,
+        safeStyle("boder", "1px solid #000")
+    )
+
+    assert.end()
+})
+
+function safeStyle(property, value) {
+    var div = doc.createElement("div")
+    div.style[property] = value
+    return div.style[property]
+}

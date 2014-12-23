@@ -42,7 +42,8 @@ function svg(tagName, properties, children) {
             continue;
         }
 
-        attributes[key] = value;
+        attributes[key] = value
+        properties[key] = undefined
     }
 
     return h(tagName, properties, children);
