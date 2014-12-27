@@ -57,9 +57,7 @@ function h(tagName, properties, children) {
     }
 
 
-    var node = new VNode(tag, props, childNodes, key, namespace);
-
-    return node;
+    return new VNode(tag, props, childNodes, key, namespace);
 }
 
 function addChild(c, childNodes, tag, props) {
