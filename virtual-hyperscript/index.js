@@ -113,11 +113,23 @@ function UnexpectedVirtualElement(data) {
     err.type = 'virtual-hyperscript.unexpected.virtual-element';
     err.message = 'Unexpected virtual child passed to h().\n' +
         'Expected a VNode / Vthunk / VWidget / string but:\n' +
-        'got a {foreignObjectStr}.\n' +
-        'The parent vnode is {parentVnodeStr}.\n' +
+        'got:\n' +
+        errorString(data.foreignObject) +
+        '.\n' +
+        'The parent vnode is:\n' +
+        errorString(data.parentVnode)
+        '\n' +
         'Suggested fix: change your `h(..., [ ... ])` callsite.';
     err.foreignObject = data.foreignObject;
     err.parentVnode = data.parentVnode;
 
     return err;
+}
+
+function errorString(obj) {
+    try {
+        return JSON.stringify(obj, null, '    ');
+    } catch (e) {
+        return String(obj);
+    }
 }
