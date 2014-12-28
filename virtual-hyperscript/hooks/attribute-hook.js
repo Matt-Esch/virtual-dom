@@ -1,10 +1,13 @@
+'use strict';
+
 module.exports = AttributeHook;
 
-function AttributeHook(value) {
+function AttributeHook(namespace, value) {
     if (!(this instanceof AttributeHook)) {
         return new AttributeHook(value);
     }
 
+    this.namespace = namespace;
     this.value = value;
 }
 
@@ -13,5 +16,5 @@ AttributeHook.prototype.hook = function (node, prop, prev) {
         return;
     }
 
-    node.setAttributeNS(null, prop, this.value)
-}
+    node.setAttributeNS(this.namespace, prop, this.value);
+};

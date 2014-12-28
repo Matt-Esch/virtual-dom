@@ -1,25 +1,27 @@
-var DataSet = require("data-set")
+'use strict';
 
-module.exports = DataSetHook;
+var EvStore = require('ev-store');
 
-function DataSetHook(value) {
-    if (!(this instanceof DataSetHook)) {
-        return new DataSetHook(value);
+module.exports = EvHook;
+
+function EvHook(value) {
+    if (!(this instanceof EvHook)) {
+        return new EvHook(value);
     }
 
     this.value = value;
 }
 
-DataSetHook.prototype.hook = function (node, propertyName) {
-    var ds = DataSet(node)
-    var propName = propertyName.substr(3)
-
-    ds[propName] = this.value;
-};
-
-DataSetHook.prototype.unhook = function(node, propertyName) {
-    var ds = DataSet(node);
+EvHook.prototype.hook = function (node, propertyName) {
+    var es = EvStore(node);
     var propName = propertyName.substr(3);
 
-    ds[propName] = undefined;
-}
+    es[propName] = this.value;
+};
+
+EvHook.prototype.unhook = function(node, propertyName) {
+    var es = EvStore(node);
+    var propName = propertyName.substr(3);
+
+    es[propName] = undefined;
+};

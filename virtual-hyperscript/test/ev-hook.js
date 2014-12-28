@@ -1,5 +1,5 @@
 var test = require("tape")
-var DataSet = require("data-set")
+var EvStore = require("ev-store")
 
 var h = require("../index.js")
 var createElement = require("../../vdom/create-element")
@@ -17,7 +17,7 @@ test("h with events", function (assert) {
 
     var elem = createElement(left)
 
-    var ds1 = DataSet(elem)
+    var ds1 = EvStore(elem)
     assert.ok(ds1)
     assert.equal(ds1.click, one)
 
@@ -25,7 +25,7 @@ test("h with events", function (assert) {
 
     patch(elem, patches)
 
-    var ds2 = DataSet(elem)
+    var ds2 = EvStore(elem)
     assert.ok(ds2)
     assert.equal(ds1, ds2)
     assert.equal(ds2.click, undefined)
