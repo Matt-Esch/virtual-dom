@@ -31,7 +31,6 @@ function render(count)  {
     return h('div', {
         style: {
             textAlign: 'center',
-            verticalAlign: 'center',
             lineHeight: (100 + count) + 'px',
             border: '1px solid red',
             width: (100 + count) + 'px',
