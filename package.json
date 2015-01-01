@@ -1,8 +1,16 @@
 {
   "name": "virtual-dom",
-  "version": "0.0.24",
+  "version": "1.0.0",
   "description": "A batched diff-based DOM rendering strategy",
-  "keywords": ["virtual", "dom", "vdom", "vtree", "diff", "patch", "browser"],
+  "keywords": [
+    "virtual",
+    "dom",
+    "vdom",
+    "vtree",
+    "diff",
+    "patch",
+    "browser"
+  ],
   "author": "Matt-Esch <matt@mattesch.info>",
   "repository": "git://github.com/Matt-Esch/virtual-dom.git",
   "main": "index",
