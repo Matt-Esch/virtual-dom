@@ -137,7 +137,7 @@ function reorderChildren(domNode, bIndex) {
         move = bIndex[i]
         if (move !== undefined && move !== i) {
             // the element currently at this index will be moved later so increase the insert offset
-            if (reverseIndex[i] > i) {
+            if (reverseIndex[i] > i + 1) {
                 insertOffset++
             }
 
@@ -148,7 +148,7 @@ function reorderChildren(domNode, bIndex) {
             }
 
             // the moved element came from the front of the array so reduce the insert offset
-            if (move < i) {
+            if (move < i - 1) {
                 insertOffset--
             }
         }
