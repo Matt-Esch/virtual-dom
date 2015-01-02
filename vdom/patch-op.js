@@ -154,9 +154,8 @@ function reorderChildren(domNode, bIndex) {
             insertNode = childNodes[i + insertOffset] || null
             insertedLength = 0
             while (node !== insertNode && insertedLength++ < chainLength) {
-                nextSibling = node.nextSibling;
                 domNode.insertBefore(node, insertNode);
-                node = nextSibling;
+                node = children[move + insertedLength];
             }
 
             // the moved element came from the front of the array so reduce the insert offset
