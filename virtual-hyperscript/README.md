@@ -66,6 +66,8 @@ If you call `h` with `h('div', { namespace: "http://www.w3.org/2000/svg" })`
 
 #### `ev-*`
 
+**Note:** You must create an instance of `dom-delegator` for `ev-*` to work.
+
 If you call `h` with `h('div', { ev-click: function (ev) { } })` it
   will store the event handler on the dom element. It will not
   set a property `'ev-foo'` on the DOM element.
