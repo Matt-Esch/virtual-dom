@@ -10,6 +10,7 @@ function applyProperties(node, props, previous) {
         if (propValue === undefined) {
             removeProperty(node, props, previous, propName);
         } else if (isHook(propValue)) {
+            removeProperty(node, props, previous, propName)
             propValue.hook(node,
                 propName,
                 previous ? previous[propName] : undefined)
