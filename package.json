@@ -35,6 +35,7 @@
     "x-is-string": "0.1.0"
   },
   "devDependencies": {
+    "browserify": "^8.1.0",
     "istanbul": "^0.3.4",
     "min-document": "^2.6.1",
     "opn": "^1.0.0",
