@@ -152,7 +152,7 @@ test("two different hooks", function (assert) {
 
     var elem = createAndPatch(prev, curr)
     assert.equal(elem.propA, undefined)
-    assert.equal(elem.propB, undefined)
+    assert.equal(elem.propB, null)
     assert.equal(counters.a, 1)
     assert.equal(counters.b, 1)
 
@@ -227,6 +227,42 @@ test("hooks are not called on trivial diff", function (assert) {
     assert.equal(counters.c, 1, "counters.c patch")
     assert.end()
 })
+
+test("property-replacing diff calls unhook", function (assert) {
+  unhookCallCount = 0
+
+  function zhook(x) {
+    this.x = x
+  }
+  zhook.prototype.hook = function () {
+    return null
+  }
+
+  zhook.prototype.unhook = function () {
+    unhookCallCount += 1
+  }
+
+  hooker = new zhook('ONE')
+  hooker2 = new zhook('TWO')
+
+  var firstTree = h("div", {roothook: hooker})
+  var secondTree = h("div", {roothook: hooker2})
+  var thirdTree = h("span")
+
+  var rootNode = create(firstTree)
+
+  var firstPatches = diff(firstTree, secondTree)
+  rootNode = patch(rootNode, firstPatches)
+
+
+  var secondPatches = diff(secondTree, thirdTree)
+  rootNode = patch(rootNode, secondPatches)
+
+  assert.strictEqual(unhookCallCount, 2, "Missing unhook calls")
+
+  assert.end()
+})
+
 
 test("all hooks are unhooked", function (assert) {
     var hookCounts = {}
