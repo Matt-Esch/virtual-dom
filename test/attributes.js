@@ -6,14 +6,20 @@ var diff = require("../diff.js")
 var patch = require("../patch.js")
 
 test("attributes can be set", function (assert) {
-    var vtree = h("div", {
+    var leftTree = h("div")
+
+    var rightTree = h("div",{
         attributes: {
             src: "test.jpg"
         }
     })
 
-    var node = createElement(vtree)
-    assert.equal(node.getAttribute("src"), "test.jpg")
+    var rootNode = createElement(leftTree)
+    var patches = diff(leftTree, rightTree)
+
+    var newRootNode = patch(rootNode, patches)
+
+    assert.equal(newRootNode.getAttribute("src"), "test.jpg")
     assert.end()
 })
 
