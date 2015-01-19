@@ -5,7 +5,8 @@ var isArray = require('x-is-array');
 var h = require('./index.js');
 
 
-var isSVGAttribute = require('./is-svg-attribute');
+var SVGAttributeNamespace = require('./svg-attribute-namespace');
+var attributeHook = require('./hooks/attribute-hook');
 
 var SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 
@@ -29,7 +30,9 @@ function svg(tagName, properties, children) {
             continue;
         }
 
-        if (!isSVGAttribute(key)) {
+        var namespace = SVGAttributeNamespace(key);
+
+        if (namespace === undefined) { // not a svg attribute
             continue;
         }
 
@@ -39,6 +42,11 @@ function svg(tagName, properties, children) {
             typeof value !== 'number' &&
             typeof value !== 'boolean'
         ) {
+            continue;
+        }
+
+        if (namespace !== null) { // namespaced attribute
+            properties[key] = attributeHook(namespace, value);
             continue;
         }
 
