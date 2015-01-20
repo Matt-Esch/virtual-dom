@@ -11,9 +11,11 @@ function applyProperties(node, props, previous) {
             removeProperty(node, props, previous, propName);
         } else if (isHook(propValue)) {
             removeProperty(node, props, previous, propName)
-            propValue.hook(node,
-                propName,
-                previous ? previous[propName] : undefined)
+            if (propValue.hook) {
+                propValue.hook(node,
+                    propName,
+                    previous ? previous[propName] : undefined)
+            }
         } else {
             if (isObject(propValue)) {
                 patchObject(node, props, previous, propName, propValue);
