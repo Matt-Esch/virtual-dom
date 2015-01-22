@@ -8,9 +8,9 @@ function applyProperties(node, props, previous) {
         var propValue = props[propName]
 
         if (propValue === undefined) {
-            removeProperty(node, props, previous, propName);
+            removeProperty(node, propName, propValue, previous);
         } else if (isHook(propValue)) {
-            removeProperty(node, props, previous, propName)
+            removeProperty(node, propName, propValue, previous)
             if (propValue.hook) {
                 propValue.hook(node,
                     propName,
@@ -26,7 +26,7 @@ function applyProperties(node, props, previous) {
     }
 }
 
-function removeProperty(node, props, previous, propName) {
+function removeProperty(node, propName, propValue, previous) {
     if (previous) {
         var previousValue = previous[propName]
 
@@ -45,7 +45,7 @@ function removeProperty(node, props, previous, propName) {
                 node[propName] = null
             }
         } else if (previousValue.unhook) {
-            previousValue.unhook(node, propName)
+            previousValue.unhook(node, propName, propValue)
         }
     }
 }
