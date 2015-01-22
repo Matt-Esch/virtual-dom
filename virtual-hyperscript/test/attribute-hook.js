@@ -10,20 +10,29 @@ var diff = require("../../vtree/diff")
 test("sets and removes namespaced attribute", function (assert) {
     var namespace = 'http://ns.com/my'
 
-    var left = h('div', {
-        'myns:myattr': attributeHook(namespace, 'the value')
-    })
+    var hook1 = attributeHook(namespace, 'first value')
+    var hook2 = attributeHook(namespace, 'first value')
+    var hook3 = attributeHook(namespace, 'second value')
 
-    var right = h('div', {})
+    var first = h('div', {'myns:myattr': hook1})
+    var second = h('div', {'myns:myattr': hook2})
+    var third = h('div', {'myns:myattr': hook3})
+    var fourth = h('div', {})
 
-    var elem = createElement(left)
+    var elem = createElement(first)
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'first value')
 
-    assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'the value')
-
-    var patches = diff(left, right)
-
+    var patches = diff(first, second)
     patch(elem, patches)
+    // The value shouldn't change.
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'first value')
 
+    patches = diff(second, third)
+    patch(elem, patches)
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'second value')
+
+    patches = diff(third, fourth)
+    patch(elem, patches)
     assert.equal(elem.getAttributeNS(namespace, 'myattr'), blankAttributeNS())
 
     assert.end()
