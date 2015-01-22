@@ -38,6 +38,94 @@ test("sets and removes namespaced attribute", function (assert) {
     assert.end()
 })
 
+test("sets the attribute if previous value was not an AttributeHook", function (assert) {
+    var namespace = 'http://ns.com/my'
+
+    var OtherHook = function(namespace, value) {
+        this.namespace = namespace
+        this.value = value
+    }
+    OtherHook.prototype.hook = function() {}
+
+    var hook1 = new OtherHook(namespace, 'the value')
+    var hook2 = attributeHook(namespace, 'the value')
+
+    var first = h('div', {'myns:myattr': hook1})
+    var second = h('div', {'myns:myattr': hook2})
+
+    var elem = createElement(first)
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), blankAttributeNS())
+
+    patches = diff(first, second)
+    patch(elem, patches)
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'the value')
+
+    assert.end()
+})
+
+test("sets the attribute if previous value uses a different namespace", function (assert) {
+    var namespace = 'http://ns.com/my'
+
+    var hook1 = attributeHook('http://other.ns/', 'the value')
+    var hook2 = attributeHook(namespace, 'the value')
+
+    var first = h('div', {'myns:myattr': hook1})
+    var second = h('div', {'myns:myattr': hook2})
+
+    var elem = createElement(first)
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), blankAttributeNS())
+
+    patches = diff(first, second)
+    patch(elem, patches)
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'the value')
+
+    assert.end()
+})
+
+test("removes the attribute if next value is not an AttributeHook", function (assert) {
+    var namespace = 'http://ns.com/my'
+
+    var OtherHook = function(namespace, value) {
+        this.namespace = namespace
+        this.value = value
+    }
+    OtherHook.prototype.hook = function() {}
+
+    var hook1 = attributeHook(namespace, 'the value')
+    var hook2 = new OtherHook(namespace, 'the value')
+
+    var first = h('div', {'myns:myattr': hook1})
+    var second = h('div', {'myns:myattr': hook2})
+
+    var elem = createElement(first)
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'the value')
+
+    patches = diff(first, second)
+    patch(elem, patches)
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), blankAttributeNS())
+
+    assert.end()
+})
+
+test("removes the attribute if next value uses a different namespace", function (assert) {
+    var namespace = 'http://ns.com/my'
+
+    var hook1 = attributeHook(namespace, 'the value')
+    var hook2 = attributeHook('http://other.ns/', 'the value')
+
+    var first = h('div', {'myns:myattr': hook1})
+    var second = h('div', {'myns:myattr': hook2})
+
+    var elem = createElement(first)
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'the value')
+
+    patches = diff(first, second)
+    patch(elem, patches)
+    assert.equal(elem.getAttributeNS(namespace, 'myattr'), blankAttributeNS())
+
+    assert.end()
+})
+
 function blankAttributeNS() {
     // Most browsers conform to the latest version of the DOM spec,
     // which requires `getAttributeNS` to return `null` when the attribute

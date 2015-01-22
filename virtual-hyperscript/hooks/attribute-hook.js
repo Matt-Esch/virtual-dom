@@ -12,7 +12,9 @@ function AttributeHook(namespace, value) {
 }
 
 AttributeHook.prototype.hook = function (node, prop, prev) {
-    if (prev && prev.value === this.value) {
+    if (prev && prev.type === 'AttributeHook' &&
+        prev.value === this.value &&
+        prev.namespace === this.namespace) {
         return;
     }
 
@@ -20,7 +22,8 @@ AttributeHook.prototype.hook = function (node, prop, prev) {
 };
 
 AttributeHook.prototype.unhook = function (node, prop, next) {
-    if (next !== undefined) {
+    if (next && next.type === 'AttributeHook' &&
+        next.namespace === this.namespace) {
         return;
     }
 
@@ -28,3 +31,5 @@ AttributeHook.prototype.unhook = function (node, prop, next) {
     var localName = colonPosition > -1 ? prop.substr(colonPosition + 1) : prop;
     node.removeAttributeNS(this.namespace, localName);
 };
+
+AttributeHook.prototype.type = 'AttributeHook';
