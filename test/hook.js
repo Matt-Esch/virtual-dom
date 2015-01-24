@@ -263,6 +263,30 @@ test("property-replacing diff calls unhook", function (assert) {
   assert.end()
 })
 
+test("unhook-only hook is a valid hook", function (assert) {
+    var unhookCalled = false;
+
+    function UnhookHook() {}
+
+    UnhookHook.prototype.unhook = function() {
+        unhookCalled = true
+    }
+
+    var hook = new UnhookHook()
+
+    var firstTree = h('div', {hook: hook})
+    var secondTree = h('div', {})
+
+    var rootNode = create(firstTree)
+
+    assert.notOk(unhookCalled)
+
+    var patches = diff(firstTree, secondTree)
+    rootNode = patch(rootNode, patches)
+
+    assert.ok(unhookCalled)
+    assert.end()
+})
 
 test("all hooks are unhooked", function (assert) {
     var hookCounts = {}
