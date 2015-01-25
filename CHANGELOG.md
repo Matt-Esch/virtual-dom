@@ -1,5 +1,16 @@
 # Release Notes
 
+## v1.3.0
+
+  - Add optimization to AttributHook to prevent resetting attributes where
+    new hook instances are used but their values remain the same.
+
+  - Extend the interface of unhook to take the next value from diff.
+
+  - Fix bug where hook is called on unhook-only hooks.
+
+  - Code refactor: diffProps broken out into it's own file
+
 ## v1.2.0
 
   - Correctly sets SVG attributes that are namespaced using a (fixed)
