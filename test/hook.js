@@ -125,6 +125,46 @@ test("hooks get called in patch", function (assert) {
     assert.end()
 })
 
+test("hooks are called with DOM node, property name, and previous/next value", function (assert) {
+    var hookArgs = [];
+    var unhookArgs = [];
+
+    function Hook() {}
+    Hook.prototype.hook = function() {
+      hookArgs.push([].slice.call(arguments, 0))
+    }
+    Hook.prototype.unhook = function() {
+      unhookArgs.push([].slice.call(arguments, 0))
+    }
+
+    var hook1 = new Hook()
+    var hook2 = new Hook()
+
+    var first = h("div", {hook: hook1})
+    var second = h("div", {hook: hook2})
+    var third = h("div")
+
+    var elem = create(first)
+    assert.equal(hookArgs.length, 1)
+    assert.deepEqual(hookArgs[0], [elem, 'hook', undefined])
+    assert.equal(unhookArgs.length, 0)
+
+    var patches = diff(first, second)
+    elem = patch(elem, patches)
+    assert.equal(hookArgs.length, 2)
+    assert.deepEqual(hookArgs[1], [elem, 'hook', hook1])
+    assert.equal(unhookArgs.length, 1)
+    assert.deepEqual(unhookArgs[0], [elem, 'hook', hook2])
+
+    patches = diff(second, third)
+    elem = patch(elem, patches)
+    assert.equal(hookArgs.length, 2)
+    assert.equal(unhookArgs.length, 2)
+    assert.deepEqual(unhookArgs[1], [elem, 'hook', undefined])
+
+    assert.end()
+})
+
 test("functions are not hooks in render", function (assert) {
     var counter = 0
     var fakeHook = function () {
