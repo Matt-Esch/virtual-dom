@@ -80,8 +80,8 @@ We can create a VTree using the objects directly in a verbose manner, or we can 
 ### Example - creating a VTree using the objects directly
 
 ```javascript
-var VNode = require('virtual-dom/vtree/vnode');
-var VText = require('virtual-dom/vtree/vtext')
+var VNode = require('virtual-dom/vnode/vnode');
+var VText = require('virtual-dom/vnode/vtext')
 
 function render(data) {
     return new VNode('div', {
