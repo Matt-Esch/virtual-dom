@@ -1,10 +1,5 @@
 'use strict';
 
-var split = require('browser-split');
-
-var classIdSplit = /([\.#]?[a-zA-Z0-9_:-]+)/;
-var notClassId = /^\.|#/;
-
 module.exports = parseTag;
 
 function parseTag(tag, props) {
@@ -14,16 +9,13 @@ function parseTag(tag, props) {
 
     var noId = !(props.hasOwnProperty('id'));
 
-    var tagParts = split(tag, classIdSplit);
-    var tagName = null;
+    var tagParts = splitTag(tag);
 
-    if (notClassId.test(tagParts[1])) {
-        tagName = 'DIV';
-    }
+    var tagName = tagParts[0] || 'DIV';
 
     var classes, part, type, i;
 
-    for (i = 0; i < tagParts.length; i++) {
+    for (i = 1; i < tagParts.length; i++) {
         part = tagParts[i];
 
         if (!part) {
@@ -32,9 +24,7 @@ function parseTag(tag, props) {
 
         type = part.charAt(0);
 
-        if (!tagName) {
-            tagName = part;
-        } else if (type === '.') {
+        if (type === '.') {
             classes = classes || [];
             classes.push(part.substring(1, part.length));
         } else if (type === '#' && noId) {
@@ -51,4 +41,32 @@ function parseTag(tag, props) {
     }
 
     return props.namespace ? tagName : tagName.toUpperCase();
+}
+
+
+function splitTag(tag) {
+
+    var classIndex, idIndex,
+        remaining = tag,
+        parts = [],
+        last = '';
+
+    do {
+        idIndex = remaining.indexOf('#');
+        classIndex = remaining.indexOf('.');
+        if ((idIndex === -1 || idIndex > classIndex) && classIndex !== -1) {
+            parts.push(last + remaining.substr(0, classIndex));
+            last = '.';
+            remaining = remaining.substr(classIndex + 1);
+        } else if (idIndex !== -1){
+            parts.push(last + remaining.substr(0, idIndex));
+            last = '#';
+            remaining = remaining.substr(idIndex + 1);
+        }
+
+    } while(idIndex !== -1 || classIndex !== -1)
+
+    parts.push(last + remaining);
+
+    return parts;
 }

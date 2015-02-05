@@ -25,7 +25,6 @@
     "email": "matt@mattesch.info"
   },
   "dependencies": {
-    "browser-split": "0.0.1",
     "error": "^4.3.0",
     "ev-store": "^7.0.0",
     "global": "^4.3.0",
