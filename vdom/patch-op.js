@@ -70,7 +70,7 @@ function stringPatch(domNode, leftVNode, vText, renderOptions) {
         var parentNode = domNode.parentNode
         newNode = render(vText, renderOptions)
 
-        if (parentNode) {
+        if (parentNode && newNode !== domNode) {
             parentNode.replaceChild(newNode, domNode)
         }
     }
@@ -105,7 +105,7 @@ function vNodePatch(domNode, leftVNode, vNode, renderOptions) {
     var parentNode = domNode.parentNode
     var newNode = render(vNode, renderOptions)
 
-    if (parentNode) {
+    if (parentNode && newNode !== domNode) {
         parentNode.replaceChild(newNode, domNode)
     }
 
@@ -176,7 +176,6 @@ function reorderChildren(domNode, bIndex) {
 
 function replaceRoot(oldRoot, newRoot) {
     if (oldRoot && newRoot && oldRoot !== newRoot && oldRoot.parentNode) {
-        console.log(oldRoot)
         oldRoot.parentNode.replaceChild(newRoot, oldRoot)
     }
 
