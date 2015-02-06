@@ -135,7 +135,6 @@ function reorderChildren(domNode, bIndex) {
     var insertNode
     var chainLength
     var insertedLength
-    var nextSibling
     for (i = 0; i < len;) {
         move = bIndex[i]
         chainLength = 1
@@ -145,17 +144,19 @@ function reorderChildren(domNode, bIndex) {
                 chainLength++;
             }
 
-            // the element currently at this index will be moved later so increase the insert offset
-            if (reverseIndex[i] > i + chainLength) {
-                insertOffset++
-            }
-
             node = children[move]
             insertNode = childNodes[i + insertOffset] || null
             insertedLength = 0
             while (node !== insertNode && insertedLength++ < chainLength) {
-                domNode.insertBefore(node, insertNode);
+                if (!insertNode || insertNode.previousSibling !== node) {
+                    domNode.insertBefore(node, insertNode);
+                }
                 node = children[move + insertedLength];
+            }
+
+            // the element currently at this index will be moved later so increase the insert offset
+            if (reverseIndex[i] >= i + chainLength) {
+                insertOffset++
             }
 
             // the moved element came from the front of the array so reduce the insert offset
