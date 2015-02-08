@@ -371,6 +371,33 @@ test("add to end and delete from center & reverse", function (assert) {
     assert.end()
 })
 
+test("add to front and remove", function (assert) {
+    var leftNode = h("ul", [
+        h("li", { key: "c" }, "c"),
+        h("li", { key: "d" }, "d")
+    ])
+
+    var rightNode = h("ul", [
+        h("li", { key: "a" }, "a"),
+        h("li", { key: "b" }, "b"),
+        h("li", { key: "c" }, "c"),
+        h("li", { key: "e" }, "e")
+    ])
+
+    var rootNode = render(leftNode)
+    var childNodes = childNodesArray(rootNode)
+
+    var patches = diff(leftNode, rightNode)
+
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot, rootNode)
+
+    assert.equal(newRoot.childNodes.length, 4)
+
+    assert.equal(newRoot.childNodes[2], childNodes[0])
+    assert.end()
+})
+
 test("adding multiple widgets", function (assert) {
     function FooWidget(foo) {
         this.foo = foo
