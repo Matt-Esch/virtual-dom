@@ -8,7 +8,7 @@ var diff = require("./vtree/diff.js")
 
 module.exports = diff
 
-},{"./vtree/diff.js":34}],3:[function(require,module,exports){
+},{"./vtree/diff.js":35}],3:[function(require,module,exports){
 var h = require("./virtual-hyperscript/index.js")
 
 module.exports = h
@@ -257,23 +257,25 @@ function applyProperties(node, props, previous) {
         var propValue = props[propName]
 
         if (propValue === undefined) {
-            removeProperty(node, props, previous, propName);
+            removeProperty(node, propName, propValue, previous);
         } else if (isHook(propValue)) {
-            removeProperty(node, props, previous, propName)
-            propValue.hook(node,
-                propName,
-                previous ? previous[propName] : undefined)
+            removeProperty(node, propName, propValue, previous)
+            if (propValue.hook) {
+                propValue.hook(node,
+                    propName,
+                    previous ? previous[propName] : undefined)
+            }
         } else {
             if (isObject(propValue)) {
                 patchObject(node, props, previous, propName, propValue);
-            } else if (propValue !== undefined) {
+            } else {
                 node[propName] = propValue
             }
         }
     }
 }
 
-function removeProperty(node, props, previous, propName) {
+function removeProperty(node, propName, propValue, previous) {
     if (previous) {
         var previousValue = previous[propName]
 
@@ -292,7 +294,7 @@ function removeProperty(node, props, previous, propName) {
                 node[propName] = null
             }
         } else if (previousValue.unhook) {
-            previousValue.unhook(node, propName)
+            previousValue.unhook(node, propName, propValue)
         }
     }
 }
@@ -1196,16 +1198,76 @@ VirtualText.prototype.version = version
 VirtualText.prototype.type = "VirtualText"
 
 },{"./version":30}],34:[function(require,module,exports){
-var isArray = require("x-is-array")
 var isObject = require("is-object")
+var isHook = require("../vnode/is-vhook")
+
+module.exports = diffProps
+
+function diffProps(a, b) {
+    var diff
+
+    for (var aKey in a) {
+        if (!(aKey in b)) {
+            diff = diff || {}
+            diff[aKey] = undefined
+        }
+
+        var aValue = a[aKey]
+        var bValue = b[aKey]
+
+        if (aValue === bValue) {
+            continue
+        } else if (isObject(aValue) && isObject(bValue)) {
+            if (getPrototype(bValue) !== getPrototype(aValue)) {
+                diff = diff || {}
+                diff[aKey] = bValue
+            } else if (isHook(bValue)) {
+                 diff = diff || {}
+                 diff[aKey] = bValue
+            } else {
+                var objectDiff = diffProps(aValue, bValue)
+                if (objectDiff) {
+                    diff = diff || {}
+                    diff[aKey] = objectDiff
+                }
+            }
+        } else {
+            diff = diff || {}
+            diff[aKey] = bValue
+        }
+    }
+
+    for (var bKey in b) {
+        if (!(bKey in a)) {
+            diff = diff || {}
+            diff[bKey] = b[bKey]
+        }
+    }
+
+    return diff
+}
+
+function getPrototype(value) {
+  if (Object.getPrototypeOf) {
+    return Object.getPrototypeOf(value)
+  } else if (value.__proto__) {
+    return value.__proto__
+  } else if (value.constructor) {
+    return value.constructor.prototype
+  }
+}
+
+},{"../vnode/is-vhook":26,"is-object":11}],35:[function(require,module,exports){
+var isArray = require("x-is-array")
 
 var VPatch = require("../vnode/vpatch")
 var isVNode = require("../vnode/is-vnode")
 var isVText = require("../vnode/is-vtext")
 var isWidget = require("../vnode/is-widget")
 var isThunk = require("../vnode/is-thunk")
-var isHook = require("../vnode/is-vhook")
 var handleThunk = require("../vnode/handle-thunk")
+
+var diffProps = require("./diff-props")
 
 module.exports = diff
 
@@ -1276,60 +1338,6 @@ function walk(a, b, patch, index) {
 
     if (applyClear) {
         clearState(a, patch, index)
-    }
-}
-
-function diffProps(a, b) {
-    var diff
-
-    for (var aKey in a) {
-        if (!(aKey in b)) {
-            diff = diff || {}
-            diff[aKey] = undefined
-        }
-
-        var aValue = a[aKey]
-        var bValue = b[aKey]
-
-        if (aValue === bValue) {
-            continue
-        } else if (isObject(aValue) && isObject(bValue)) {
-            if (getPrototype(bValue) !== getPrototype(aValue)) {
-                diff = diff || {}
-                diff[aKey] = bValue
-            } else if (isHook(bValue)) {
-                 diff = diff || {}
-                 diff[aKey] = bValue
-            } else {
-                var objectDiff = diffProps(aValue, bValue)
-                if (objectDiff) {
-                    diff = diff || {}
-                    diff[aKey] = objectDiff
-                }
-            }
-        } else {
-            diff = diff || {}
-            diff[aKey] = bValue
-        }
-    }
-
-    for (var bKey in b) {
-        if (!(bKey in a)) {
-            diff = diff || {}
-            diff[bKey] = b[bKey]
-        }
-    }
-
-    return diff
-}
-
-function getPrototype(value) {
-    if (Object.getPrototypeOf) {
-        return Object.getPrototypeOf(value)
-    } else if (value.__proto__) {
-        return value.__proto__
-    } else if (value.constructor) {
-        return value.constructor.prototype
     }
 }
 
@@ -1574,5 +1582,5 @@ function appendPatch(apply, patch) {
     }
 }
 
-},{"../vnode/handle-thunk":24,"../vnode/is-thunk":25,"../vnode/is-vhook":26,"../vnode/is-vnode":27,"../vnode/is-vtext":28,"../vnode/is-widget":29,"../vnode/vpatch":32,"is-object":11,"x-is-array":12}]},{},[4])(4)
+},{"../vnode/handle-thunk":24,"../vnode/is-thunk":25,"../vnode/is-vnode":27,"../vnode/is-vtext":28,"../vnode/is-widget":29,"../vnode/vpatch":32,"./diff-props":34,"x-is-array":12}]},{},[4])(4)
 });
