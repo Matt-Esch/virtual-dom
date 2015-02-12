@@ -176,3 +176,22 @@ test("h with two ids", function (assert) {
 
     assert.end()
 })
+
+test("h with tag and two classes", function (assert) {
+    var node = h("div.foo.bar")
+
+    assert.equal(node.tagName, "DIV")
+    assert.equal(node.properties.className, "foo bar")
+
+    assert.end()
+})
+
+test("h with tag, id and class", function (assert) {
+    var node = h("div#foo.bar")
+
+    assert.equal(node.tagName, "DIV")
+    assert.equal(node.properties.id, "foo")
+    assert.equal(node.properties.className, "bar")
+
+    assert.end()
+})
