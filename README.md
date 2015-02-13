@@ -141,6 +141,12 @@ Once we have computed the set of patches required to apply to the DOM, we need a
 
 virtual-dom is heavily inspired by the inner workings of React by facebook. This project originated as a gist of ideas, which [we have linked to provide some background context](https://gist.github.com/Raynos/8414846).
 
+## Tools
+
+* [html2hscript](https://github.com/twilson63/html2hscript) - Parse HTML into hyperscript
+* [html2hscript.herokuapp.com](http://html2hscript.herokuapp.com/) - Online Tool that converts html snippets to hyperscript
+
+
 [1]: https://secure.travis-ci.org/Matt-Esch/virtual-dom.svg
 [2]: https://travis-ci.org/Matt-Esch/virtual-dom
 [3]: https://badge.fury.io/js/virtual-dom.svg
