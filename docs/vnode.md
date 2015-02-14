@@ -23,7 +23,7 @@ A string specifying the namespace uri to associate with the element. VNodes crea
 
 ### A full example
 ```javascript
-var VNode = require("virtual-dom/vnode/vnode")
+var VNode = require("virtual-dom").VNode
 var createElement = require("virtual-dom").create
 
 var Hook = function(){}

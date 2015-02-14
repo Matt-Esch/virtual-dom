@@ -25,7 +25,7 @@ document.body.appendChild(myElem)
 The string you would like the text node to contain.
 
 ## HTML Injection
-`document#createTextNode` will defend against HTML injection. If you do not want this behavior, you may use the innerHTML property of the parent VNode.
+`document#createTextNode` will defend against HTML injection. You could use the innerHTML property, but it will most likely break virtual dom.
 
 ```javascript
 escapedText = new VText('<span>Example</span>')
@@ -34,4 +34,5 @@ escapedNode = new VNode('div', null, [escapedText])
 
 unescapedNode = new VNode('div', { innerHTML: "<span>Example</span>" })
 // Will enter the dom as <div><span>Example</span></div>
+// You should probably never do this
 ```
