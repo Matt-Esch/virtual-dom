@@ -18,7 +18,7 @@ function ItemInsertHook(value) {
 }
 
 ItemInsertHook.prototype.hook = function(elem, propName) {
-  if (!elem.childNodes.length) {
+  if (!document.body.contains(elem)) {
     elem.setAttribute(propName, this.value + ' inserting');
 
     nextTick(function () {
