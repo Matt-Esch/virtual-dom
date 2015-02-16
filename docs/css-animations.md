@@ -1,8 +1,52 @@
-> Below is a comment stolen from a controlling position ( https://github.com/Matt-Esch/virtual-dom/issues/104#issuecomment-68611995 ) question.
+Based on a discusison in ( https://github.com/Matt-Esch/virtual-dom/issues/104#issuecomment-68611995 ) question.
 
-You should be activating the CSS transitions using hooks and nextTick. That is, you should know exactly which nodes you wish to animate based on your data, and you should use that data to add a transition hook based on next tick.
+You should be activating the CSS transitions using hooks and nextTick. Here is a basic example of inserting an element through transition:
+```javascript
+Item.render = function(state) {
+  return h('li', {
+    'class' : new ItemInsertHook('item'),
+  }, [
+    h('div.text', state.text), 
+    h('button', {
+      'ev-click' : mercury.event(...)
+    }, 'Remove or something...'),
+  ]);
+}
 
-This is where the flaw in this topic is; the lack of encoding of the animation state. You don't have to do animations with JS, I don't recommed it over CSS transitions, but you do need to model your expectations properly in your data model and apply transitions to the nodes using that data. Generic transitions that rely on the way in which the DOM is mutated isn't going to work consistently.
+function ItemInsertHook(value) {
+  this.value = value;
+}
+
+ItemInsertHook.prototype.hook = function(elem, propName) {
+  if (!elem.childNodes.length) {
+    elem.setAttribute(propName, this.value + ' inserting');
+
+    nextTick(function () {
+      elem.setAttribute(propName, this.value + '');
+    }.bind(this))
+  }
+}
+
+//Elswhere at the top level of application:
+function renderItemsList(state) {
+  return h('ul#item-list', [
+    state.items.map(function(item) {return Item.render(item);})
+  ]);
+}
+```
+
+And css:
+```css
+li.item.inserting { opacity : 0.01; }
+li.item { transition: opacity 0.2s ease-in-out; }
+li.item { opacity : 0.99; }
+```
+
+See full example on requirebin: http://requirebin.com/?gist=250e6e59aa40d5ff0fcc
+
+In a more complex case it may be necessary to encode animation state in the model. You should know exactly which nodes you wish to animate based on your data, and you should use that data to add a transition hook based on next tick.
+
+You don't have to do animations with JS, prefer CSS transitions, but you do need to model your expectations properly in your data model and apply transitions to the nodes using that data. Generic transitions that rely on the way in which the DOM is mutated isn't going to work consistently.
 
 For example, if you want an inserted transition, you might add a wasInserted boolean flag to your model.
 
