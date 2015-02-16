@@ -18,7 +18,14 @@ function ItemInsertHook(value) {
 }
 
 ItemInsertHook.prototype.hook = function(elem, propName) {
-  if (!elem.childNodes.length) {
+  
+  // Here we want to see if this is a newly created dom element
+  // or an element that was inserted before and is revisited.
+  // The way to check for that in this case is see if the element is 
+  // attached to the dom.
+  // Newly created element will not be attached to the dom when hook is executed.
+  
+  if (!document.body.contains(elem)) {
     elem.setAttribute(propName, this.value + ' inserting');
 
     nextTick(function () {
