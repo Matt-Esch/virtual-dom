@@ -482,6 +482,46 @@ test('3 elements in a container, insert an element after each', function (assert
     assert.end();
 })
 
+test('10 elements in a container, remove every second element', function(assert) {
+    function item(key) {
+        key = key.toString()
+        return h('div', {key: key, id: key}, key)
+    }
+
+    function container(children) {
+        return h('div', children)
+    }
+
+    fiveItems = container([
+        item(0),
+        item(2),
+        item(4),
+        item(6),
+        item(8)
+    ])
+
+    tenItems = container((function (){
+        items = []
+        for (var i = 0; i < 10; i++){
+            items.push(item(i))
+        }
+        return items
+    })())
+
+    var rootNode = render(tenItems)
+    rootNode = patch(rootNode, diff(tenItems, fiveItems))
+
+    function expectTextOfChild(childNo, text) {
+        assert.equal(rootNode.childNodes[childNo].id, text)
+    }
+
+    for (var i = 0; i < 10; i += 2) {
+        expectTextOfChild(i, i.toString())
+    }
+
+    assert.end();
+})
+
 function childNodesArray(node) {
     var childNodes = []
     for (var i = 0; i < node.childNodes.length; i++) {
