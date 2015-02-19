@@ -443,7 +443,7 @@ test("adding multiple widgets", function (assert) {
     assert.end()
 })
 
-test.only('grids of 3x2, 3x1 then 3x2', function (assert) {
+test('3 elements in a container, insert an element after each', function (assert) {
     function item(key) {
         key = key.toString()
         return h('div', {key: key}, key)
@@ -453,7 +453,13 @@ test.only('grids of 3x2, 3x1 then 3x2', function (assert) {
         return h('div', children)
     }
 
-    var gridOf3x2 = container([
+    var threeItems = container([
+        item(0),
+        item(2),
+        item(4)
+    ])
+
+    var sixItems = container([
         item(0),
         item(1),
         item(2),
@@ -462,14 +468,8 @@ test.only('grids of 3x2, 3x1 then 3x2', function (assert) {
         item(5)
     ])
 
-    var gridOf3x1 = container([
-        item(0),
-        item(2),
-        item(4)
-    ])
-
-    var rootNode = render(gridOf3x1)
-    rootNode = patch(rootNode, diff(gridOf3x1, gridOf3x2))
+    var rootNode = render(threeItems)
+    rootNode = patch(rootNode, diff(threeItems, sixItems))
 
     function expectTextOfChild(childNo, text) {
         assert.equal(rootNode.childNodes[childNo].textContent, text)
