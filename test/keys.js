@@ -443,6 +443,44 @@ test("adding multiple widgets", function (assert) {
     assert.end()
 })
 
+test('grids of 3x2, 3x1 then 3x2', function (assert) {
+    function item(x, y) {
+        var key = x + '-' + y
+        return h('div', {key: key}, key)
+    }
+
+    function container(children) {
+        return h('div', children)
+    }
+
+    var gridOf3x2 = container([
+        item(0, 0),
+        item(1, 0),
+        item(0, 1),
+        item(1, 1),
+        item(0, 2),
+        item(1, 2)
+    ])
+
+    var gridOf3x1 = container([
+        item(0, 0),
+        item(0, 1),
+        item(0, 2)
+    ])
+
+    var rootNode = render(gridOf3x1)
+    rootNode = patch(rootNode, diff(gridOf3x1, gridOf3x2))
+    rootNode = patch(rootNode, diff(gridOf3x2, gridOf3x1))
+
+    function expectTextOfChild(childNo, text) {
+        assert.equal(rootNode.childNodes[childNo].textContent, text)
+    }
+
+    expectTextOfChild(0, '0-0')
+    expectTextOfChild(1, '0-1')
+    expectTextOfChild(2, '0-2')
+})
+
 function childNodesArray(node) {
     var childNodes = []
     for (var i = 0; i < node.childNodes.length; i++) {
