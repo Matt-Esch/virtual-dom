@@ -446,7 +446,7 @@ test("adding multiple widgets", function (assert) {
 test('3 elements in a container, insert an element after each', function (assert) {
     function item(key) {
         key = key.toString()
-        return h('div', {key: key}, key)
+        return h('div', {key: key, id: key}, key)
     }
 
     function container(children) {
@@ -472,12 +472,14 @@ test('3 elements in a container, insert an element after each', function (assert
     rootNode = patch(rootNode, diff(threeItems, sixItems))
 
     function expectTextOfChild(childNo, text) {
-        assert.equal(rootNode.childNodes[childNo].textContent, text)
+        assert.equal(rootNode.childNodes[childNo].id, text)
     }
 
     for (var i = 0; i <= 5; i++) {
         expectTextOfChild(i, i.toString())
     }
+
+    assert.end();
 })
 
 function childNodesArray(node) {

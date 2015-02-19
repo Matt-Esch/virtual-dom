@@ -160,7 +160,7 @@ function reorderChildren(domNode, bIndex) {
             }
 
             // the moved element came from the front of the array so reduce the insert offset
-            if (move + chainLength < i) {
+            if (move + chainLength <= i) {
                 insertOffset--
             }
         }
