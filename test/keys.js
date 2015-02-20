@@ -445,6 +445,35 @@ test("adding multiple widgets", function (assert) {
     assert.end()
 })
 
+itemHelpers = {
+    item: function (key) {
+        key = key.toString()
+        return h('div', {key: key, id: key}, key)
+    },
+
+    container: function (children) {
+        return h('div', children)
+    },
+
+    itemsInContainer: function () {
+        return { from: function (start) {
+            return { to: function (end) {
+                return {by: function (increment) {
+                    var items = []
+                    for (var i = start; i <= end; i += increment) {
+                        items.push(itemHelpers.item(i))
+                    }
+                    return itemHelpers.container(items)
+                } }
+            } }
+        } }
+    },
+
+    expectTextOfChild: function (assert, rootNode, childNo, text) {
+        assert.equal(rootNode.childNodes[childNo].id, text)
+    }
+}
+
 test('3 elements in a container, insert an element after each', function (assert) {
     function item(key) {
         key = key.toString()
@@ -455,60 +484,22 @@ test('3 elements in a container, insert an element after each', function (assert
         return h('div', children)
     }
 
-    var threeItems = container([
-        item(0),
-        item(2),
-        item(4)
-    ])
-
-    var sixItems = container([
-        item(0),
-        item(1),
-        item(2),
-        item(3),
-        item(4),
-        item(5)
-    ])
+    var threeItems = itemHelpers.itemsInContainer().from(0).to(4).by(2)
+    var sixItems = itemHelpers.itemsInContainer().from(0).to(5).by(1)
 
     var rootNode = render(threeItems)
     rootNode = patch(rootNode, diff(threeItems, sixItems))
 
-    function expectTextOfChild(childNo, text) {
-        assert.equal(rootNode.childNodes[childNo].id, text)
-    }
-
     for (var i = 0; i <= 5; i++) {
-        expectTextOfChild(i, i.toString())
+        itemHelpers.expectTextOfChild(assert, rootNode, i, i.toString())
     }
 
     assert.end();
 })
 
 test('10 elements in a container, remove every second element', function(assert) {
-    function item(key) {
-        key = key.toString()
-        return h('div', {key: key, id: key}, key)
-    }
-
-    function container(children) {
-        return h('div', children)
-    }
-
-    fiveItems = container([
-        item(0),
-        item(2),
-        item(4),
-        item(6),
-        item(8)
-    ])
-
-    tenItems = container((function (){
-        items = []
-        for (var i = 0; i < 10; i++){
-            items.push(item(i))
-        }
-        return items
-    })())
+    fiveItems = itemHelpers.itemsInContainer().from(0).to(8).by(2)
+    tenItems = itemHelpers.itemsInContainer().from(0).to(10).by(1)
 
     var rootNode = render(tenItems)
     var patches = diff(tenItems, fiveItems)
@@ -518,16 +509,14 @@ test('10 elements in a container, remove every second element', function(assert)
 
     rootNode = patch(rootNode, patches)
 
-    function expectTextOfChild(childNo, text) {
-        assert.equal(rootNode.childNodes[childNo].id, text)
-    }
-
     for (var i = 0; i < 5; i++) {
-        expectTextOfChild(i, (i * 2).toString())
+        itemHelpers.expectTextOfChild(assert, rootNode, i, (i * 2).toString())
     }
 
     assert.end();
 })
+
+test('10 elements in a container')
 
 function childNodesArray(node) {
     var childNodes = []
