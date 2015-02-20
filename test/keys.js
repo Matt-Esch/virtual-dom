@@ -496,7 +496,7 @@ test('3 elements in a container, insert an element after each', function (assert
 })
 
 test('10 elements in a container, remove every second element', function(assert) {
-   var  fiveItems = itemHelpers.itemsInContainer().from(0).to(8).by(2)
+    var  fiveItems = itemHelpers.itemsInContainer().from(0).to(8).by(2)
     var tenItems = itemHelpers.itemsInContainer().from(0).to(9).by(1)
 
     var rootNode = render(tenItems)
@@ -514,23 +514,33 @@ test('10 elements in a container, remove every second element', function(assert)
     assert.end();
 })
 
-test('5 elements in a container, insert an element after every second element', function (assert) {
-    function everySecondOrThird(i) {
-        return i % 3 == 0 || i % 3 == 1
-    }
+test('3 elements in a container, add 3 elements after each', function (assert) {
+    var first = itemHelpers.itemsInContainer().from(0).to(12).by(4)
+    var second = itemHelpers.itemsInContainer().from(0).to(12).by(1)
 
-    var tenItems = itemHelpers.itemsInContainer().from(0).to(9).withPredicate(everySecondOrThird)
-    var fifteenItems = itemHelpers.itemsInContainer().from(0).to(14).by(1)
+    var rootNode = render(first)
+    rootNode = patch(rootNode, diff(first, second))
 
-    var rootNode = render(tenItems)
-    rootNode = patch(rootNode, diff(tenItems, fifteenItems))
-
-    for (var i = 0; i < 15; i++) {
+    for (var i = 0; i <= 12; i++) {
         itemHelpers.expectTextOfChild(assert, rootNode, i, i.toString())
     }
 })
 
-test('10 elements in a container')
+test('10 elements in a container, add an element after every second element', function (assert) {
+    function skipEveryThird(i) {
+        return i % 3 == 0 || i % 3 == 1
+    }
+
+    var first = itemHelpers.itemsInContainer().from(0).to(14).withPredicate(skipEveryThird)
+    var second = itemHelpers.itemsInContainer().from(0).to(14).by(1)
+
+    var rootNode = render(first)
+    rootNode = patch(rootNode, diff(first, second))
+
+    for (var i = 0; i <= 14; i++) {
+        itemHelpers.expectTextOfChild(assert, rootNode, i, i.toString())
+    }
+})
 
 function childNodesArray(node) {
     var childNodes = []
