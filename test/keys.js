@@ -458,13 +458,20 @@ itemHelpers = {
     itemsInContainer: function () {
         return { from: function (start) {
             return { to: function (end) {
-                return {by: function (increment) {
+                function withPredicate(predicate) {
                     var items = []
-                    for (var i = start; i <= end; i += increment) {
+                    for (var i = start; i <= end; i++) {
+                        if (!predicate(i)) continue
                         items.push(itemHelpers.item(i))
                     }
                     return itemHelpers.container(items)
-                } }
+                }
+                return {
+                    by: function (increment) {
+                        return withPredicate(function (i) { return (i - start) % increment == 0 })
+                    },
+                    withPredicate: withPredicate
+                }
             } }
         } }
     },
@@ -475,15 +482,6 @@ itemHelpers = {
 }
 
 test('3 elements in a container, insert an element after each', function (assert) {
-    function item(key) {
-        key = key.toString()
-        return h('div', {key: key, id: key}, key)
-    }
-
-    function container(children) {
-        return h('div', children)
-    }
-
     var threeItems = itemHelpers.itemsInContainer().from(0).to(4).by(2)
     var sixItems = itemHelpers.itemsInContainer().from(0).to(5).by(1)
 
@@ -498,8 +496,8 @@ test('3 elements in a container, insert an element after each', function (assert
 })
 
 test('10 elements in a container, remove every second element', function(assert) {
-    fiveItems = itemHelpers.itemsInContainer().from(0).to(8).by(2)
-    tenItems = itemHelpers.itemsInContainer().from(0).to(10).by(1)
+   var  fiveItems = itemHelpers.itemsInContainer().from(0).to(8).by(2)
+    var tenItems = itemHelpers.itemsInContainer().from(0).to(9).by(1)
 
     var rootNode = render(tenItems)
     var patches = diff(tenItems, fiveItems)
@@ -514,6 +512,22 @@ test('10 elements in a container, remove every second element', function(assert)
     }
 
     assert.end();
+})
+
+test('5 elements in a container, insert an element after every second element', function (assert) {
+    function everySecondOrThird(i) {
+        return i % 3 == 0 || i % 3 == 1
+    }
+
+    var tenItems = itemHelpers.itemsInContainer().from(0).to(9).withPredicate(everySecondOrThird)
+    var fifteenItems = itemHelpers.itemsInContainer().from(0).to(14).by(1)
+
+    var rootNode = render(tenItems)
+    rootNode = patch(rootNode, diff(tenItems, fifteenItems))
+
+    for (var i = 0; i < 15; i++) {
+        itemHelpers.expectTextOfChild(assert, rootNode, i, i.toString())
+    }
 })
 
 test('10 elements in a container')
