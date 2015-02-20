@@ -243,7 +243,8 @@ test("delete key at the start", function (assert) {
     var childNodes = childNodesArray(rootNode)
 
     var patches = diff(leftNode, rightNode)
-    assert.equal(patchCount(patches), 2)
+    // just a remove patch
+    assert.equal(patchCount(patches), 1)
 
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
@@ -299,7 +300,8 @@ test("delete key at the end", function (assert) {
     var childNodes = childNodesArray(rootNode)
 
     var patches = diff(leftNode, rightNode)
-    assert.equal(patchCount(patches), 2)
+    // just a remove patch
+    assert.equal(patchCount(patches), 1)
 
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
@@ -341,17 +343,17 @@ test("add key to end", function (assert) {
 
 test("add to end and delete from center & reverse", function (assert) {
     var leftNode = h("div", [
-        h("div", { key: "a" }, "a"),
-        h("div", { key: "b" }, "b"),
-        h("div", { key: "c" }, "c"),
-        h("div", { key: "d" }, "d")
+        h("div", { key: "a", id: "a" }, "a"),
+        h("div", { key: "b", id: "b" }, "b"),
+        h("div", { key: "c", id: "c" }, "c"),
+        h("div", { key: "d", id: "d" }, "d")
     ])
 
     var rightNode = h("div", [
-        h("div", { key: "e" }, "e"),
-        h("div", { key: "d" }, "d"),
-        h("div", { key: "c" }, "c"),
-        h("div", { key: "a" }, "a")
+        h("div", { key: "e", id: "e" }, "e"),
+        h("div", { key: "d", id: "d" }, "d"),
+        h("div", { key: "c", id: "c" }, "c"),
+        h("div", { key: "a", id: "a" }, "a")
     ])
 
     var rootNode = render(leftNode)
@@ -509,14 +511,19 @@ test('10 elements in a container, remove every second element', function(assert)
     })())
 
     var rootNode = render(tenItems)
-    rootNode = patch(rootNode, diff(tenItems, fiveItems))
+    var patches = diff(tenItems, fiveItems)
+
+    // 5 remove patches only
+    assert.equal(patchCount(patches), 5)
+
+    rootNode = patch(rootNode, patches)
 
     function expectTextOfChild(childNo, text) {
         assert.equal(rootNode.childNodes[childNo].id, text)
     }
 
-    for (var i = 0; i < 10; i += 2) {
-        expectTextOfChild(i, i.toString())
+    for (var i = 0; i < 5; i++) {
+        expectTextOfChild(i, (i * 2).toString())
     }
 
     assert.end();

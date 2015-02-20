@@ -247,6 +247,7 @@ function reorder(aChildren, bChildren) {
     var moveIndex = 0
     var moves = {}
     var removes = moves.removes = {}
+    var removeCount = 0
     var reverse = moves.reverse = {}
     var hasMoves = false
 
@@ -254,7 +255,7 @@ function reorder(aChildren, bChildren) {
         var move = aMatch[i]
         if (move !== undefined) {
             shuffle[i] = bChildren[move]
-            if (move !== moveIndex) {
+            if (move !== moveIndex - removeCount) {
                 moves[move] = moveIndex
                 reverse[moveIndex] = move
                 hasMoves = true
@@ -263,7 +264,7 @@ function reorder(aChildren, bChildren) {
         } else if (i in aMatch) {
             shuffle[i] = undefined
             removes[i] = moveIndex++
-            hasMoves = true
+            removeCount++
         } else {
             while (bMatch[freeIndex] !== undefined) {
                 freeIndex++

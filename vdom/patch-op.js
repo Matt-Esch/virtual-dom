@@ -130,6 +130,7 @@ function reorderChildren(domNode, bIndex) {
     }
 
     var insertOffset = 0
+    var removeOffset = 0
     var move
     var node
     var insertNode
@@ -138,6 +139,13 @@ function reorderChildren(domNode, bIndex) {
     for (i = 0; i < len;) {
         move = bIndex[i]
         chainLength = 1
+
+        // element at this index is scheduled to be removed so increase insert offset
+        if (i + removeOffset in bIndex.removes) {
+            removeOffset++
+            insertOffset++
+        }
+
         if (move !== undefined && move !== i) {
             // try to bring forward as long of a chain as possible
             while (bIndex[i + chainLength] === move + chainLength) {
@@ -163,11 +171,6 @@ function reorderChildren(domNode, bIndex) {
             if (move + chainLength <= i) {
                 insertOffset--
             }
-        }
-
-        // element at this index is scheduled to be removed so increase insert offset
-        if (i in bIndex.removes) {
-            insertOffset++
         }
 
         i += chainLength
