@@ -445,10 +445,10 @@ test("adding multiple widgets", function (assert) {
     assert.end()
 })
 
-itemHelpers = {
+var itemHelpers = {
     item: function (key) {
         key = key.toString()
-        return h('div', {key: key, id: key}, key)
+        return h('div', { key: key, id: key }, ["" + key])
     },
 
     container: function (children) {
@@ -456,24 +456,30 @@ itemHelpers = {
     },
 
     itemsInContainer: function () {
-        return { from: function (start) {
-            return { to: function (end) {
-                function withPredicate(predicate) {
-                    var items = []
-                    for (var i = start; i <= end; i++) {
-                        if (!predicate(i)) continue
-                        items.push(itemHelpers.item(i))
-                    }
-                    return itemHelpers.container(items)
-                }
+        return {
+            from: function (start) {
                 return {
-                    by: function (increment) {
-                        return withPredicate(function (i) { return (i - start) % increment == 0 })
-                    },
-                    withPredicate: withPredicate
+                    to: function (end) {
+                        function withPredicate(predicate) {
+                            var items = []
+                            for (var i = start; i <= end; i++) {
+                                if (!predicate(i)) continue
+                                items.push(itemHelpers.item(i))
+                            }
+                            return itemHelpers.container(items)
+                        }
+                        return {
+                            by: function (increment) {
+                                return withPredicate(function (i) {
+                                    return (i - start) % increment === 0
+                                })
+                            },
+                            withPredicate: withPredicate
+                        }
+                    }
                 }
-            } }
-        } }
+            }
+        }
     },
 
     expectTextOfChild: function (assert, rootNode, childNo, text) {
@@ -496,7 +502,7 @@ test('3 elements in a container, insert an element after each', function (assert
 })
 
 test('10 elements in a container, remove every second element', function(assert) {
-    var  fiveItems = itemHelpers.itemsInContainer().from(0).to(8).by(2)
+    var  fiveItems = itemHelpers.itemsInContainer().from(0).to(9).by(2)
     var tenItems = itemHelpers.itemsInContainer().from(0).to(9).by(1)
 
     var rootNode = render(tenItems)
@@ -515,31 +521,67 @@ test('10 elements in a container, remove every second element', function(assert)
 })
 
 test('3 elements in a container, add 3 elements after each', function (assert) {
-    var first = itemHelpers.itemsInContainer().from(0).to(12).by(4)
-    var second = itemHelpers.itemsInContainer().from(0).to(12).by(1)
+    var first = itemHelpers.itemsInContainer().from(0).to(11).by(4)
+    var second = itemHelpers.itemsInContainer().from(0).to(11).by(1)
+
+    // Assert indices before
+    assert.strictEqual(first.children.length, 3);
 
     var rootNode = render(first)
-    rootNode = patch(rootNode, diff(first, second))
 
-    for (var i = 0; i <= 12; i++) {
-        itemHelpers.expectTextOfChild(assert, rootNode, i, i.toString())
+    for (var i = 0; i < 3; i++) {
+        itemHelpers.expectTextOfChild(assert, rootNode, i, (4*i).toString())
     }
+
+    // Assert indices after
+    assert.strictEqual(second.children.length, 12);
+
+    var newRoot = patch(rootNode, diff(first, second))
+
+    for (var j = 0; j < 12; j++) {
+        itemHelpers.expectTextOfChild(assert, newRoot, j, j.toString())
+    }
+
+    assert.end()
 })
 
-test('10 elements in a container, add an element after every second element', function (assert) {
+test('10 in container, add 1 after every 2nd element', function (assert) {
     function skipEveryThird(i) {
-        return i % 3 == 0 || i % 3 == 1
+        return i % 3 === 0 || i % 3 === 1
     }
 
-    var first = itemHelpers.itemsInContainer().from(0).to(14).withPredicate(skipEveryThird)
+    var first = itemHelpers
+        .itemsInContainer()
+        .from(0)
+        .to(14)
+        .withPredicate(skipEveryThird)
+
     var second = itemHelpers.itemsInContainer().from(0).to(14).by(1)
 
-    var rootNode = render(first)
-    rootNode = patch(rootNode, diff(first, second))
+    // Assert indices before
+    assert.strictEqual(first.children.length, 10);
 
-    for (var i = 0; i <= 14; i++) {
-        itemHelpers.expectTextOfChild(assert, rootNode, i, i.toString())
+    var rootNode = render(first)
+    var expectedIndices = [0, 1, 3, 4, 6, 7, 9, 10, 12, 13]
+
+    for (var i = 0; i < 10; i++) {
+        itemHelpers.expectTextOfChild(
+            assert, rootNode, i, expectedIndices[i].toString()
+        )
     }
+
+    // Assert indices after
+    assert.strictEqual(second.children.length, 15)
+
+    var patches = diff(first, second);
+
+    var newRoot = patch(rootNode, patches);
+
+    for (var j = 0; j < 15; j++) {
+        itemHelpers.expectTextOfChild(assert, newRoot, j, j.toString())
+    }
+
+    assert.end();
 })
 
 function childNodesArray(node) {

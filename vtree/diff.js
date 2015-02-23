@@ -66,7 +66,7 @@ function walk(a, b, patch, index) {
         }
     } else if (isWidget(b)) {
         if (!isWidget(a)) {
-            applyClear = true;
+            applyClear = true
         }
 
         apply = appendPatch(apply, new VPatch(VPatch.WIDGET, a, b))
@@ -83,7 +83,8 @@ function walk(a, b, patch, index) {
 
 function diffChildren(a, b, patch, apply, index) {
     var aChildren = a.children
-    var bChildren = reorder(aChildren, b.children)
+    var orderedSet = reorder(aChildren, b.children)
+    var bChildren = orderedSet.children
 
     var aLen = aChildren.length
     var bLen = bChildren.length
@@ -109,9 +110,13 @@ function diffChildren(a, b, patch, apply, index) {
         }
     }
 
-    if (bChildren.moves) {
+    if (orderedSet.moves.length > 0) {
         // Reorder nodes last
-        apply = appendPatch(apply, new VPatch(VPatch.ORDER, a, bChildren.moves))
+        apply = appendPatch(apply, new VPatch(
+            VPatch.ORDER,
+            a,
+            orderedSet.moves
+        ))
     }
 
     return apply
@@ -153,7 +158,7 @@ function destroyWidgets(vNode, patch, index) {
 
 // Create a sub-patch for thunks
 function thunks(a, b, patch, index) {
-    var nodes = handleThunk(a, b);
+    var nodes = handleThunk(a, b)
     var thunkPatch = diff(nodes.a, nodes.b)
     if (hasPatches(thunkPatch)) {
         patch[index] = new VPatch(VPatch.THUNK, null, thunkPatch)
@@ -163,11 +168,11 @@ function thunks(a, b, patch, index) {
 function hasPatches(patch) {
     for (var index in patch) {
         if (index !== "a") {
-            return true;
+            return true
         }
     }
 
-    return false;
+    return false
 }
 
 // Execute hooks when two nodes are identical
@@ -215,83 +220,143 @@ function undefinedKeys(obj) {
 
 // List diff, naive left to right reordering
 function reorder(aChildren, bChildren) {
-
     var bKeys = keyIndex(bChildren)
 
     if (!bKeys) {
-        return bChildren
+        return {
+            children: bChildren,
+            moves: []
+        }
     }
 
     var aKeys = keyIndex(aChildren)
 
     if (!aKeys) {
-        return bChildren
+        return {
+            children: bChildren,
+            moves: []
+        }
     }
 
-    var bMatch = {}, aMatch = {}
+    var newChildren = []
 
-    for (var aKey in bKeys) {
-        bMatch[bKeys[aKey]] = aKeys[aKey]
-    }
+    var bIndex = 0
+    var findNextIndex = true
 
-    for (var bKey in aKeys) {
-        aMatch[aKeys[bKey]] = bKeys[bKey]
-    }
+    // Iterate through a and match a node in b
+    for (var i = 0 ; i < aChildren.length; i++) {
+        var aItem = aChildren[i]
 
-    var aLen = aChildren.length
-    var bLen = bChildren.length
-    var len = aLen > bLen ? aLen : bLen
-    var shuffle = []
-    var freeIndex = 0
-    var i = 0
-    var moveIndex = 0
-    var moves = {}
-    var removes = moves.removes = {}
-    var removeCount = 0
-    var reverse = moves.reverse = {}
-    var hasMoves = false
-
-    while (freeIndex < len) {
-        var move = aMatch[i]
-        if (move !== undefined) {
-            shuffle[i] = bChildren[move]
-            if (move !== moveIndex - removeCount) {
-                moves[move] = moveIndex
-                reverse[moveIndex] = move
-                hasMoves = true
-            }
-            moveIndex++
-        } else if (i in aMatch) {
-            shuffle[i] = undefined
-            removes[i] = moveIndex++
-            removeCount++
-        } else {
-            while (bMatch[freeIndex] !== undefined) {
-                freeIndex++
-            }
-
-            if (freeIndex < len) {
-                var freeChild = bChildren[freeIndex]
-                if (freeChild) {
-                    shuffle[i] = freeChild
-                    if (freeIndex !== moveIndex) {
-                        hasMoves = true
-                        moves[freeIndex] = moveIndex
-                        reverse[moveIndex] = freeIndex
-                    }
-                    moveIndex++
-                }
-                freeIndex++
+        while (findNextIndex && bIndex < bChildren.length) {
+            var bItem = bChildren[bIndex]
+            if (bItem && !bItem.key) {
+                findNextIndex = false
+            } else {
+                bIndex++
             }
         }
-        i++
+
+        if (aItem.key) {
+            if (bKeys.hasOwnProperty(aItem.key)) {
+                // Match up the old keys
+                newChildren.push(bChildren[bKeys[aItem.key]])
+            } else {
+                // Remove old keyed items
+                newChildren.push(null)
+            }
+        } else {
+            // Match the item in a with the next free item in b
+            newChildren.push(bChildren[bIndex])
+            bIndex += 1
+            findNextIndex = true
+        }
     }
 
-    if (hasMoves) {
-        shuffle.moves = moves
+    // Iterate through b and append and new keys
+    for (var j = 0; j < bChildren.length; j++) {
+        var newItem = bChildren[j]
+
+        if (newItem.key) {
+            if (!aKeys.hasOwnProperty(newItem.key)) {
+                // Add any new keyed items
+                newChildren.push(newItem)
+            }
+        } else if (j >= bIndex) {
+            // Add any leftover non-keyed items
+            newChildren.push(newItem)
+        }
     }
 
-    return shuffle
+    // Simulate swaps left to right to generate moves for keyed items
+    // Note that by this point, new items have been inserted, but the old
+    // items have  NOT been removed. This is effectively a bubble sort.
+    var simulate = newChildren.slice()
+    var simulateIndex = 0
+    var moves = []
+    var sorted = false
+
+    while (!sorted) {
+        simulateIndex = 0
+        sorted = true
+
+        for (var k = 0; k < bChildren.length; k++) {
+            var wantedItem = bChildren[k]
+            var simulateItem = simulate[simulateIndex]
+
+            // Find the next item to match
+            while (simulateItem === null && simulateIndex < simulate.length) {
+                simulateItem = simulate[++simulateIndex]
+            }
+
+            if (simulateItem.key !== wantedItem.key) {
+                if (wantedItem.key) {
+                    moves.push(
+                        moveItem(simulate, simulateIndex, wantedItem.key)
+                    )
+                } else {
+                    // Move the current item to the end
+                    moves.push({
+                        from: simulateIndex,
+                        to: simulate.length
+                    })
+                    simulate.splice(
+                        simulate.length,
+                        0,
+                        simulate.splice(simulateIndex, 1)[0]
+                    )
+                }
+                sorted = false
+                break
+            } else {
+                simulateIndex++
+            }
+        }
+    }
+
+    return {
+        children: newChildren,
+        moves: moves
+    }
+}
+
+// TODO: We really want to make this more efficient
+// Finding the current index of any key in the array could be
+// faster.
+function moveItem(array, toIndex, itemKey) {
+    for (var i = 0; i < array.length; i++) {
+        var node = array[i]
+
+        if (node && node.key === itemKey) {
+            break
+        }
+    }
+
+    array.splice(toIndex, 0, array.splice(i, 1)[0])
+
+    return {
+        from: i,
+        to: toIndex
+    }
 }
 
 function keyIndex(children) {
