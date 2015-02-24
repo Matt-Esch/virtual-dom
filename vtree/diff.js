@@ -220,41 +220,39 @@ function undefinedKeys(obj) {
 
 // List diff, naive left to right reordering
 function reorder(aChildren, bChildren) {
-    var bKeys = keyIndex(bChildren)
+    // O(M) time, O(M) memory
+    var bChildIndex = keyIndex(bChildren)
+    var bKeys = bChildIndex.keys
+    var bFree = bChildIndex.free
 
-    if (!bKeys) {
+    if (bFree.length === bChildren.length) {
         return {
             children: bChildren,
             moves: []
         }
     }
 
-    var aKeys = keyIndex(aChildren)
+    // O(N) time, O(N) memory
+    var aChildIndex = keyIndex(aChildren)
+    var aKeys = aChildIndex.keys
+    var aFree = aChildIndex.free
 
-    if (!aKeys) {
+    if (aFree.length === aChildren.length) {
         return {
             children: bChildren,
             moves: []
         }
     }
 
+    // O(MAX(N, M)) memory
     var newChildren = []
 
-    var bIndex = 0
-    var findNextIndex = true
+    var freeIndex = 0
 
     // Iterate through a and match a node in b
+    // O(N) time,
     for (var i = 0 ; i < aChildren.length; i++) {
         var aItem = aChildren[i]
-
-        while (findNextIndex && bIndex < bChildren.length) {
-            var bItem = bChildren[bIndex]
-            if (bItem && !bItem.key) {
-                findNextIndex = false
-            } else {
-                bIndex++
-            }
-        }
 
         if (aItem.key) {
             if (bKeys.hasOwnProperty(aItem.key)) {
@@ -266,13 +264,16 @@ function reorder(aChildren, bChildren) {
             }
         } else {
             // Match the item in a with the next free item in b
-            newChildren.push(bChildren[bIndex])
-            bIndex += 1
-            findNextIndex = true
+            newChildren.push(bChildren[bFree[freeIndex++]])
         }
     }
 
+    var lastFreeIndex = freeIndex >= bFree.length ?
+        bChildren.length :
+        bFree[freeIndex]
+
     // Iterate through b and append and new keys
+    // O(M) time
     for (var j = 0; j < bChildren.length; j++) {
         var newItem = bChildren[j]
 
@@ -281,7 +282,7 @@ function reorder(aChildren, bChildren) {
                 // Add any new keyed items
                 newChildren.push(newItem)
             }
-        } else if (j >= bIndex) {
+        } else if (j >= lastFreeIndex) {
             // Add any leftover non-keyed items
             newChildren.push(newItem)
         }
@@ -360,18 +361,24 @@ function moveItem(array, toIndex, itemKey) {
 }
 
 function keyIndex(children) {
-    var i, keys
+    var keys = {}
+    var free = []
+    var length = children.length
 
-    for (i = 0; i < children.length; i++) {
+    for (var i = 0; i < length; i++) {
         var child = children[i]
 
-        if (child.key !== undefined) {
-            keys = keys || {}
+        if (child.key) {
             keys[child.key] = i
+        } else {
+            free.push(i)
         }
     }
 
-    return keys
+    return {
+        keys: keys,     // A hash of key name to index
+        free: free,     // An array of unkeyed item indices
+    }
 }
 
 function appendPatch(apply, patch) {
