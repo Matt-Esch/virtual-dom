@@ -246,33 +246,43 @@ function reorder(aChildren, bChildren) {
 
     // O(MAX(N, M)) memory
     var newChildren = []
+    var sortOrder = []
 
     var freeIndex = 0
+    var deleteIndex = bChildren.length
 
     // Iterate through a and match a node in b
     // O(N) time,
     for (var i = 0 ; i < aChildren.length; i++) {
         var aItem = aChildren[i]
+        var itemIndex
 
         if (aItem.key) {
             if (bKeys.hasOwnProperty(aItem.key)) {
                 // Match up the old keys
-                newChildren.push(bChildren[bKeys[aItem.key]])
+                itemIndex = bKeys[aItem.key]
+                newChildren.push(bChildren[itemIndex])
             } else {
                 // Remove old keyed items
+                // Essentially we are sorting the removed items to the end
+                // We should eagerly remove these in future ahead of sorting.
+                itemIndex = deleteIndex++
                 newChildren.push(null)
             }
         } else {
             // Match the item in a with the next free item in b
-            newChildren.push(bChildren[bFree[freeIndex++]])
+            itemIndex = bFree[freeIndex++]
+            newChildren.push(bChildren[itemIndex])
         }
+
+        sortOrder.push(itemIndex)
     }
 
     var lastFreeIndex = freeIndex >= bFree.length ?
         bChildren.length :
         bFree[freeIndex]
 
-    // Iterate through b and append and new keys
+    // Iterate through b and append any new keys
     // O(M) time
     for (var j = 0; j < bChildren.length; j++) {
         var newItem = bChildren[j]
@@ -280,84 +290,75 @@ function reorder(aChildren, bChildren) {
         if (newItem.key) {
             if (!aKeys.hasOwnProperty(newItem.key)) {
                 // Add any new keyed items
+                // We are adding new items to the end and then sorting them
+                // in place. In future we should insert new items in place.
                 newChildren.push(newItem)
+                sortOrder.push(j);
             }
         } else if (j >= lastFreeIndex) {
             // Add any leftover non-keyed items
             newChildren.push(newItem)
-        }
-    }
-
-    // Simulate swaps left to right to generate moves for keyed items
-    // Note that by this point, new items have been inserted, but the old
-    // items have  NOT been removed. This is effectively a bubble sort.
-    var simulate = newChildren.slice()
-    var simulateIndex = 0
-    var moves = []
-    var sorted = false
-
-    while (!sorted) {
-        simulateIndex = 0
-        sorted = true
-
-        for (var k = 0; k < bChildren.length; k++) {
-            var wantedItem = bChildren[k]
-            var simulateItem = simulate[simulateIndex]
-
-            // Find the next item to match
-            while (simulateItem === null && simulateIndex < simulate.length) {
-                simulateItem = simulate[++simulateIndex]
-            }
-
-            if (simulateItem.key !== wantedItem.key) {
-                if (wantedItem.key) {
-                    moves.push(
-                        moveItem(simulate, simulateIndex, wantedItem.key)
-                    )
-                } else {
-                    // Move the current item to the end
-                    moves.push({
-                        from: simulateIndex,
-                        to: simulate.length
-                    })
-                    simulate.splice(
-                        simulate.length,
-                        0,
-                        simulate.splice(simulateIndex, 1)[0]
-                    )
-                }
-                sorted = false
-                break
-            } else {
-                simulateIndex++
-            }
+            sortOrder.push(j)
         }
     }
 
     return {
         children: newChildren,
-        moves: moves
+        moves: sortIndex(sortOrder) // O(N^2) worst case
     }
 }
 
-// TODO: We really want to make this more efficient
-// Finding the current index of any key in the array could be
-// faster.
-function moveItem(array, toIndex, itemKey) {
-    for (var i = 0; i < array.length; i++) {
-        var node = array[i]
+function sortIndex(arr) {
+    var arrLength = arr.length;
+    var moves = [];
 
-        if (node && node.key === itemKey) {
-            break
+    for (var i = 0; i < arrLength; i++) {
+        var item = arr[i];
+
+        if (item !== i) {
+            var desiredItemIndex = 0;
+            var swapDestination = 0;
+            var lessThanSearchHalt = item - i;
+            var lessThanSearchCount = 0;
+
+            for (var j = i + 1; j < arrLength; j++) {
+                var compareItem = arr[j];
+
+                if (compareItem < item) {
+                    lessThanSearchCount += 1;
+                    if (lessThanSearchCount === lessThanSearchHalt) {
+                        swapDestination = j + 1;
+                    }
+                }
+
+                if (compareItem === i) {
+                    desiredItemIndex = j;
+                }
+
+                if (desiredItemIndex > 0 && swapDestination > 0) {
+                    break;
+                }
+            }
+
+            if (swapDestination > desiredItemIndex + 1) {
+                moves.push(move(arr, i, swapDestination));
+                i--;
+            } else {
+                moves.push(move(arr, desiredItemIndex, i));
+            }
         }
     }
 
-    array.splice(toIndex, 0, array.splice(i, 1)[0])
+    return moves
+}
+
+function move(array, from, to) {
+    array.splice(from < to ? to - 1 : to, 0, array.splice(from, 1)[0]);
 
     return {
-        from: i,
-        to: toIndex
-    }
+        from: from,
+        to: to
+    };
 }
 
 function keyIndex(children) {

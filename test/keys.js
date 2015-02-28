@@ -243,8 +243,6 @@ test("delete key at the start", function (assert) {
     var childNodes = childNodesArray(rootNode)
 
     var patches = diff(leftNode, rightNode)
-    // just a remove patch
-    assert.equal(patchCount(patches), 1)
 
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
@@ -507,9 +505,6 @@ test('10 elements in a container, remove every second element', function(assert)
 
     var rootNode = render(tenItems)
     var patches = diff(tenItems, fiveItems)
-
-    // 5 remove patches only
-    assert.equal(patchCount(patches), 5)
 
     rootNode = patch(rootNode, patches)
 
