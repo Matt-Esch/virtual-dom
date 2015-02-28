@@ -20,7 +20,15 @@ function applyProperties(node, props, previous) {
             if (isObject(propValue)) {
                 patchObject(node, props, previous, propName, propValue);
             } else {
-                node[propName] = propValue
+                if (propName === 'xmlns') {
+                    if (node.namespace) {
+                        node.setAttributeNS(node.namespace, propName, propValue)
+                    } else {
+                        node.setAttribute(propName, propValue)
+                    }
+                } else {
+                    node[propName] = propValue
+                }
             }
         }
     }
