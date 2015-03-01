@@ -224,11 +224,12 @@ function reorder(aChildren, bChildren) {
     var bChildIndex = keyIndex(bChildren)
     var bKeys = bChildIndex.keys
     var bFree = bChildIndex.free
+    var moves = []
 
     if (bFree.length === bChildren.length) {
         return {
             children: bChildren,
-            moves: []
+            moves: moves
         }
     }
 
@@ -240,7 +241,7 @@ function reorder(aChildren, bChildren) {
     if (aFree.length === aChildren.length) {
         return {
             children: bChildren,
-            moves: []
+            moves: moves
         }
     }
 
@@ -249,7 +250,8 @@ function reorder(aChildren, bChildren) {
     var sortOrder = []
 
     var freeIndex = 0
-    var deleteIndex = bChildren.length
+    var freeCount = bFree.length
+    var deletedItems = 0
 
     // Iterate through a and match a node in b
     // O(N) time,
@@ -262,20 +264,38 @@ function reorder(aChildren, bChildren) {
                 // Match up the old keys
                 itemIndex = bKeys[aItem.key]
                 newChildren.push(bChildren[itemIndex])
+                sortOrder.push(itemIndex)
+
             } else {
                 // Remove old keyed items
-                // Essentially we are sorting the removed items to the end
-                // We should eagerly remove these in future ahead of sorting.
-                itemIndex = deleteIndex++
+                // Moving an item to -1 deletes it. We have to keep
+                // track of items have been deleted as all items are shifted
+                // to the left after removal
+                itemIndex = i - deletedItems++
                 newChildren.push(null)
+                moves.push({
+                    from: itemIndex,
+                    to: -1
+                })
             }
         } else {
             // Match the item in a with the next free item in b
-            itemIndex = bFree[freeIndex++]
-            newChildren.push(bChildren[itemIndex])
+            if (freeIndex < freeCount) {
+                itemIndex = bFree[freeIndex++]
+                newChildren.push(bChildren[itemIndex])
+                sortOrder.push(itemIndex)
+            } else {
+                // There are no free items in b to match with
+                // the free items in a, so the extra free nodes
+                // are deleted.
+                itemIndex = i - deletedItems++
+                newChildren.push(null)
+                moves.push({
+                    from: itemIndex,
+                    to: -1
+                })
+            }
         }
-
-        sortOrder.push(itemIndex)
     }
 
     var lastFreeIndex = freeIndex >= bFree.length ?
@@ -302,15 +322,25 @@ function reorder(aChildren, bChildren) {
         }
     }
 
+    sortIndex(sortOrder, moves) // O(N^2) worst case
+
+    // If the only moves we have are deletes then we can just
+    // let the delete patch remove these items.
+    if (moves.length === deletedItems) {
+        return {
+            children: newChildren,
+            moves: []
+        }
+    }
+
     return {
         children: newChildren,
-        moves: sortIndex(sortOrder) // O(N^2) worst case
+        moves: moves
     }
 }
 
-function sortIndex(arr) {
+function sortIndex(arr, moves) {
     var arrLength = arr.length;
-    var moves = [];
 
     for (var i = 0; i < arrLength; i++) {
         var item = arr[i];

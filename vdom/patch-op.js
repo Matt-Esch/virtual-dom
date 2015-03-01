@@ -123,10 +123,17 @@ function reorderChildren(domNode, moves) {
 
     for (var i = 0; i < moves.length; i++) {
         var move = moves[i]
-        domNode.insertBefore(
-            childNodes[move.from],
-            childNodes[move.to]
-        )
+        var from = move.from;
+        var to = move.to;
+
+        if (to >= 0) {
+            domNode.insertBefore(
+                childNodes[move.from],
+                childNodes[move.to]
+            )
+        } else {
+            domNode.removeChild(childNodes[from])
+        }
     }
 }
 
