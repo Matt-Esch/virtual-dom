@@ -332,23 +332,20 @@ function reorder(aChildren, bChildren) {
                         // if the remove didn't put the wanted item in place, we need to insert it
                         if (!simulateItem || simulateItem.key !== wantedItem.key) {
                             inserts.push({key: wantedItem.key, to: k})
-                            k++
                         }
                         // items are matching, so skip ahead
                         else {
                             simulateIndex++
-                            k++
                         }
                     }
                     else {
                         inserts.push({key: wantedItem.key, to: k})
-                        k++
                     }
                 }
                 else {
                     inserts.push({key: wantedItem.key, to: k})
-                    k++
                 }
+                k++
             }
             // a key in simulate has no matching wanted key, remove it
             else if (simulateItem && simulateItem.key) {
