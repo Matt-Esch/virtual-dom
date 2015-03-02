@@ -110,7 +110,7 @@ function diffChildren(a, b, patch, apply, index) {
         }
     }
 
-    if (orderedSet.moves.length > 0) {
+    if (orderedSet.moves) {
         // Reorder nodes last
         apply = appendPatch(apply, new VPatch(
             VPatch.ORDER,
@@ -224,12 +224,11 @@ function reorder(aChildren, bChildren) {
     var bChildIndex = keyIndex(bChildren)
     var bKeys = bChildIndex.keys
     var bFree = bChildIndex.free
-    var moves = []
 
     if (bFree.length === bChildren.length) {
         return {
             children: bChildren,
-            moves: moves
+            moves: null
         }
     }
 
@@ -241,13 +240,12 @@ function reorder(aChildren, bChildren) {
     if (aFree.length === aChildren.length) {
         return {
             children: bChildren,
-            moves: moves
+            moves: null
         }
     }
 
     // O(MAX(N, M)) memory
     var newChildren = []
-    var sortOrder = []
 
     var freeIndex = 0
     var freeCount = bFree.length
@@ -264,36 +262,23 @@ function reorder(aChildren, bChildren) {
                 // Match up the old keys
                 itemIndex = bKeys[aItem.key]
                 newChildren.push(bChildren[itemIndex])
-                sortOrder.push(itemIndex)
 
             } else {
                 // Remove old keyed items
-                // Moving an item to -1 deletes it. We have to keep
-                // track of items have been deleted as all items are shifted
-                // to the left after removal
                 itemIndex = i - deletedItems++
                 newChildren.push(null)
-                moves.push({
-                    from: itemIndex,
-                    to: -1
-                })
             }
         } else {
             // Match the item in a with the next free item in b
             if (freeIndex < freeCount) {
                 itemIndex = bFree[freeIndex++]
                 newChildren.push(bChildren[itemIndex])
-                sortOrder.push(itemIndex)
             } else {
                 // There are no free items in b to match with
                 // the free items in a, so the extra free nodes
                 // are deleted.
                 itemIndex = i - deletedItems++
                 newChildren.push(null)
-                moves.push({
-                    from: itemIndex,
-                    to: -1
-                })
             }
         }
     }
@@ -313,82 +298,100 @@ function reorder(aChildren, bChildren) {
                 // We are adding new items to the end and then sorting them
                 // in place. In future we should insert new items in place.
                 newChildren.push(newItem)
-                sortOrder.push(j);
             }
         } else if (j >= lastFreeIndex) {
             // Add any leftover non-keyed items
             newChildren.push(newItem)
-            sortOrder.push(j)
         }
     }
 
-    sortIndex(sortOrder, moves) // O(N^2) worst case
+    var simulate = newChildren.slice()
+    var simulateIndex = 0
+    var removes = []
+    var inserts = []
+    var simulateItem
+
+    for (var k = 0; k < bChildren.length;) {
+        var wantedItem = bChildren[k]
+        simulateItem = simulate[simulateIndex]
+
+        // remove items
+        while (simulateItem === null && simulate.length) {
+            removes.push(remove(simulate, simulateIndex, null))
+            simulateItem = simulate[simulateIndex]
+        }
+
+        if (!simulateItem || simulateItem.key !== wantedItem.key) {
+            // if we need a key in this position...
+            if (wantedItem.key) {
+                if (simulateItem && simulateItem.key) {
+                    // if an insert doesn't put this key in place, it needs to move
+                    if (bKeys[simulateItem.key] !== k + 1) {
+                        removes.push(remove(simulate, simulateIndex, simulateItem.key))
+                        simulateItem = simulate[simulateIndex]
+                        // if the remove didn't put the wanted item in place, we need to insert it
+                        if (!simulateItem || simulateItem.key !== wantedItem.key) {
+                            inserts.push({key: wantedItem.key, to: k})
+                            k++
+                        }
+                        // items are matching, so skip ahead
+                        else {
+                            simulateIndex++
+                            k++
+                        }
+                    }
+                    else {
+                        inserts.push({key: wantedItem.key, to: k})
+                        k++
+                    }
+                }
+                else {
+                    inserts.push({key: wantedItem.key, to: k})
+                    k++
+                }
+            }
+            // a key in simulate has no matching wanted key, remove it
+            else if (simulateItem && simulateItem.key) {
+                removes.push(remove(simulate, simulateIndex, simulateItem.key))
+            }
+        }
+        else {
+            simulateIndex++
+            k++
+        }
+    }
+
+    // remove all the remaining nodes from simulate
+    while(simulateIndex < simulate.length) {
+        simulateItem = simulate[simulateIndex]
+        removes.push(remove(simulate, simulateIndex, simulateItem && simulateItem.key))
+    }
 
     // If the only moves we have are deletes then we can just
     // let the delete patch remove these items.
-    if (moves.length === deletedItems) {
+    if (removes.length === deletedItems && !inserts.length) {
         return {
             children: newChildren,
-            moves: []
+            moves: null
         }
     }
 
     return {
         children: newChildren,
-        moves: moves
-    }
-}
-
-function sortIndex(arr, moves) {
-    var arrLength = arr.length;
-
-    for (var i = 0; i < arrLength; i++) {
-        var item = arr[i];
-
-        if (item !== i) {
-            var desiredItemIndex = 0;
-            var swapDestination = 0;
-            var lessThanSearchHalt = item - i;
-            var lessThanSearchCount = 0;
-
-            for (var j = i + 1; j < arrLength; j++) {
-                var compareItem = arr[j];
-
-                if (compareItem < item) {
-                    lessThanSearchCount += 1;
-                    if (lessThanSearchCount === lessThanSearchHalt) {
-                        swapDestination = j + 1;
-                    }
-                }
-
-                if (compareItem === i) {
-                    desiredItemIndex = j;
-                }
-
-                if (desiredItemIndex > 0 && swapDestination > 0) {
-                    break;
-                }
-            }
-
-            if (swapDestination > desiredItemIndex + 1) {
-                moves.push(move(arr, i, swapDestination));
-                i--;
-            } else {
-                moves.push(move(arr, desiredItemIndex, i));
-            }
+        moves: {
+            removes: removes,
+            inserts: inserts
         }
     }
-
-    return moves
 }
 
-function move(array, from, to) {
-    array.splice(from < to ? to - 1 : to, 0, array.splice(from, 1)[0]);
+function remove(arr, index, key) {
+    arr.splice(index, 1)
 
     return {
-        from: from,
-        to: to
-    };
+        from: index,
+        key: key
+    }
 }
 
 function keyIndex(children) {
