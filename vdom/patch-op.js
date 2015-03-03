@@ -134,11 +134,12 @@ function reorderChildren(domNode, moves) {
         domNode.removeChild(node)
     }
 
+    var length = childNodes.length
     for (var j = 0; j < moves.inserts.length; j++) {
         insert = moves.inserts[j]
         node = keyMap[insert.key]
         // this is the weirdest bug i've ever seen in webkit
-        domNode.insertBefore(node, insert.to >= childNodes.length ? null : childNodes[insert.to])
+        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
     }
 }
 
