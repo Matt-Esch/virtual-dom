@@ -7,6 +7,8 @@ var render = require("../create-element.js")
 
 var patchCount = require("./lib/patch-count.js")
 var assertEqualDom = require("./lib/assert-equal-dom.js")
+var nodesFromArray = require("./lib/nodes-from-array.js")
+var assertChildNodesFromArray = require("./lib/assert-childNodes-from-array.js")
 
 var VPatch = require("../vnode/vpatch.js")
 
@@ -766,49 +768,12 @@ function keyTest(itemsA, itemsB) {
     }
 }
 
-function assertChildNodesFromArray(assert, items, childNodes) {
-    // ensure that the output has the same number of nodes as required
-    assert.equal(childNodes.length, items.length)
-
-    for (var i = 0; i < items.length; i++) {
-        var key = items[i]
-        assert.equal(childNodes[i].id, key != null ? String(key) : 'no-key-' + i)
-    }
-}
-
 function childNodesArray(node) {
     var childNodes = []
     for (var i = 0; i < node.childNodes.length; i++) {
         childNodes.push(node.childNodes[i])
     }
     return childNodes
-}
-
-function nodesFromArray(array) {
-    var i =0
-    var children = []
-    var key
-    var properties
-
-    for(; i < array.length; i++) {
-        key = array[i]
-
-        if (key != null) {
-            properties = {
-                key: key,
-                id: String(key)
-            }
-        }
-        else {
-            properties = {
-                id: 'no-key-' + i
-            }
-        }
-
-        children.push(h('div', properties))
-    }
-
-    return h('div', children)
 }
 
 function getReorderPatch(patches) {
