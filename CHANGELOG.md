@@ -1,5 +1,21 @@
 # Release Notes
 
+## v2.0.0
+
+  Provides fundamental fixes and tests for reordering of keyed nodes.
+
+  Everyone is encouraged to upgrade to v2. The main caveat of this upgrade
+  is that it changes the patch format to encode all of the move data,
+  instead of previously providing the mapping and expecting patch to work
+  out which moves are required. While this might limit options for
+  reordering, on the grounds of performance and debugging it made more
+  sense.
+
+  This is considered a breaking change for that reason. However, for those
+  of you who only consume `create`, `diff`, `patch` and `h`, this will
+  not affect your usage, and upgrading is recommended due to the bugs this
+  new version fixes.
+
 ## v1.3.0
 
   - Add optimization to AttributHook to prevent resetting attributes where

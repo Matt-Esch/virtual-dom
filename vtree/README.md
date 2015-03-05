@@ -20,7 +20,7 @@ var rightNode = h("text")
 var patches = diff(leftNode, rightNode)
 /*
   -> {
-    a: lefNode,
+    a: leftNode,
     0: vpatch<REPLACE>(rightNode) // a replace operation for the first node
   }
 */
