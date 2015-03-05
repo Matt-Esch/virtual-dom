@@ -118,59 +118,28 @@ function destroyWidget(domNode, w) {
     }
 }
 
-function reorderChildren(domNode, bIndex) {
-    var children = []
+function reorderChildren(domNode, moves) {
     var childNodes = domNode.childNodes
-    var len = childNodes.length
-    var i
-    var reverseIndex = bIndex.reverse
+    var keyMap = {}
+    var node
+    var remove
+    var insert
 
-    for (i = 0; i < len; i++) {
-        children.push(domNode.childNodes[i])
+    for (var i = 0; i < moves.removes.length; i++) {
+        remove = moves.removes[i]
+        node = childNodes[remove.from]
+        if (remove.key) {
+            keyMap[remove.key] = node
+        }
+        domNode.removeChild(node)
     }
 
-    var insertOffset = 0
-    var move
-    var node
-    var insertNode
-    var chainLength
-    var insertedLength
-    for (i = 0; i < len;) {
-        move = bIndex[i]
-        chainLength = 1
-        if (move !== undefined && move !== i) {
-            // try to bring forward as long of a chain as possible
-            while (bIndex[i + chainLength] === move + chainLength) {
-                chainLength++;
-            }
-
-            node = children[move]
-            insertNode = childNodes[i + insertOffset] || null
-            insertedLength = 0
-            while (node !== insertNode && insertedLength++ < chainLength) {
-                if (!insertNode || insertNode.previousSibling !== node) {
-                    domNode.insertBefore(node, insertNode);
-                }
-                node = children[move + insertedLength];
-            }
-
-            // the element currently at this index will be moved later so increase the insert offset
-            if (reverseIndex[i] >= i + chainLength) {
-                insertOffset++
-            }
-
-            // the moved element came from the front of the array so reduce the insert offset
-            if (move + chainLength < i) {
-                insertOffset--
-            }
-        }
-
-        // element at this index is scheduled to be removed so increase insert offset
-        if (i in bIndex.removes) {
-            insertOffset++
-        }
-
-        i += chainLength
+    var length = childNodes.length
+    for (var j = 0; j < moves.inserts.length; j++) {
+        insert = moves.inserts[j]
+        node = keyMap[insert.key]
+        // this is the weirdest bug i've ever seen in webkit
+        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
     }
 }
 
