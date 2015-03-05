@@ -1,8 +1,5 @@
 //
-// This tests the performance of a potential sort approach in vtree/diff.
-// The benchmark contains the actual code which returns the sorted array
-// instead of the moves so we can more efficiently verify the results of the
-// algorithm. The move objects are still generated to preserve similarity.
+// This tests the performance of vtree/diff.
 //
 // This test in it's current configuration will test every array permutation of
 // N numbers from 0, 2, ... N  for N = 1 up to and including N = 9.
@@ -18,11 +15,6 @@
 // Essentially this test proves that the sorting algorithm for N 0-based
 // consecutive integers works for ALL permutations up to length 9.
 //
-// Some work was done to experiment on the performance of the array move
-// operation. It appears that the slice approach is always faster in modern
-// browsers. Further work is required to see how the performance profile
-// changes in other browsers.
-//
 
 var PERMUTATION_START = 1;
 var PERMUTATION_END = 9;
@@ -32,7 +24,21 @@ var SAMPLE_END = 1000;
 var SAMPLE_COUNT = 100;
 var SAMPLE_INTERVAL = 10;
 
-var move = moveSplice;  // Splice appears to be faster in benchmarks
+var nodesFromArray = require('./lib/nodes-from-array.js');
+var assertChildNodesFromArray = require('./lib/assert-childNodes-from-array.js');
+
+var diff = require('../vtree/diff');
+var render = require('../create-element.js');
+var patch = require('../patch.js');
+
+var assert = require('assert');
+
+var document = require('global/document');
+
+var testlingOutput = document.getElementById('__testling_output');
+if (testlingOutput) {
+    testlingOutput.parentNode.removeChild(testlingOutput);
+}
 
 runTest();
 // validateOnly();
@@ -60,14 +66,24 @@ function benchmarkOnly() {
 
 function runBench(permutations) {
     var count = permutations.length;
-    var arrayLength = permutations[0].length;
+    var arrayLength = permutations[0].goal.length;
 
     console.log('Benchmarking sort for length ', arrayLength);
 
     var startTime = Date.now();
 
     for (var i = 0; i < count; i++) {
-        sort(permutations[i]);
+        var item = permutations[i];
+        var goal = nodesFromArray(item.goal);
+        var shuffled = nodesFromArray(item.shuffled);
+
+        var rootNode = render(shuffled);
+        document.body.appendChild(rootNode);
+        var reflow = rootNode.offsetWidth;
+        var patches = diff(shuffled, goal);
+        patch(rootNode, patches);
+        reflow = rootNode.offsetWidth;
+        document.body.removeChild(rootNode);
     }
 
     var totalTime = Date.now() - startTime;
@@ -79,36 +95,22 @@ function runBench(permutations) {
 
 function runSort(permutations) {
     var count = permutations.length;
-    var arrayLength = permutations[0].length;
 
-    console.log('Testing sort for length ', permutations[0].length);
+    console.log('Testing sort for length ', permutations[0].goal.length);
 
     for (var i = 0; i < count; i++) {
-        var sorted = sort(permutations[i]);
-        assertSorted(sorted, arrayLength);
+        var item = permutations[i];
+        var goal = nodesFromArray(item.goal);
+        var shuffled = nodesFromArray(item.shuffled);
+
+        var rootNode = render(shuffled);
+        var patches = diff(shuffled, goal);
+        patch(rootNode, patches);
+
+        assertChildNodesFromArray(assert, item.goal, rootNode.childNodes);
     }
 
     console.log('All permutations sorted correctly');
-}
-
-function assertSorted(sorted, length) {
-    if (sorted.length !== length) {
-        throw new Error("Sorted array is longer than expected");
-    }
-
-    var testSorted = sorted.slice().sort(numericalSort);
-
-    for (var i = 0; i < testSorted.length; i++) {
-        if (testSorted[i] !== sorted[i]) {
-            console.log(sorted);
-            console.log(testSorted);
-            throw new Error("UNSORTED ARRAY");
-        }
-    }
-}
-
-function numericalSort(a, b) {
-    return a > b ? 1 : a < b ? -1 : 0;
 }
 
 function forEachPermutation(start, end, run) {
@@ -126,12 +128,17 @@ function permutator(inputArr) {
     var results = [];
 
     function permute(arr, memo) {
-        var cur, memo = memo || [];
+        memo = memo || [];
+
+        var cur;
 
         for (var i = 0; i < arr.length; i++) {
             cur = arr.splice(i, 1);
             if (arr.length === 0) {
-                results.push(memo.concat(cur));
+                results.push({
+                    goal: inputArr,
+                    shuffled: memo.concat(cur)
+                });
             }
             permute(arr.slice(), memo.concat(cur));
             arr.splice(i, 0, cur[0]);
@@ -150,8 +157,12 @@ function forEachSample(start, end, count, interval, run) {
 
         console.log("Generating", count, "sample arrays of length", i);
 
-        for (j = 0; j < count; j++) {
-            samples[j] = shuffle(createArray(i));
+        for (var j = 0; j < count; j++) {
+            var goal = createArray(i);
+            samples[j] = {
+                goal: goal,
+                shuffled: shuffle(goal)
+            };
         }
 
         run(samples);
@@ -183,89 +194,4 @@ function shuffle(array) {
     }
 
     return array;
-}
-
-
-//
-// Code to test/benchmark code begins ----------------------------------------
-//
-
-function sort(arr) {
-    var arrLength = arr.length;
-    var moves = [];
-
-    for (var i = 0; i < arrLength; i++) {
-        var item = arr[i];
-
-        if (item !== i) {
-            var desiredItemIndex = 0;
-            var swapDestination = 0;
-            var lessThanSearchHalt = item - i;
-            var lessThanSearchCount = 0;
-
-            for (var j = i + 1; j < arrLength; j++) {
-                var compareItem = arr[j];
-
-                if (compareItem < item) {
-                    lessThanSearchCount += 1;
-                    if (lessThanSearchCount === lessThanSearchHalt) {
-                        swapDestination = j + 1;
-                    }
-                }
-
-                if (compareItem === i) {
-                    desiredItemIndex = j;
-                }
-
-                if (desiredItemIndex > 0 && swapDestination > 0) {
-                    break;
-                }
-            }
-
-            if (swapDestination > desiredItemIndex + 1) {
-                moves.push(move(arr, i, swapDestination));
-                i--;
-            } else {
-                moves.push(move(arr, desiredItemIndex, i));
-            }
-        }
-    }
-
-    return arr
-}
-
-function moveSplice(array, from, to) {
-    array.splice(from < to ? to - 1 : to, 0, array.splice(from, 1)[0]);
-
-    return {
-        from: from,
-        to: to
-    };
-}
-
-
-// Shift instead of splice - slower in benchmarks
-function moveShift(arr, from, to) {
-    var fromItem = arr[from];
-    var i;
-    var end;
-
-    if (from < to) {
-        end = to - 1;
-        for (i = from; i < end; i++) {
-            arr[i] = arr[i + 1];
-        }
-    } else {
-        end = to;
-        for (i = from; i > to; i--) {
-            arr[i] = arr[i - 1];
-        }
-    }
-
-    arr[end] = fromItem;
-
-    return {
-        from: from,
-        to: to
-    };
 }

@@ -7,31 +7,14 @@ var render = require("../create-element.js")
 
 var patchCount = require("./lib/patch-count.js")
 var assertEqualDom = require("./lib/assert-equal-dom.js")
+var nodesFromArray = require("./lib/nodes-from-array.js")
+var assertChildNodesFromArray = require("./lib/assert-childNodes-from-array.js")
 
 var VPatch = require("../vnode/vpatch.js")
 
 test("keys get reordered", function (assert) {
-    var leftNode = h("div", [
-        h("div", { key: 1 }, "1"),
-        h("div", { key: 2 }, "2"),
-        h("div", { key: 3 }, "3"),
-        h("div", { key: 4 }, "4"),
-        h("div", { key: "test" }, "test"),
-        h("div", { key: 6 }, "6"),
-        h("div", { key: "good" }, "good"),
-        h("div", { key: "7" }, "7")
-    ])
-
-    var rightNode = h("div", [
-        h("div", { key: "7" }, "7"),
-        h("div", { key: 4 }, "4"),
-        h("div", { key: 3 }, "3"),
-        h("div", { key: 2 }, "2"),
-        h("div", { key: 6 }, "6"),
-        h("div", { key: "test" }, "test"),
-        h("div", { key: "good" }, "good"),
-        h("div", { key: 1 }, "1")
-    ])
+    var leftNode = nodesFromArray(["1", "2", "3", "4", "test", "6", "good", "7"])
+    var rightNode = nodesFromArray(["7", "4", "3", "2", "6", "test", "good", "1"])
 
     var rootNode = render(leftNode)
 
@@ -42,6 +25,22 @@ test("keys get reordered", function (assert) {
 
     var patches = diff(leftNode, rightNode)
     assert.equal(patchCount(patches), 1)
+    assertReorderEquals(assert, patches, {
+        removes: [
+            {from: 0, key: '1'},
+            {from: 0, key: '2'},
+            {from: 1, key: '4'},
+            {from: 2, key: '6'},
+            {from: 3, key: '7'}
+        ],
+        inserts: [
+            {to: 0, key: '7'},
+            {to: 1, key: '4'},
+            {to: 3, key: '2'},
+            {to: 4, key: '6'},
+            {to: 7, key: '1'}
+        ]
+    })
 
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
@@ -87,7 +86,10 @@ test("mix keys without keys", function (assert) {
 
     var patches = diff(leftNode, rightNode)
     assert.equal(patchCount(patches), 1)
-    assertReorderEquals(assert, patches, [{ from: 0, to: 8 }])
+    assertReorderEquals(assert, patches, {
+        removes: [{from: 0, key: '1'}],
+        inserts: [{to: 7, key: '1'}]
+    })
 
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
@@ -593,7 +595,10 @@ test('move a single element to the end', function (assert) {
 
     var patches = diff(start, end)
 
-    assertReorderEquals(assert, patches, [{ from: 1, to: 6 }])
+    assertReorderEquals(assert, patches, {
+        removes: [{key: '5', from: 1}],
+        inserts: [{key: '5', to: 5}]
+    })
     assert.end()
 })
 
@@ -603,7 +608,10 @@ test('move a single element to a later position', function (assert) {
 
     var patches = diff(start, end)
 
-    assertReorderEquals(assert, patches, [{ from: 1, to: 5 }])
+    assertReorderEquals(assert, patches, {
+        removes: [{ key: '4', from: 1 }],
+        inserts: [{ key: '4', to: 4 }]
+    })
     assert.end()
 })
 
@@ -624,10 +632,13 @@ test('move an element to a position after a removed element', function (assert) 
 
     var patches = diff(start, end)
 
-    assertReorderEquals(assert, patches, [
-        { from: 1, to: -1 },    // remove the deleted element
-        { from: 4, to: 3 }      // move the out of place element
-    ])
+    assertReorderEquals(assert, patches, {
+        removes: [
+            {from: 1, key: null},
+            {from: 4, key: '5'}
+        ],
+        inserts: [{to: 3, key: '5'}]
+    })
     assert.end()
 })
 
@@ -637,7 +648,10 @@ test('mixed keys move from i>0 to i<length-1', function (assert) {
 
     var patches = diff(start, end)
 
-    assertReorderEquals(assert, patches, [{ from: 2, to: 5 }])
+    assertReorderEquals(assert, patches, {
+        removes: [{from: 2, key: 'key'}],
+        inserts: [{to: 4, key: 'key'}]
+    })
     assert.end()
 })
 
@@ -766,49 +780,12 @@ function keyTest(itemsA, itemsB) {
     }
 }
 
-function assertChildNodesFromArray(assert, items, childNodes) {
-    // ensure that the output has the same number of nodes as required
-    assert.equal(childNodes.length, items.length)
-
-    for (var i = 0; i < items.length; i++) {
-        var key = items[i]
-        assert.equal(childNodes[i].id, key != null ? String(key) : 'no-key-' + i)
-    }
-}
-
 function childNodesArray(node) {
     var childNodes = []
     for (var i = 0; i < node.childNodes.length; i++) {
         childNodes.push(node.childNodes[i])
     }
     return childNodes
-}
-
-function nodesFromArray(array) {
-    var i =0
-    var children = []
-    var key
-    var properties
-
-    for(; i < array.length; i++) {
-        key = array[i]
-
-        if (key != null) {
-            properties = {
-                key: key,
-                id: String(key)
-            }
-        }
-        else {
-            properties = {
-                id: 'no-key-' + i
-            }
-        }
-
-        children.push(h('div', properties))
-    }
-
-    return h('div', children)
 }
 
 function getReorderPatch(patches) {

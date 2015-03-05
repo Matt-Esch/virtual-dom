@@ -120,20 +120,26 @@ function destroyWidget(domNode, w) {
 
 function reorderChildren(domNode, moves) {
     var childNodes = domNode.childNodes
+    var keyMap = {}
+    var node
+    var remove
+    var insert
 
-    for (var i = 0; i < moves.length; i++) {
-        var move = moves[i]
-        var from = move.from;
-        var to = move.to;
-
-        if (to >= 0) {
-            domNode.insertBefore(
-                childNodes[move.from],
-                childNodes[move.to]
-            )
-        } else {
-            domNode.removeChild(childNodes[from])
+    for (var i = 0; i < moves.removes.length; i++) {
+        remove = moves.removes[i]
+        node = childNodes[remove.from]
+        if (remove.key) {
+            keyMap[remove.key] = node
         }
+        domNode.removeChild(node)
+    }
+
+    var length = childNodes.length
+    for (var j = 0; j < moves.inserts.length; j++) {
+        insert = moves.inserts[j]
+        node = keyMap[insert.key]
+        // this is the weirdest bug i've ever seen in webkit
+        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
     }
 }
 
