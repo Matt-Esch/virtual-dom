@@ -26,11 +26,20 @@ function createElement(vnode, opts) {
         return null
     }
 
-    var node = (vnode.namespace === null) ?
-        doc.createElement(vnode.tagName) :
-        doc.createElementNS(vnode.namespace, vnode.tagName)
-
     var props = vnode.properties
+    var typeExtension = props.attributes && props.attributes.is
+    var node
+
+    if (typeExtension) {
+        node = (vnode.namespace === null) ?
+                doc.createElement(vnode.tagName, typeExtension) :
+                doc.createElementNS(vnode.namespace, vnode.tagName, typeExtension)
+    } else {
+        node = (vnode.namespace === null) ?
+                doc.createElement(vnode.tagName) :
+                doc.createElementNS(vnode.namespace, vnode.tagName)
+    }
+
     applyProperties(node, props)
 
     var children = vnode.children
