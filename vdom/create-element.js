@@ -1,7 +1,7 @@
 var document = require("global/document")
 
 var applyProperties = require("./apply-properties")
-
+var VPatch = require("../vnode/vpatch")
 var isVNode = require("../vnode/is-vnode.js")
 var isVText = require("../vnode/is-vtext.js")
 var isWidget = require("../vnode/is-widget.js")
@@ -31,7 +31,7 @@ function createElement(vnode, opts) {
         doc.createElementNS(vnode.namespace, vnode.tagName)
 
     var props = vnode.properties
-    applyProperties(node, props)
+    applyProperties(node, props, undefined, new VPatch(VPatch.VNODE, vnode, props))
 
     var children = vnode.children
 

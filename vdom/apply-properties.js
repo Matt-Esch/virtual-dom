@@ -3,18 +3,18 @@ var isHook = require("../vnode/is-vhook.js")
 
 module.exports = applyProperties
 
-function applyProperties(node, props, previous) {
+function applyProperties(node, props, previous, vpatch) {
     for (var propName in props) {
         var propValue = props[propName]
 
         if (propValue === undefined) {
-            removeProperty(node, propName, propValue, previous);
+            removeProperty(node, propName, propValue, previous, vpatch)
         } else if (isHook(propValue)) {
-            removeProperty(node, propName, propValue, previous)
+            removeProperty(node, propName, propValue, previous, vpatch)
             if (propValue.hook) {
                 propValue.hook(node,
                     propName,
-                    previous ? previous[propName] : undefined)
+                    previous ? previous[propName] : undefined, vpatch)
             }
         } else {
             if (isObject(propValue)) {
@@ -26,27 +26,28 @@ function applyProperties(node, props, previous) {
     }
 }
 
-function removeProperty(node, propName, propValue, previous) {
-    if (previous) {
-        var previousValue = previous[propName]
+function removeProperty(node, propName, propValue, previous, vpatch) {
+    if (!previous) {
+        return
+    }
+    var previousValue = previous[propName]
 
-        if (!isHook(previousValue)) {
-            if (propName === "attributes") {
-                for (var attrName in previousValue) {
-                    node.removeAttribute(attrName)
-                }
-            } else if (propName === "style") {
-                for (var i in previousValue) {
-                    node.style[i] = ""
-                }
-            } else if (typeof previousValue === "string") {
-                node[propName] = ""
-            } else {
-                node[propName] = null
+    if (!isHook(previousValue)) {
+        if (propName === "attributes") {
+            for (var attrName in previousValue) {
+                node.removeAttribute(attrName)
             }
-        } else if (previousValue.unhook) {
-            previousValue.unhook(node, propName, propValue)
+        } else if (propName === "style") {
+            for (var i in previousValue) {
+                node.style[i] = ""
+            }
+        } else if (typeof previousValue === "string") {
+            node[propName] = ""
+        } else {
+            node[propName] = null
         }
+    } else if (previousValue.unhook) {
+        previousValue.unhook(node, propName, propValue, vpatch)
     }
 }
 
