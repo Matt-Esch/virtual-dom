@@ -126,7 +126,7 @@ Given that we have created a `VTree`, we need some way to translate this into a 
 diff(previous:VTree, current:VTree) -> PatchObject
 ```
 
-The primary motivation behind virtual-dom is to allow us to write code indepentent of previous state. So when our application state changes we will generate a new `VTree`. The `diff` function creates a set of DOM patches that, based on the difference between the previous `VTree` and the current `VTree`, will update the previous DOM tree to match the new `VTree`.
+The primary motivation behind virtual-dom is to allow us to write code independent of previous state. So when our application state changes we will generate a new `VTree`. The `diff` function creates a set of DOM patches that, based on the difference between the previous `VTree` and the current `VTree`, will update the previous DOM tree to match the new `VTree`.
 
 ## Patch operations
 
