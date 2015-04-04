@@ -1,4 +1,5 @@
-Based on a discusison in ( https://github.com/Matt-Esch/virtual-dom/issues/104#issuecomment-68611995 ) question.
+# CSS animations
+Based on a discusison in [question](https://github.com/Matt-Esch/virtual-dom/issues/104#issuecomment-68611995).
 
 You should be activating the CSS transitions using hooks and nextTick. Here is a basic example of inserting an element through transition:
 ```javascript

@@ -23,3 +23,5 @@ Newcomers should start by reading the VNode and VText documentation, as virtual 
 [Thunk](thunk.md) - The mechanism for taking control of diffing a specific DOM sub-tree
 
 [Widget](widget.md) - The mechanism for taking control of node patching: DOM Element creation, updating, and removal.
+
+[CSS animations](css-animations.md)
