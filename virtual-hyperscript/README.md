@@ -8,8 +8,6 @@
     [![Davis Dependency status][9]][10]
 -->
 
-<!-- [![browser support][11]][12] -->
-
 A DSL for creating virtual trees
 
 ## Example
@@ -97,5 +95,3 @@ This means that `dom-delegator` will recognise the event handler
   [8]: https://gemnasium.com/Raynos/virtual-hyperscript
   [9]: https://david-dm.org/Raynos/virtual-hyperscript.png
   [10]: https://david-dm.org/Raynos/virtual-hyperscript
-  [11]: https://ci.testling.com/Raynos/virtual-hyperscript.png
-  [12]: https://ci.testling.com/Raynos/virtual-hyperscript

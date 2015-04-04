@@ -35,11 +35,6 @@ var assert = require('assert');
 
 var document = require('global/document');
 
-var testlingOutput = document.getElementById('__testling_output');
-if (testlingOutput) {
-    testlingOutput.parentNode.removeChild(testlingOutput);
-}
-
 runTest();
 // validateOnly();
 // benchmarkOnly();
