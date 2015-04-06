@@ -81,13 +81,13 @@ We can create a VTree using the objects directly in a verbose manner, or we can 
 
 ```javascript
 var VNode = require('virtual-dom/vnode/vnode');
-var VText = require('virtual-dom/vnode/vtext')
+var VText = require('virtual-dom/vnode/vtext');
 
 function render(data) {
     return new VNode('div', {
         className: "greeting"
     }, [
-        new VText("Hello " + String(data.name));
+        new VText("Hello " + String(data.name))
     ]);
 }
 
