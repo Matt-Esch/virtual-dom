@@ -126,41 +126,42 @@ test("hooks get called in patch", function (assert) {
 })
 
 test("hooks are called with DOM node, property name, and previous/next value", function (assert) {
-    var hookArgs = [];
-    var unhookArgs = [];
-
-    function Hook() {}
+    function Hook(name) {
+        this.name = name
+        this.hookArgs = []
+        this.unhookArgs = []
+    }
     Hook.prototype.hook = function() {
-      hookArgs.push([].slice.call(arguments, 0))
+      this.hookArgs.push([].slice.call(arguments, 0))
     }
     Hook.prototype.unhook = function() {
-      unhookArgs.push([].slice.call(arguments, 0))
+      this.unhookArgs.push([].slice.call(arguments, 0))
     }
 
-    var hook1 = new Hook()
-    var hook2 = new Hook()
+    var hook1 = new Hook('hook1')
+    var hook2 = new Hook('hook2')
 
-    var first = h("div", {hook: hook1})
-    var second = h("div", {hook: hook2})
+    var first = h("div", { id: 'first', hook: hook1 })
+    var second = h("div", { id: 'second', hook: hook2 })
     var third = h("div")
 
     var elem = create(first)
-    assert.equal(hookArgs.length, 1)
-    assert.deepEqual(hookArgs[0], [elem, 'hook', undefined])
-    assert.equal(unhookArgs.length, 0)
+    assert.equal(hook1.hookArgs.length, 1)
+    assert.deepEqual(hook1.hookArgs[0], [elem, 'hook', undefined])
+    assert.equal(hook1.unhookArgs.length, 0)
 
     var patches = diff(first, second)
     elem = patch(elem, patches)
-    assert.equal(hookArgs.length, 2)
-    assert.deepEqual(hookArgs[1], [elem, 'hook', hook1])
-    assert.equal(unhookArgs.length, 1)
-    assert.deepEqual(unhookArgs[0], [elem, 'hook', hook2])
+    assert.equal(hook2.hookArgs.length, 1)
+    assert.deepEqual(hook2.hookArgs[0], [elem, 'hook', hook1])
+    assert.equal(hook1.unhookArgs.length, 1)
+    assert.deepEqual(hook1.unhookArgs[0], [elem, 'hook', hook2])
 
     patches = diff(second, third)
     elem = patch(elem, patches)
-    assert.equal(hookArgs.length, 2)
-    assert.equal(unhookArgs.length, 2)
-    assert.deepEqual(unhookArgs[1], [elem, 'hook', undefined])
+    assert.equal(hook2.hookArgs.length, 1)
+    assert.equal(hook2.unhookArgs.length, 1)
+    assert.deepEqual(hook2.unhookArgs[0], [elem, 'hook', undefined])
 
     assert.end()
 })
