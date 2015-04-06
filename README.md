@@ -145,6 +145,7 @@ virtual-dom is heavily inspired by the inner workings of React by facebook. This
 
 * [html2hscript](https://github.com/twilson63/html2hscript) - Parse HTML into hyperscript
 * [html2hscript.herokuapp.com](http://html2hscript.herokuapp.com/) - Online Tool that converts html snippets to hyperscript
+* [html2hyperscript](https://github.com/unframework/html2hyperscript) - Original commandline utility to convert legacy HTML markup into hyperscript
 
 
 [1]: https://secure.travis-ci.org/Matt-Esch/virtual-dom.svg
