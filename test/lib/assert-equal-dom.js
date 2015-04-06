@@ -22,6 +22,8 @@ function areEqual(a, b) {
             key !== "self" &&
             key !== "outerHTML" &&
             key !== "innerHTML" &&
+            key !== "spellcheck" &&
+            key !== "bind" &&
             "" + parseInt(key, 10) !== key
         ) {
             if (key === "ownerDocument") {
