@@ -35,15 +35,15 @@
     "x-is-string": "0.1.0"
   },
   "devDependencies": {
-    "browserify": "^8.1.0",
-    "istanbul": "^0.3.4",
-    "min-document": "^2.13.0",
-    "opn": "^1.0.0",
-    "run-browser": "git://github.com/Raynos/run-browser",
-    "tap-dot": "^0.2.1",
-    "tap-spec": "^2.1.1",
-    "tape": "^3.0.3",
-    "zuul": "^1.10.0"
+    "browserify": "^9.0.7",
+    "istanbul": "^0.3.13",
+    "min-document": "^2.14.0",
+    "opn": "^1.0.1",
+    "run-browser": "^2.0.2",
+    "tap-dot": "^1.0.0",
+    "tap-spec": "^3.0.0",
+    "tape": "^4.0.0",
+    "zuul": "^2.1.1"
   },
   "licenses": [
     {
