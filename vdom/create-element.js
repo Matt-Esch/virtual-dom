@@ -26,6 +26,7 @@ function createElement(vnode, opts) {
         return null
     }
 
+    var tagName = vnode.tagName || "span"
     var node = (vnode.namespace === null) ?
         doc.createElement(vnode.tagName) :
         doc.createElementNS(vnode.namespace, vnode.tagName)
@@ -33,7 +34,7 @@ function createElement(vnode, opts) {
     var props = vnode.properties
     applyProperties(node, props)
 
-    var children = vnode.children
+    var children = vnode.children || []
 
     for (var i = 0; i < children.length; i++) {
         var childNode = createElement(children[i], opts)
