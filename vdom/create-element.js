@@ -26,7 +26,7 @@ function createElement(vnode, opts) {
         return null
     }
 
-    var tagName = vnode.tagName || "span"
+    var tagName = vnode.tagName || "div"
     var node = (vnode.namespace === null) ?
         doc.createElement(vnode.tagName) :
         doc.createElementNS(vnode.namespace, vnode.tagName)
