@@ -12,6 +12,8 @@ virtual-dom consists of four main parts:
 
 Newcomers should start by reading the VNode and VText documentation, as virtual nodes are central to the operation of virtual-dom. Hooks, Thunks, and Widgets are more advanced features, and you will find both documentation of their interfaces and several examples on their respective pages.
 
+The Special Topics section covers frequently asked questions and features that don't have a good fit in the core documentation.
+
 ## Contents
 
 [VNode](vnode.md) - A representation of a DOM element
@@ -24,4 +26,8 @@ Newcomers should start by reading the VNode and VText documentation, as virtual 
 
 [Widget](widget.md) - The mechanism for taking control of node patching: DOM Element creation, updating, and removal.
 
-[CSS animations](css-animations.md)
+## Special Topics
+
+[CSS animations](css-animations.md) - Some tips on how to approach animations using hooks
+
+[Custom Patch/Render](custom-renderer.md) - How to customize the way patches happen and DOM elements are created
