@@ -11,7 +11,7 @@ var isHook = require('../vnode/is-vhook');
 var isVThunk = require('../vnode/is-thunk');
 
 var parseTag = require('./parse-tag.js');
-var softSetHook = require('./hooks/soft-set-hook.js');
+var propertyHook = require('./hooks/property-hook.js');
 var evHook = require('./hooks/ev-hook.js');
 
 module.exports = h;
@@ -47,7 +47,7 @@ function h(tagName, properties, children) {
         props.value !== undefined &&
         !isHook(props.value)
     ) {
-        props.value = softSetHook(props.value);
+        props.value = propertyHook(props.value);
     }
 
     transformProperties(props);
