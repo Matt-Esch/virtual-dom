@@ -2,32 +2,32 @@
 Thunks allow the user to take control of the diff'ing process for a specific dom tree, usually to avoid doing calculations you know are unneeded, such as diff'ing a tree you know hasn't changed.
 
 ## Thunk Interface
-A Thunk needs to be an object with two keys
+A Thunk needs to be an object with two keys.
 
 **type**   
-must be the string "Thunk"
+must be the string `"Thunk"`.
 
 **render**   
-Function that returns a VNode, Widget, or VText.
+Function that returns a `VNode`, `Widget`, or `VText`.
 
 ```javascript
 // Boilerplate Thunk
 var Thunk = function (){}
 Thunk.prototype.type = "Thunk"
-Thunk.prototype.render = function(previous){}
+Thunk.prototype.render = function (previous){}
 ```
 
 ## Render Method Arguments
 When diff is run, the render method is passed a single argument.
 
 **previous**  
-The previous VNode, Thunk, Widget, or VText that the Thunk is being diffed against
+The previous `VNode`, `Thunk`, `Widget`, or `VText` that the Thunk is being diffed against
 
-## The Special "vnode" Property
+## The Special `vnode` Property
 When `render` is called by `diff`, it will create a cache of whatever it returns in the key `vnode`. When implementing the Thunk interface, don't define a `vnode` key, as it will be overwritten! You should use the `vnode` property when render is provided with the `previous` argument, and you'd like to return the cached copy to prevent a Thunk from re-rendering. We give an example of this in the ConstantlyThunk implementation below.
 
 ## Simple Example
-Here we implement a simple Thunk called ConstantlyThunk. Any instance of ConstantlyThunk that gets diffed with another instance of ConstantlyThunk will return the value of the previous ConstantlyThunk, preventing a patch from being generated.
+Here we implement a simple Thunk called `ConstantlyThunk`. Any instance of `ConstantlyThunk` that gets diffed with another instance of `ConstantlyThunk` will return the value of the previous `ConstantlyThunk`, preventing a patch from being generated.
 
 ```javascript
 // Only the first instance of this Thunk will be shown. 
@@ -58,9 +58,9 @@ patch(thunkElem, patches)
 ```
 
 ## Full Example
-Here we implement GenericThunk, a simplified version of Raynos' [immutable-thunk](https://github.com/Raynos/vdom-thunk/blob/master/immutable-thunk.js)
+Here we implement `GenericThunk`, a simplified version of Raynos' [immutable-thunk](https://github.com/Raynos/vdom-thunk/blob/master/immutable-thunk.js).
 
-It takes a rendering function, a comparison function, and a state. When it's being diffed vs. another instance of GenericThunk, it will use the comparison function to look at the new state and old state, and decide if it's ok to update.
+It takes a rendering function, a comparison function, and a state. When it's being diffed vs. another instance of `GenericThunk`, it will use the comparison function to look at the new state and old state, and decide if it's ok to update.
 
 ```javascript
 var diff = require("virtual-dom").diff
@@ -137,8 +137,8 @@ setTimeout(function() {
     update(BlueColoredThunk)
   },
   2000)
-
 ```
 
 ## Other Resources
-Raynos has created a library for making Thunks at [vdom-thunk](https://github.com/Raynos/vdom-thunk).
+* [vdom-thunk](https://github.com/Raynos/vdom-thunk) by Raynos,
+* [vnode-immutable-thunk](https://github.com/kuraga/vnode-immutable-thunk) by Alexander Kurakin.
