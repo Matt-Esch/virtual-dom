@@ -60,7 +60,7 @@ setInterval(function () {
 
 ## Documentation
 
-You can find the documentation for the seperate components
+You can find the documentation for the separate components
   in their READMEs
 
  - For `create-element.js` see the [vdom README](vdom/README.md)
@@ -73,7 +73,7 @@ For information about the type signatures of these modules feel
 
 ## DOM model
 
-`virtual-dom` exposes a set of objects designed for representing DOM nodes. A "Document Object Model Model" might seem like a strange term, but it is exactly that. It's a native JavaScript tree structure that represents a native DOM node tree. We call this a **VTree**
+`virtual-dom` exposes a set of objects designed for representing DOM nodes. A "Document Object Model Model" might seem like a strange term, but it is exactly that. It's a native JavaScript tree structure that represents a native DOM node tree. We call this a **VTree**.
 
 We can create a VTree using the objects directly in a verbose manner, or we can use the more terse virtual-hyperscript.
 
