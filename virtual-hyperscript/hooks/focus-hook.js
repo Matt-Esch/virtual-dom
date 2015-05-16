@@ -18,3 +18,5 @@ MutableFocusHook.prototype.hook = function (node) {
         }
     });
 };
+
+MutableFocusHook.prototype.type = 'MutableFocusHook';

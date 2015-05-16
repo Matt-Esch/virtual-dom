@@ -15,3 +15,5 @@ SoftSetHook.prototype.hook = function (node, propertyName) {
         node[propertyName] = this.value;
     }
 };
+
+SoftSetHook.prototype.type = 'SoftSetHook';

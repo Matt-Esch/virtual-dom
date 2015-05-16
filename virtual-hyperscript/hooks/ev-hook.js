@@ -25,3 +25,5 @@ EvHook.prototype.unhook = function(node, propertyName) {
 
     es[propName] = undefined;
 };
+
+EvHook.prototype.type = 'EvHook';
