@@ -66,6 +66,10 @@ function VirtualNode(tagName, properties, children, key, namespace) {
     this.hasThunks = hasThunks
     this.hooks = hooks
     this.descendantHooks = descendantHooks
+
+    // this allows diffs to be send over the wire in pure json
+    this.version = version
+    this.type = "VirtualNode"
 }
 
 VirtualNode.prototype.version = version

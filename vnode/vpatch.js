@@ -16,6 +16,9 @@ function VirtualPatch(type, vNode, patch) {
     this.type = Number(type)
     this.vNode = vNode
     this.patch = patch
+
+    // this allows diffs to be send over the wire in pure json
+    this.version = version
 }
 
 VirtualPatch.prototype.version = version
