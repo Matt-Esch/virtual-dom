@@ -59,7 +59,7 @@ var interval = setInterval(function () {
         clearInterval(interval); // It has to stop at some point, right?
 }, 1000);
 ```
-[View on RequireBin](http://requirebin.com/?gist=5492847b9a9025e64bab)
+[View on RequireBin](http://requirebin.com/?gist=47becaf367761e8361a5)
 
 ## Documentation
 
