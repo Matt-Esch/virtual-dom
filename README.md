@@ -47,13 +47,16 @@ var rootNode = createElement(tree);     // Create an initial root DOM node ...
 document.body.appendChild(rootNode);    // ... and it should be in the document
 
 // 3: Wire up the update logic
-setInterval(function () {
-      count++;
-
-      var newTree = render(count);
-      var patches = diff(tree, newTree);
-      rootNode = patch(rootNode, patches);
-      tree = newTree;
+var interval = setInterval(function () {
+    count++;
+      
+    var newTree = render(count);
+    var patches = diff(tree, newTree);
+    rootNode = patch(rootNode, patches);
+    tree = newTree;
+        
+    if (count >= 1000)
+        clearInterval(interval); // It has to stop at some point, right?
 }, 1000);
 ```
 [View on RequireBin](http://requirebin.com/?gist=5492847b9a9025e64bab)
