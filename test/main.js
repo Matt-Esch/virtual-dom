@@ -61,8 +61,8 @@ test("class selectors combine with className property", function (assert) {
 })
 
 test("can use id selector", function (assert) {
-    var node = h("div.pretty")
-    assertNode(assert, node, "DIV", { className: "pretty" })
+    var node = h("div#important")
+    assertNode(assert, node, "DIV", { id: "important" })
     assert.end()
 })
 
