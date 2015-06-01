@@ -54,6 +54,12 @@ test("can use class selector", function (assert) {
     assert.end()
 })
 
+test("can use non-ascii class selector", function (assert) {
+    var node = h("div.ΑΒΓΔΕΖ")
+    assertNode(assert, node, "DIV", { className: "ΑΒΓΔΕΖ" })
+    assert.end()
+})
+
 test("class selectors combine with className property", function (assert) {
     var node = h("div.very", { className: "pretty" })
     assertNode(assert, node, "DIV", { className: "very pretty" })
@@ -63,6 +69,12 @@ test("class selectors combine with className property", function (assert) {
 test("can use id selector", function (assert) {
     var node = h("div#important")
     assertNode(assert, node, "DIV", { id: "important" })
+    assert.end()
+})
+
+test("can use non-ascii id selector", function (assert) {
+    var node = h("div#ΑΒΓΔΕΖ")
+    assertNode(assert, node, "DIV", { id: "ΑΒΓΔΕΖ" })
     assert.end()
 })
 
