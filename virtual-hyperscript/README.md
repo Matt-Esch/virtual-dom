@@ -31,7 +31,7 @@ If you pass it a selector like `span.foo.bar#some-id` it will
   properties of the `properties` object.
 
 If you pass it an array of `children` it will have child
-  nodes, normally ou want to create children with `h()`.
+  nodes, normally you want to create children with `h()`.
 
 If you pass it a string it will create an array containing
   a single child node that is a text element.
@@ -57,6 +57,10 @@ If you call `h` with `h('div', { namespace: "http://www.w3.org/2000/svg" })`
 #### `ev-*`
 
 **Note:** You must create an instance of `dom-delegator` for `ev-*` to work.
+
+```js
+let dom-delegator = require('virtual-dom/dom-delegator');
+```
 
 If you call `h` with `h('div', { ev-click: function (ev) { } })` it
   will store the event handler on the dom element. It will not
