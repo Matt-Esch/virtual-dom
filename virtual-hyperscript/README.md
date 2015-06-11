@@ -60,6 +60,7 @@ If you call `h` with `h('div', { namespace: "http://www.w3.org/2000/svg" })`
 
 ```js
 let dom-delegator = require('virtual-dom/dom-delegator');
+let d = delegator();
 ```
 
 If you call `h` with `h('div', { ev-click: function (ev) { } })` it
