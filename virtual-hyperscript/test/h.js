@@ -111,6 +111,16 @@ test("h with undefined", function (assert) {
     assert.end()
 })
 
+test("h with false", function (assert) {
+    var node = h("div", false)
+    var node2 = h("div", [false])
+
+    assert.equal(node.children.length, 0)
+    assert.equal(node2.children.length, 0)
+
+    assert.end()
+})
+
 test("h with foreign object", function (assert) {
     var errorSingleChild
 
