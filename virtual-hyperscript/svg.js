@@ -3,7 +3,7 @@
 var isArray = require('x-is-array');
 
 var h = require('./index.js');
-
+var parseTag = require('./parse-tag.js');
 
 var SVGAttributeNamespace = require('./svg-attribute-namespace');
 var attributeHook = require('./hooks/attribute-hook');
@@ -23,10 +23,19 @@ function svg(tagName, properties, children) {
     // set namespace for svg
     properties.namespace = SVG_NAMESPACE;
 
+    // parse tag now to support className
+    var tag = parseTag(tagName, properties);
+
     var attributes = properties.attributes || (properties.attributes = {});
 
     for (var key in properties) {
         if (!properties.hasOwnProperty(key)) {
+            continue;
+        }
+
+        if (key === 'className') {
+            attributes['class'] = properties[key];
+            properties[key] = undefined;
             continue;
         }
 
@@ -54,7 +63,7 @@ function svg(tagName, properties, children) {
         properties[key] = undefined
     }
 
-    return h(tagName, properties, children);
+    return h(tag, properties, children);
 }
 
 function isChildren(x) {
