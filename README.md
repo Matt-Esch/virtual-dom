@@ -1,5 +1,7 @@
 # virtual-dom
 
+[![Join the chat at https://gitter.im/Matt-Esch/virtual-dom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Matt-Esch/virtual-dom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A JavaScript [DOM model](#dom-model) supporting [element creation](#element-creation), [diff computation](#diff-computation) and [patch operations](#patch-operations) for efficient re-rendering
 
 [![build status][1]][2]
