@@ -6,6 +6,7 @@ require("./keys.js")
 require("./thunk.js")
 require("./style.js")
 require("./attributes")
+require("./non-string.js")
 
 require("../vdom/test/")
 require("../vtree/test/")
