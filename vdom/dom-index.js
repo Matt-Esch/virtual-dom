@@ -4,6 +4,8 @@
 // We only recurse into a DOM node if we know that it contains a child of
 // interest.
 
+var Dom = require("../polymer-dom.js")
+
 var noChild = {}
 
 module.exports = domIndex
@@ -30,7 +32,7 @@ function recurse(rootNode, tree, indices, nodes, rootIndex) {
 
         if (vChildren) {
 
-            var childNodes = rootNode.childNodes
+            var childNodes = Dom(rootNode).childNodes
 
             for (var i = 0; i < tree.children.length; i++) {
                 rootIndex += 1

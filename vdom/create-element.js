@@ -7,6 +7,8 @@ var isVText = require("../vnode/is-vtext.js")
 var isWidget = require("../vnode/is-widget.js")
 var handleThunk = require("../vnode/handle-thunk.js")
 
+var Dom = require("../polymer-dom.js")
+
 module.exports = createElement
 
 function createElement(vnode, opts) {
@@ -38,7 +40,7 @@ function createElement(vnode, opts) {
     for (var i = 0; i < children.length; i++) {
         var childNode = createElement(children[i], opts)
         if (childNode) {
-            node.appendChild(childNode)
+            Dom(node).appendChild(childNode)
         }
     }
 

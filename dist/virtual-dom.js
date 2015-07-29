@@ -254,6 +254,8 @@ module.exports = patch
 var isObject = require("is-object")
 var isHook = require("../vnode/is-vhook.js")
 
+var Dom = require("../polymer-dom.js")
+
 module.exports = applyProperties
 
 function applyProperties(node, props, previous) {
@@ -286,7 +288,7 @@ function removeProperty(node, propName, propValue, previous) {
         if (!isHook(previousValue)) {
             if (propName === "attributes") {
                 for (var attrName in previousValue) {
-                    node.removeAttribute(attrName)
+                    Dom(node).removeAttribute(attrName)
                 }
             } else if (propName === "style") {
                 for (var i in previousValue) {
@@ -312,9 +314,9 @@ function patchObject(node, props, previous, propName, propValue) {
             var attrValue = propValue[attrName]
 
             if (attrValue === undefined) {
-                node.removeAttribute(attrName)
+                Dom(node).removeAttribute(attrName)
             } else {
-                node.setAttribute(attrName, attrValue)
+                Dom(node).setAttribute(attrName, attrValue)
             }
         }
 
@@ -359,6 +361,8 @@ var isVText = require("../vnode/is-vtext.js")
 var isWidget = require("../vnode/is-widget.js")
 var handleThunk = require("../vnode/handle-thunk.js")
 
+var Dom = require("../polymer-dom.js")
+
 module.exports = createElement
 
 function createElement(vnode, opts) {
@@ -390,7 +394,7 @@ function createElement(vnode, opts) {
     for (var i = 0; i < children.length; i++) {
         var childNode = createElement(children[i], opts)
         if (childNode) {
-            node.appendChild(childNode)
+            Dom(node).appendChild(childNode)
         }
     }
 
@@ -405,6 +409,8 @@ function createElement(vnode, opts) {
 // interest.
 
 var noChild = {}
+
+var Dom = require("../polymer-dom.js")
 
 module.exports = domIndex
 
@@ -430,7 +436,7 @@ function recurse(rootNode, tree, indices, nodes, rootIndex) {
 
         if (vChildren) {
 
-            var childNodes = rootNode.childNodes
+            var childNodes = Dom(rootNode).childNodes
 
             for (var i = 0; i < tree.children.length; i++) {
                 rootIndex += 1
@@ -492,6 +498,8 @@ var VPatch = require("../vnode/vpatch.js")
 
 var updateWidget = require("./update-widget")
 
+var Dom = require("../polymer-dom.js")
+
 module.exports = applyPatch
 
 function applyPatch(vpatch, domNode, renderOptions) {
@@ -525,10 +533,10 @@ function applyPatch(vpatch, domNode, renderOptions) {
 }
 
 function removeNode(domNode, vNode) {
-    var parentNode = domNode.parentNode
+    var parentNode = Dom(domNode).parentNode
 
     if (parentNode) {
-        parentNode.removeChild(domNode)
+        Dom(parentNode).removeChild(domNode)
     }
 
     destroyWidget(domNode, vNode);
@@ -540,7 +548,7 @@ function insertNode(parentNode, vNode, renderOptions) {
     var newNode = renderOptions.render(vNode, renderOptions)
 
     if (parentNode) {
-        parentNode.appendChild(newNode)
+        Dom(parentNode).appendChild(newNode)
     }
 
     return parentNode
@@ -553,7 +561,7 @@ function stringPatch(domNode, leftVNode, vText, renderOptions) {
         domNode.replaceData(0, domNode.length, vText.text)
         newNode = domNode
     } else {
-        var parentNode = domNode.parentNode
+        var parentNode = Dom(domNode).parentNode
         newNode = renderOptions.render(vText, renderOptions)
 
         if (parentNode && newNode !== domNode) {
@@ -574,7 +582,7 @@ function widgetPatch(domNode, leftVNode, widget, renderOptions) {
         newNode = renderOptions.render(widget, renderOptions)
     }
 
-    var parentNode = domNode.parentNode
+    var parentNode = Dom(domNode).parentNode
 
     if (parentNode && newNode !== domNode) {
         parentNode.replaceChild(newNode, domNode)
@@ -588,7 +596,7 @@ function widgetPatch(domNode, leftVNode, widget, renderOptions) {
 }
 
 function vNodePatch(domNode, leftVNode, vNode, renderOptions) {
-    var parentNode = domNode.parentNode
+    var parentNode = Dom(domNode).parentNode
     var newNode = renderOptions.render(vNode, renderOptions)
 
     if (parentNode && newNode !== domNode) {
@@ -605,7 +613,7 @@ function destroyWidget(domNode, w) {
 }
 
 function reorderChildren(domNode, moves) {
-    var childNodes = domNode.childNodes
+    var childNodes = Dom(domNode).childNodes
     var keyMap = {}
     var node
     var remove
@@ -617,7 +625,7 @@ function reorderChildren(domNode, moves) {
         if (remove.key) {
             keyMap[remove.key] = node
         }
-        domNode.removeChild(node)
+        Dom(domNode).removeChild(node)
     }
 
     var length = childNodes.length
@@ -625,13 +633,13 @@ function reorderChildren(domNode, moves) {
         insert = moves.inserts[j]
         node = keyMap[insert.key]
         // this is the weirdest bug i've ever seen in webkit
-        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
+        Dom(domNode).insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
     }
 }
 
 function replaceRoot(oldRoot, newRoot) {
-    if (oldRoot && newRoot && oldRoot !== newRoot && oldRoot.parentNode) {
-        oldRoot.parentNode.replaceChild(newRoot, oldRoot)
+    if (oldRoot && newRoot && oldRoot !== newRoot && Dom(oldRoot).parentNode) {
+        Dom(oldRoot).parentNode.replaceChild(newRoot, oldRoot)
     }
 
     return newRoot;

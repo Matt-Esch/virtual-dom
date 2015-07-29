@@ -10,7 +10,7 @@ var version = require("../vnode/version")
 var assertEqualDom = require("./lib/assert-equal-dom.js")
 var patchCount = require("./lib/patch-count.js")
 
-
+var Dom = require("../polymer-dom.js")
 
 // VirtualNode tests
 test("Node is a function", function (assert) {
@@ -164,8 +164,8 @@ test("render text node", function (assert) {
     assert.equal(dom.tagName, "SPAN")
     assert.notOk(dom.id)
     assert.notOk(dom.className)
-    assert.equal(dom.childNodes.length, 1)
-    assert.equal(dom.childNodes[0].data, "hello")
+    assert.equal(Dom(dom).childNodes.length, 1)
+    assert.equal(Dom(dom).childNodes[0].data, "hello")
     assert.end()
 })
 
@@ -175,7 +175,7 @@ test("render div", function (assert) {
     assert.notOk(dom.id)
     assert.notOk(dom.className)
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.childNodes.length, 0)
+    assert.equal(Dom(dom).childNodes.length, 0)
     assert.end()
 })
 
@@ -185,7 +185,7 @@ test("node id is applied correctly", function (assert) {
     assert.equal(dom.id, "important")
     assert.notOk(dom.className)
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.childNodes.length, 0)
+    assert.equal(Dom(dom).childNodes.length, 0)
     assert.end()
 })
 
@@ -195,7 +195,7 @@ test("node class name is applied correctly", function (assert) {
     assert.notOk(dom.id)
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.childNodes.length, 0)
+    assert.equal(Dom(dom).childNodes.length, 0)
     assert.end()
 })
 
@@ -205,7 +205,7 @@ test("mixture of node/classname applied correctly", function (assert) {
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "very pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.childNodes.length, 0)
+    assert.equal(Dom(dom).childNodes.length, 0)
     assert.end()
 })
 
@@ -220,7 +220,7 @@ test("style object is applied correctly", function (assert) {
     assert.equal(dom.tagName, "DIV")
     assert.equal(dom.style.border, style("border", "1px solid rgb(0, 0, 0)"))
     assert.equal(dom.style.padding, style("padding", "2px"))
-    assert.equal(dom.childNodes.length, 0)
+    assert.equal(Dom(dom).childNodes.length, 0)
     assert.end()
 })
 
@@ -237,9 +237,9 @@ test("children are added", function (assert) {
 
     var dom = render(vdom)
 
-    assert.equal(dom.childNodes.length, 3)
+    assert.equal(Dom(dom).childNodes.length, 3)
 
-    var nodes = dom.childNodes
+    var nodes = Dom(dom).childNodes
     assert.equal(nodes.length, 3)
     assert.equal(nodes[0].tagName, "DIV")
     assert.equal(nodes[1].data, "hello")
@@ -274,7 +274,7 @@ test("incompatible children are ignored", function (assert) {
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
     assert.equal(dom.style.cssText, style("cssText", "color: red;"))
-    assert.equal(dom.childNodes.length, 0)
+    assert.equal(Dom(dom).childNodes.length, 0)
     assert.end()
 })
 
@@ -333,7 +333,7 @@ test("injected warning is used", function (assert) {
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
     assert.equal(dom.style.cssText, style("cssText", "color: red;"))
-    assert.equal(dom.childNodes.length, 0)
+    assert.equal(Dom(dom).childNodes.length, 0)
     assert.equal(i, 2)
     assert.end()
 })
@@ -451,8 +451,8 @@ test("reuse dom node without breaking", function (assert) {
 test("Allow empty textnode", function (assert) {
     var empty = h("span", "")
     var rootNode = render(empty)
-    assert.equal(rootNode.childNodes.length, 1)
-    assert.equal(rootNode.childNodes[0].data, "")
+    assert.equal(Dom(rootNode).childNodes.length, 1)
+    assert.equal(Dom(rootNode).childNodes[0].data, "")
     assert.end()
 })
 
@@ -463,8 +463,8 @@ test("Can replace vnode with vtext", function (assert) {
 
     var rootNode = render(leftNode)
 
-    assert.equal(rootNode.childNodes.length, 1)
-    assert.equal(rootNode.childNodes[0].nodeType, 1)
+    assert.equal(Dom(rootNode).childNodes.length, 1)
+    assert.equal(Dom(rootNode).childNodes[0].nodeType, 1)
 
     var patches = diff(leftNode, rightNode)
 
@@ -472,8 +472,8 @@ test("Can replace vnode with vtext", function (assert) {
 
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, 1)
-    assert.equal(newRoot.childNodes[0].nodeType, 3)
+    assert.equal(Dom(newRoot).childNodes.length, 1)
+    assert.equal(Dom(newRoot).childNodes[0].nodeType, 3)
 
     assert.end()
 })
@@ -525,7 +525,7 @@ test("Nested widget is initialised on render", function (assert) {
     var result = render(vdom)
 
     assert.equal(initCount, 1)
-    assert.equal(result.childNodes[1].childNodes[0], testNode)
+    assert.equal(Dom(result).childNodes[1].childNodes[0], testNode)
     assert.end()
 })
 
@@ -603,7 +603,7 @@ test("Patch nested widgets", function (assert) {
         updateCount++
         assert.equal(this.state, rightState)
         assert.equal(leftNode.state, leftState)
-        assert.equal(dom, domNode.childNodes[1].childNodes[0])
+        assert.equal(dom, Dom(domNode).childNodes[1].childNodes[0])
         patch(dom, diff(leftNode.vdom, this.vdom))
     }
 
@@ -667,8 +667,8 @@ test("Can replace stateful widget with vnode", function (assert) {
 
     var rootNode = render(leftNode)
 
-    assert.equal(rootNode.childNodes.length, 1)
-    assert.equal(rootNode.childNodes[0].className, 'widget')
+    assert.equal(Dom(rootNode).childNodes.length, 1)
+    assert.equal(Dom(rootNode).childNodes[0].className, 'widget')
 
     var patches = diff(leftNode, rightNode)
 
@@ -676,8 +676,8 @@ test("Can replace stateful widget with vnode", function (assert) {
 
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, 1)
-    assert.equal(newRoot.childNodes[0].className, 'vnode')
+    assert.equal(Dom(newRoot).childNodes.length, 1)
+    assert.equal(Dom(newRoot).childNodes[0].className, 'vnode')
 
     assert.end()
 })
@@ -697,8 +697,8 @@ test("Can replace vnode with stateful widget with vnode", function (assert) {
 
     var rootNode = render(leftNode)
 
-    assert.equal(rootNode.childNodes.length, 1)
-    assert.equal(rootNode.childNodes[0].className, 'vnode')
+    assert.equal(Dom(rootNode).childNodes.length, 1)
+    assert.equal(Dom(rootNode).childNodes[0].className, 'vnode')
 
     var patches = diff(leftNode, rightNode)
 
@@ -706,8 +706,8 @@ test("Can replace vnode with stateful widget with vnode", function (assert) {
 
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, 1)
-    assert.equal(newRoot.childNodes[0].className, 'widget')
+    assert.equal(Dom(newRoot).childNodes.length, 1)
+    assert.equal(Dom(newRoot).childNodes[0].className, 'widget')
 
     assert.end()
 })
@@ -939,11 +939,11 @@ test("Widget update can replace domNode", function (assert) {
     var rootNode
 
     rootNode = render(initTree)
-    assert.equal(rootNode.childNodes[0], widgetInit)
+    assert.equal(Dom(rootNode).childNodes[0], widgetInit)
 
     patch(rootNode, diff(initTree, updateTree))
 
-    assert.equal(rootNode.childNodes[0], widgetUpdate)
+    assert.equal(Dom(rootNode).childNodes[0], widgetUpdate)
     assert.end()
 })
 

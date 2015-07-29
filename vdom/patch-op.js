@@ -5,6 +5,8 @@ var VPatch = require("../vnode/vpatch.js")
 
 var updateWidget = require("./update-widget")
 
+var Dom = require("../polymer-dom.js")
+
 module.exports = applyPatch
 
 function applyPatch(vpatch, domNode, renderOptions) {
@@ -38,10 +40,10 @@ function applyPatch(vpatch, domNode, renderOptions) {
 }
 
 function removeNode(domNode, vNode) {
-    var parentNode = domNode.parentNode
+    var parentNode = Dom(domNode).parentNode
 
     if (parentNode) {
-        parentNode.removeChild(domNode)
+        Dom(parentNode).removeChild(domNode)
     }
 
     destroyWidget(domNode, vNode);
@@ -53,7 +55,7 @@ function insertNode(parentNode, vNode, renderOptions) {
     var newNode = renderOptions.render(vNode, renderOptions)
 
     if (parentNode) {
-        parentNode.appendChild(newNode)
+        Dom(parentNode).appendChild(newNode)
     }
 
     return parentNode
@@ -66,7 +68,7 @@ function stringPatch(domNode, leftVNode, vText, renderOptions) {
         domNode.replaceData(0, domNode.length, vText.text)
         newNode = domNode
     } else {
-        var parentNode = domNode.parentNode
+        var parentNode = Dom(domNode).parentNode
         newNode = renderOptions.render(vText, renderOptions)
 
         if (parentNode && newNode !== domNode) {
@@ -87,7 +89,7 @@ function widgetPatch(domNode, leftVNode, widget, renderOptions) {
         newNode = renderOptions.render(widget, renderOptions)
     }
 
-    var parentNode = domNode.parentNode
+    var parentNode = Dom(domNode).parentNode
 
     if (parentNode && newNode !== domNode) {
         parentNode.replaceChild(newNode, domNode)
@@ -101,7 +103,7 @@ function widgetPatch(domNode, leftVNode, widget, renderOptions) {
 }
 
 function vNodePatch(domNode, leftVNode, vNode, renderOptions) {
-    var parentNode = domNode.parentNode
+    var parentNode = Dom(domNode).parentNode
     var newNode = renderOptions.render(vNode, renderOptions)
 
     if (parentNode && newNode !== domNode) {
@@ -118,7 +120,7 @@ function destroyWidget(domNode, w) {
 }
 
 function reorderChildren(domNode, moves) {
-    var childNodes = domNode.childNodes
+    var childNodes = Dom(domNode).childNodes
     var keyMap = {}
     var node
     var remove
@@ -130,7 +132,7 @@ function reorderChildren(domNode, moves) {
         if (remove.key) {
             keyMap[remove.key] = node
         }
-        domNode.removeChild(node)
+        Dom(domNode).removeChild(node)
     }
 
     var length = childNodes.length
@@ -138,13 +140,13 @@ function reorderChildren(domNode, moves) {
         insert = moves.inserts[j]
         node = keyMap[insert.key]
         // this is the weirdest bug i've ever seen in webkit
-        domNode.insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
+        Dom(domNode).insertBefore(node, insert.to >= length++ ? null : childNodes[insert.to])
     }
 }
 
 function replaceRoot(oldRoot, newRoot) {
-    if (oldRoot && newRoot && oldRoot !== newRoot && oldRoot.parentNode) {
-        oldRoot.parentNode.replaceChild(newRoot, oldRoot)
+    if (oldRoot && newRoot && oldRoot !== newRoot && Dom(oldRoot).parentNode) {
+        Dom(oldRoot).parentNode.replaceChild(newRoot, oldRoot)
     }
 
     return newRoot;

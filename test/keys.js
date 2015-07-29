@@ -12,6 +12,8 @@ var assertChildNodesFromArray = require("./lib/assert-childNodes-from-array.js")
 
 var VPatch = require("../vnode/vpatch.js")
 
+var Dom = require("../polymer-dom.js")
+
 test("keys get reordered", function (assert) {
     var leftNode = nodesFromArray(["1", "2", "3", "4", "test", "6", "good", "7"])
     var rightNode = nodesFromArray(["7", "4", "3", "2", "6", "test", "good", "1"])
@@ -19,8 +21,8 @@ test("keys get reordered", function (assert) {
     var rootNode = render(leftNode)
 
     var childNodes = []
-    for (var i = 0; i < rootNode.childNodes.length; i++) {
-        childNodes.push(rootNode.childNodes[i])
+    for (var i = 0; i < Dom(rootNode).childNodes.length; i++) {
+        childNodes.push(Dom(rootNode).childNodes[i])
     }
 
     var patches = diff(leftNode, rightNode)
@@ -45,16 +47,16 @@ test("keys get reordered", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, rootNode.childNodes.length)
+    assert.equal(Dom(newRoot).childNodes.length, Dom(rootNode).childNodes.length)
 
-    assert.equal(newRoot.childNodes[7], childNodes[0])
-    assert.equal(newRoot.childNodes[3], childNodes[1])
-    assert.equal(newRoot.childNodes[2], childNodes[2])
-    assert.equal(newRoot.childNodes[1], childNodes[3])
-    assert.equal(newRoot.childNodes[5], childNodes[4])
-    assert.equal(newRoot.childNodes[4], childNodes[5])
-    assert.equal(newRoot.childNodes[6], childNodes[6])
-    assert.equal(newRoot.childNodes[0], childNodes[7])
+    assert.equal(Dom(newRoot).childNodes[7], childNodes[0])
+    assert.equal(Dom(newRoot).childNodes[3], childNodes[1])
+    assert.equal(Dom(newRoot).childNodes[2], childNodes[2])
+    assert.equal(Dom(newRoot).childNodes[1], childNodes[3])
+    assert.equal(Dom(newRoot).childNodes[5], childNodes[4])
+    assert.equal(Dom(newRoot).childNodes[4], childNodes[5])
+    assert.equal(Dom(newRoot).childNodes[6], childNodes[6])
+    assert.equal(Dom(newRoot).childNodes[0], childNodes[7])
     assert.end()
 })
 
@@ -94,16 +96,16 @@ test("mix keys without keys", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, rootNode.childNodes.length)
+    assert.equal(Dom(newRoot).childNodes.length, Dom(rootNode).childNodes.length)
 
-    assert.equal(newRoot.childNodes[0], childNodes[1])
-    assert.equal(newRoot.childNodes[1], childNodes[2])
-    assert.equal(newRoot.childNodes[2], childNodes[3])
-    assert.equal(newRoot.childNodes[3], childNodes[4])
-    assert.equal(newRoot.childNodes[4], childNodes[5])
-    assert.equal(newRoot.childNodes[5], childNodes[6])
-    assert.equal(newRoot.childNodes[6], childNodes[7])
-    assert.equal(newRoot.childNodes[7], childNodes[0])
+    assert.equal(Dom(newRoot).childNodes[0], childNodes[1])
+    assert.equal(Dom(newRoot).childNodes[1], childNodes[2])
+    assert.equal(Dom(newRoot).childNodes[2], childNodes[3])
+    assert.equal(Dom(newRoot).childNodes[3], childNodes[4])
+    assert.equal(Dom(newRoot).childNodes[4], childNodes[5])
+    assert.equal(Dom(newRoot).childNodes[5], childNodes[6])
+    assert.equal(Dom(newRoot).childNodes[6], childNodes[7])
+    assert.equal(Dom(newRoot).childNodes[7], childNodes[0])
     assert.end()
 })
 
@@ -129,9 +131,9 @@ test("avoid unnecessary reordering", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes[0], childNodes[0])
-    assert.equal(newRoot.childNodes[1], childNodes[1])
-    assert.equal(newRoot.childNodes[2], childNodes[2])
+    assert.equal(Dom(newRoot).childNodes[0], childNodes[0])
+    assert.equal(Dom(newRoot).childNodes[1], childNodes[1])
+    assert.equal(Dom(newRoot).childNodes[2], childNodes[2])
     assert.end()
 })
 
@@ -161,8 +163,8 @@ test("missing key gets replaced", function (assert) {
     var rootNode = render(leftNode)
 
     var childNodes = []
-    for (var i = 0; i < rootNode.childNodes.length; i++) {
-        childNodes.push(rootNode.childNodes[i])
+    for (var i = 0; i < Dom(rootNode).childNodes.length; i++) {
+        childNodes.push(Dom(rootNode).childNodes[i])
     }
 
     var patches = diff(leftNode, rightNode)
@@ -171,16 +173,16 @@ test("missing key gets replaced", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, rootNode.childNodes.length)
+    assert.equal(Dom(newRoot).childNodes.length, Dom(rootNode).childNodes.length)
 
-    assert.notEqual(newRoot.childNodes[0], childNodes[0])
-    assert.equal(newRoot.childNodes[1], childNodes[1])
-    assert.equal(newRoot.childNodes[2], childNodes[2])
-    assert.equal(newRoot.childNodes[3], childNodes[3])
-    assert.equal(newRoot.childNodes[4], childNodes[4])
-    assert.equal(newRoot.childNodes[5], childNodes[5])
-    assert.equal(newRoot.childNodes[6], childNodes[6])
-    assert.equal(newRoot.childNodes[7], childNodes[7])
+    assert.notEqual(Dom(newRoot).childNodes[0], childNodes[0])
+    assert.equal(Dom(newRoot).childNodes[1], childNodes[1])
+    assert.equal(Dom(newRoot).childNodes[2], childNodes[2])
+    assert.equal(Dom(newRoot).childNodes[3], childNodes[3])
+    assert.equal(Dom(newRoot).childNodes[4], childNodes[4])
+    assert.equal(Dom(newRoot).childNodes[5], childNodes[5])
+    assert.equal(Dom(newRoot).childNodes[6], childNodes[6])
+    assert.equal(Dom(newRoot).childNodes[7], childNodes[7])
     assert.end()
 })
 
@@ -224,11 +226,11 @@ test("widgets can be keyed", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, rootNode.childNodes.length)
+    assert.equal(Dom(newRoot).childNodes.length, Dom(rootNode).childNodes.length)
 
-    assertEqualDom(assert, newRoot.childNodes[0], childNodes[2])
-    assertEqualDom(assert, newRoot.childNodes[1], childNodes[1])
-    assertEqualDom(assert, newRoot.childNodes[2], childNodes[0])
+    assertEqualDom(assert, Dom(newRoot).childNodes[0], childNodes[2])
+    assertEqualDom(assert, Dom(newRoot).childNodes[1], childNodes[1])
+    assertEqualDom(assert, Dom(newRoot).childNodes[2], childNodes[0])
     assert.end()
 })
 
@@ -254,10 +256,10 @@ test("delete key at the start", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, 2)
+    assert.equal(Dom(newRoot).childNodes.length, 2)
 
-    assert.equal(newRoot.childNodes[0], childNodes[1])
-    assert.equal(newRoot.childNodes[1], childNodes[2])
+    assert.equal(Dom(newRoot).childNodes[0], childNodes[1])
+    assert.equal(Dom(newRoot).childNodes[1], childNodes[2])
     assert.end()
 })
 
@@ -282,10 +284,10 @@ test("add key to start", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, 3)
+    assert.equal(Dom(newRoot).childNodes.length, 3)
 
-    assert.equal(newRoot.childNodes[1], childNodes[0])
-    assert.equal(newRoot.childNodes[2], childNodes[1])
+    assert.equal(Dom(newRoot).childNodes[1], childNodes[0])
+    assert.equal(Dom(newRoot).childNodes[2], childNodes[1])
     assert.end()
 })
 
@@ -311,10 +313,10 @@ test("delete key at the end", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, 2)
+    assert.equal(Dom(newRoot).childNodes.length, 2)
 
-    assert.equal(newRoot.childNodes[0], childNodes[0])
-    assert.equal(newRoot.childNodes[1], childNodes[1])
+    assert.equal(Dom(newRoot).childNodes[0], childNodes[0])
+    assert.equal(Dom(newRoot).childNodes[1], childNodes[1])
     assert.end()
 })
 
@@ -339,10 +341,10 @@ test("add key to end", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, 3)
+    assert.equal(Dom(newRoot).childNodes.length, 3)
 
-    assert.equal(newRoot.childNodes[0], childNodes[0])
-    assert.equal(newRoot.childNodes[1], childNodes[1])
+    assert.equal(Dom(newRoot).childNodes[0], childNodes[0])
+    assert.equal(Dom(newRoot).childNodes[1], childNodes[1])
     assert.end()
 })
 
@@ -370,11 +372,11 @@ test("add to end and delete from center & reverse", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, 4)
+    assert.equal(Dom(newRoot).childNodes.length, 4)
 
-    assert.equal(newRoot.childNodes[1], childNodes[3])
-    assert.equal(newRoot.childNodes[2], childNodes[2])
-    assert.equal(newRoot.childNodes[3], childNodes[0])
+    assert.equal(Dom(newRoot).childNodes[1], childNodes[3])
+    assert.equal(Dom(newRoot).childNodes[2], childNodes[2])
+    assert.equal(Dom(newRoot).childNodes[3], childNodes[0])
     assert.end()
 })
 
@@ -399,9 +401,9 @@ test("add to front and remove", function (assert) {
     var newRoot = patch(rootNode, patches)
     assert.equal(newRoot, rootNode)
 
-    assert.equal(newRoot.childNodes.length, 4)
+    assert.equal(Dom(newRoot).childNodes.length, 4)
 
-    assert.equal(newRoot.childNodes[2], childNodes[0])
+    assert.equal(Dom(newRoot).childNodes[2], childNodes[0])
     assert.end()
 })
 
@@ -418,7 +420,7 @@ test("adding multiple widgets", function (assert) {
 
     FooWidget.prototype.update = function (prev, elem) {
         this.counter = prev.counter + 1
-        elem.textContent = this.foo + this.counter
+        Dom(elem).textContent = this.foo + this.counter
     }
 
     FooWidget.prototype.type = "Widget"
@@ -434,9 +436,9 @@ test("adding multiple widgets", function (assert) {
     rootNode = patch(rootNode, diff(firstTree, secondTree))
 
     assert.equal(rootNode.tagName, "DIV")
-    assert.equal(rootNode.childNodes.length, 1)
-    assert.equal(rootNode.childNodes[0].tagName, "DIV")
-    assert.equal(rootNode.childNodes[0].childNodes[0].data, "foo")
+    assert.equal(Dom(rootNode).childNodes.length, 1)
+    assert.equal(Dom(rootNode).childNodes[0].tagName, "DIV")
+    assert.equal(Dom(rootNode).childNodes[0].childNodes[0].data, "foo")
 
     var thirdTree = h("div", [
         new FooWidget("foo"),
@@ -445,7 +447,7 @@ test("adding multiple widgets", function (assert) {
     rootNode = patch(rootNode, diff(secondTree, thirdTree))
 
     assert.equal(rootNode.tagName, "DIV")
-    assert.equal(rootNode.childNodes.length, 2)
+    assert.equal(Dom(rootNode).childNodes.length, 2)
 
     assert.end()
 })
@@ -488,7 +490,7 @@ var itemHelpers = {
     },
 
     expectTextOfChild: function (assert, rootNode, childNo, text) {
-        assert.equal(rootNode.childNodes[childNo].id, text)
+        assert.equal(Dom(rootNode).childNodes[childNo].id, text)
     }
 }
 
@@ -771,7 +773,7 @@ function keyTest(itemsA, itemsB) {
         var rootNode = render(nodesA)
         patch(rootNode, patches)
 
-        var childNodes = rootNode.childNodes
+        var childNodes = Dom(rootNode).childNodes
 
         assertChildNodesFromArray(assert, itemsB, childNodes)
 
@@ -782,8 +784,8 @@ function keyTest(itemsA, itemsB) {
 
 function childNodesArray(node) {
     var childNodes = []
-    for (var i = 0; i < node.childNodes.length; i++) {
-        childNodes.push(node.childNodes[i])
+    for (var i = 0; i < Dom(node).childNodes.length; i++) {
+        childNodes.push(Dom(node).childNodes[i])
     }
     return childNodes
 }

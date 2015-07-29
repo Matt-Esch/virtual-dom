@@ -7,6 +7,8 @@ var document = require("global/document")
 var createElement = require("../create-element")
 var patch = require("../patch")
 
+var Dom = require("../../polymer-dom.js")
+
 var createElementCustom = function(vnode) {
     var created = createElement(vnode)
     created.customCreation = true
@@ -17,7 +19,7 @@ function assertPachedNodeIsMarked(leftNode, rightNode, assert) {
     var root = createElementCustom(leftNode)
     var patches = diff(leftNode, rightNode)
     var newRoot = patch(root, patches, { render: createElementCustom })
-    assert.equal(newRoot.childNodes[0].customCreation, true)
+    assert.equal(Dom(newRoot).childNodes[0].customCreation, true)
     assert.end()
 }
 

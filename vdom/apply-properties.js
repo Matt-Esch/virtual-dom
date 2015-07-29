@@ -1,6 +1,8 @@
 var isObject = require("is-object")
 var isHook = require("../vnode/is-vhook.js")
 
+var Dom = require("../polymer-dom.js")
+
 module.exports = applyProperties
 
 function applyProperties(node, props, previous) {
@@ -33,7 +35,7 @@ function removeProperty(node, propName, propValue, previous) {
         if (!isHook(previousValue)) {
             if (propName === "attributes") {
                 for (var attrName in previousValue) {
-                    node.removeAttribute(attrName)
+                    Dom(node).removeAttribute(attrName)
                 }
             } else if (propName === "style") {
                 for (var i in previousValue) {
@@ -59,9 +61,9 @@ function patchObject(node, props, previous, propName, propValue) {
             var attrValue = propValue[attrName]
 
             if (attrValue === undefined) {
-                node.removeAttribute(attrName)
+                Dom(node).removeAttribute(attrName)
             } else {
-                node.setAttribute(attrName, attrValue)
+                Dom(node).setAttribute(attrName, attrValue)
             }
         }
 
