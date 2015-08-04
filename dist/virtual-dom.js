@@ -648,7 +648,9 @@ module.exports = patch
 
 function patch(rootNode, patches, renderOptions) {
     renderOptions = renderOptions || {}
-    renderOptions.patch = renderOptions.patch || patchRecursive
+    renderOptions.patch = renderOptions.patch && renderOptions.patch !== patch
+        ? renderOptions.patch
+        : patchRecursive
     renderOptions.render = renderOptions.render || render
 
     return renderOptions.patch(rootNode, patches, renderOptions)
