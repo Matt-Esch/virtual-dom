@@ -3,24 +3,27 @@ var isHook = require("../vnode/is-vhook.js")
 
 module.exports = applyProperties
 
-function applyProperties(node, props, previous) {
+function applyProperties(node, props, previous, renderOptions) {
+    var domNode = renderOptions && renderOptions.extractNode ?
+            renderOptions.extractNode(node) : node
+
     for (var propName in props) {
         var propValue = props[propName]
 
         if (propValue === undefined) {
-            removeProperty(node, propName, propValue, previous);
+            removeProperty(domNode, propName, propValue, previous);
         } else if (isHook(propValue)) {
-            removeProperty(node, propName, propValue, previous)
+            removeProperty(domNode, propName, propValue, previous)
             if (propValue.hook) {
-                propValue.hook(node,
+                propValue.hook(domNode,
                     propName,
                     previous ? previous[propName] : undefined)
             }
         } else {
             if (isObject(propValue)) {
-                patchObject(node, props, previous, propName, propValue);
+                patchObject(domNode, props, previous, propName, propValue);
             } else {
-                node[propName] = propValue
+                domNode[propName] = propValue
             }
         }
     }
