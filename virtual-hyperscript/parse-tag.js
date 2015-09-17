@@ -4,12 +4,17 @@ var split = require('browser-split');
 
 var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
 var notClassId = /^\.|#/;
+var isTagOnly = /^[a-zA-Z]+$/;
 
 module.exports = parseTag;
 
 function parseTag(tag, props) {
     if (!tag) {
         return 'DIV';
+    }
+
+    if (isTagOnly.test(tag)) {
+      return props.namespace ? tag : tag.toUpperCase();
     }
 
     var noId = !(props.hasOwnProperty('id'));
