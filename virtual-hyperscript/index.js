@@ -71,7 +71,7 @@ function addChild(c, childNodes, tag, props) {
         for (var i = 0; i < c.length; i++) {
             addChild(c[i], childNodes, tag, props);
         }
-    } else if (c === null || c === undefined) {
+    } else if (c === null || c === undefined || c === false) {
         return;
     } else {
         throw UnexpectedVirtualElement({
