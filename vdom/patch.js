@@ -4,6 +4,7 @@ var isArray = require("x-is-array")
 var render = require("./create-element")
 var domIndex = require("./dom-index")
 var patchOp = require("./patch-op")
+var VPatch = require("../vnode/vpatch.js")
 module.exports = patch
 
 function patch(rootNode, patches, renderOptions) {
@@ -49,8 +50,25 @@ function applyPatch(rootNode, domNode, patchList, renderOptions) {
     var newNode
 
     if (isArray(patchList)) {
+        var propsPatchList = [];
+
         for (var i = 0; i < patchList.length; i++) {
-            newNode = patchOp(patchList[i], domNode, renderOptions)
+            if (patchList[i].type != VPatch.PROPS) {
+                newNode = patchOp(patchList[i], domNode, renderOptions)
+
+                if (domNode === rootNode) {
+                    rootNode = newNode
+                }
+            }
+            else {
+                propsPatchList.push(patchList[i]);
+            }
+        }
+
+        // Properties like scrollTop should be set after all children have been
+        // patched, otherwise they wouldn't take effect.
+        for (var i = 0; i < propsPatchList.length; i++) {
+            newNode = patchOp(propsPatchList[i], domNode, renderOptions)
 
             if (domNode === rootNode) {
                 rootNode = newNode
