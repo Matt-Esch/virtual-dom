@@ -28,6 +28,7 @@
     "browser-split": "0.0.1",
     "error": "^4.3.0",
     "ev-store": "^7.0.0",
+    "flatten": "0.0.1",
     "global": "^4.3.0",
     "is-object": "^1.0.1",
     "next-tick": "^0.2.2",

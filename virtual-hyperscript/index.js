@@ -1,6 +1,7 @@
 'use strict';
 
 var isArray = require('x-is-array');
+var flatten = require('flatten');
 
 var VNode = require('../vnode/vnode.js');
 var VText = require('../vnode/vtext.js');
@@ -23,6 +24,8 @@ function h(tagName, properties, children) {
     if (!children && isChildren(properties)) {
         children = properties;
         props = {};
+    } else if (arguments.length > 3) {
+        children = flatten([].slice.call(arguments, 2));
     }
 
     props = props || properties || {};
