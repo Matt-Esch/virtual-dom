@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.virtualDom=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.virtualDom = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var createElement = require("./vdom/create-element.js")
 
 module.exports = createElement
@@ -31,6 +31,8 @@ module.exports = {
 }
 
 },{"./create-element.js":1,"./diff.js":2,"./h.js":3,"./patch.js":13,"./vnode/vnode.js":31,"./vnode/vtext.js":33}],5:[function(require,module,exports){
+
+},{}],6:[function(require,module,exports){
 /*!
  * Cross-Browser Split 1.1.1
  * Copyright 2007-2012 Steven Levithan <stevenlevithan.com>
@@ -138,8 +140,6 @@ module.exports = (function split(undef) {
   return self;
 })();
 
-},{}],6:[function(require,module,exports){
-
 },{}],7:[function(require,module,exports){
 'use strict';
 
@@ -162,7 +162,26 @@ function EvStore(elem) {
     return hash;
 }
 
-},{"individual/one-version":9}],8:[function(require,module,exports){
+},{"individual/one-version":10}],8:[function(require,module,exports){
+(function (global){
+var topLevel = typeof global !== 'undefined' ? global :
+    typeof window !== 'undefined' ? window : {}
+var minDoc = require('min-document');
+
+if (typeof document !== 'undefined') {
+    module.exports = document;
+} else {
+    var doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'];
+
+    if (!doccy) {
+        doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'] = minDoc;
+    }
+
+    module.exports = doccy;
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"min-document":5}],9:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -185,7 +204,7 @@ function Individual(key, value) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 var Individual = require('./index.js');
@@ -209,26 +228,7 @@ function OneVersion(moduleName, version, defaultValue) {
     return Individual(key, defaultValue);
 }
 
-},{"./index.js":8}],10:[function(require,module,exports){
-(function (global){
-var topLevel = typeof global !== 'undefined' ? global :
-    typeof window !== 'undefined' ? window : {}
-var minDoc = require('min-document');
-
-if (typeof document !== 'undefined') {
-    module.exports = document;
-} else {
-    var doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'];
-
-    if (!doccy) {
-        doccy = topLevel['__GLOBAL_DOCUMENT_CACHE@4'] = minDoc;
-    }
-
-    module.exports = doccy;
-}
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"min-document":6}],11:[function(require,module,exports){
+},{"./index.js":9}],11:[function(require,module,exports){
 "use strict";
 
 module.exports = function isObject(x) {
@@ -397,7 +397,7 @@ function createElement(vnode, opts) {
     return node
 }
 
-},{"../vnode/handle-thunk.js":24,"../vnode/is-vnode.js":27,"../vnode/is-vtext.js":28,"../vnode/is-widget.js":29,"./apply-properties":14,"global/document":10}],16:[function(require,module,exports){
+},{"../vnode/handle-thunk.js":24,"../vnode/is-vnode.js":27,"../vnode/is-vtext.js":28,"../vnode/is-widget.js":29,"./apply-properties":14,"global/document":8}],16:[function(require,module,exports){
 // Maps a virtual DOM tree onto a real DOM tree in an efficient manner.
 // We don't want to read all of the DOM nodes in the tree so we use
 // the in-order tree indexing to eliminate recursion down certain branches.
@@ -611,7 +611,8 @@ function reorderChildren(domNode, moves) {
     var remove
     var insert
 
-    for (var i = 0; i < moves.removes.length; i++) {
+    // remove child from back to front
+    for (var i = moves.removes.length - 1; i >= 0; i--) {
         remove = moves.removes[i]
         node = childNodes[remove.from]
         if (remove.key) {
@@ -719,7 +720,7 @@ function patchIndices(patches) {
     return indices
 }
 
-},{"./create-element":15,"./dom-index":16,"./patch-op":17,"global/document":10,"x-is-array":12}],19:[function(require,module,exports){
+},{"./create-element":15,"./dom-index":16,"./patch-op":17,"global/document":8,"x-is-array":12}],19:[function(require,module,exports){
 var isWidget = require("../vnode/is-widget.js")
 
 module.exports = updateWidget
@@ -979,7 +980,7 @@ function parseTag(tag, props) {
     return props.namespace ? tagName : tagName.toUpperCase();
 }
 
-},{"browser-split":5}],24:[function(require,module,exports){
+},{"browser-split":6}],24:[function(require,module,exports){
 var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")
@@ -1543,7 +1544,6 @@ function reorder(aChildren, bChildren) {
         }
     }
 
-    var simulate = newChildren.slice()
     var simulateIndex = 0
     var removes = []
     var inserts = []
@@ -1551,12 +1551,12 @@ function reorder(aChildren, bChildren) {
 
     for (var k = 0; k < bChildren.length;) {
         var wantedItem = bChildren[k]
-        simulateItem = simulate[simulateIndex]
+        simulateItem = newChildren[simulateIndex]
 
         // remove items
-        while (simulateItem === null && simulate.length) {
-            removes.push(remove(simulate, simulateIndex, null))
-            simulateItem = simulate[simulateIndex]
+        while (simulateItem === null && simulateIndex < newChildren.length) {
+            removes.push({from: simulateIndex++, key: null})
+            simulateItem = newChildren[simulateIndex]
         }
 
         if (!simulateItem || simulateItem.key !== wantedItem.key) {
@@ -1565,8 +1565,8 @@ function reorder(aChildren, bChildren) {
                 if (simulateItem && simulateItem.key) {
                     // if an insert doesn't put this key in place, it needs to move
                     if (bKeys[simulateItem.key] !== k + 1) {
-                        removes.push(remove(simulate, simulateIndex, simulateItem.key))
-                        simulateItem = simulate[simulateIndex]
+                        removes.push({from: simulateIndex++, key: simulateItem.key})
+                        simulateItem = newChildren[simulateIndex]
                         // if the remove didn't put the wanted item in place, we need to insert it
                         if (!simulateItem || simulateItem.key !== wantedItem.key) {
                             inserts.push({key: wantedItem.key, to: k})
@@ -1587,7 +1587,7 @@ function reorder(aChildren, bChildren) {
             }
             // a key in simulate has no matching wanted key, remove it
             else if (simulateItem && simulateItem.key) {
-                removes.push(remove(simulate, simulateIndex, simulateItem.key))
+                removes.push({from: simulateIndex++, key: simulateItem.key})
             }
         }
         else {
@@ -1597,9 +1597,9 @@ function reorder(aChildren, bChildren) {
     }
 
     // remove all the remaining nodes from simulate
-    while(simulateIndex < simulate.length) {
-        simulateItem = simulate[simulateIndex]
-        removes.push(remove(simulate, simulateIndex, simulateItem && simulateItem.key))
+    while(simulateIndex < newChildren.length) {
+        simulateItem = newChildren[simulateIndex]
+        removes.push({from: simulateIndex++, key: simulateItem && simulateItem.key})
     }
 
     // If the only moves we have are deletes then we can just
