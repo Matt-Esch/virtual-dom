@@ -24,14 +24,15 @@ test("keys get reordered", function (assert) {
     }
 
     var patches = diff(leftNode, rightNode)
+    console.log(patches)
     assert.equal(patchCount(patches), 1)
     assertReorderEquals(assert, patches, {
         removes: [
             {from: 0, key: '1'},
-            {from: 0, key: '2'},
-            {from: 1, key: '4'},
-            {from: 2, key: '6'},
-            {from: 3, key: '7'}
+            {from: 1, key: '2'},
+            {from: 3, key: '4'},
+            {from: 5, key: '6'},
+            {from: 7, key: '7'}
         ],
         inserts: [
             {to: 0, key: '7'},
@@ -635,7 +636,7 @@ test('move an element to a position after a removed element', function (assert) 
     assertReorderEquals(assert, patches, {
         removes: [
             {from: 1, key: null},
-            {from: 4, key: '5'}
+            {from: 5, key: '5'}
         ],
         inserts: [{to: 3, key: '5'}]
     })

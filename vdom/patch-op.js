@@ -124,7 +124,8 @@ function reorderChildren(domNode, moves) {
     var remove
     var insert
 
-    for (var i = 0; i < moves.removes.length; i++) {
+    // remove child from back to front
+    for (var i = moves.removes.length - 1; i >= 0; i--) {
         remove = moves.removes[i]
         node = childNodes[remove.from]
         if (remove.key) {
