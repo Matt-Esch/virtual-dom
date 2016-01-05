@@ -305,7 +305,6 @@ function reorder(aChildren, bChildren) {
         }
     }
 
-    var simulate = newChildren.slice()
     var simulateIndex = 0
     var removes = []
     var inserts = []
@@ -313,12 +312,12 @@ function reorder(aChildren, bChildren) {
 
     for (var k = 0; k < bChildren.length;) {
         var wantedItem = bChildren[k]
-        simulateItem = simulate[simulateIndex]
+        simulateItem = newChildren[simulateIndex]
 
         // remove items
-        while (simulateItem === null && simulate.length) {
-            removes.push(remove(simulate, simulateIndex, null))
-            simulateItem = simulate[simulateIndex]
+        while (simulateItem === null && simulateIndex < newChildren.length) {
+            removes.push({from: simulateIndex++, key: null})
+            simulateItem = newChildren[simulateIndex]
         }
 
         if (!simulateItem || simulateItem.key !== wantedItem.key) {
@@ -327,8 +326,8 @@ function reorder(aChildren, bChildren) {
                 if (simulateItem && simulateItem.key) {
                     // if an insert doesn't put this key in place, it needs to move
                     if (bKeys[simulateItem.key] !== k + 1) {
-                        removes.push(remove(simulate, simulateIndex, simulateItem.key))
-                        simulateItem = simulate[simulateIndex]
+                        removes.push({from: simulateIndex++, key: simulateItem.key})
+                        simulateItem = newChildren[simulateIndex]
                         // if the remove didn't put the wanted item in place, we need to insert it
                         if (!simulateItem || simulateItem.key !== wantedItem.key) {
                             inserts.push({key: wantedItem.key, to: k})
@@ -349,7 +348,7 @@ function reorder(aChildren, bChildren) {
             }
             // a key in simulate has no matching wanted key, remove it
             else if (simulateItem && simulateItem.key) {
-                removes.push(remove(simulate, simulateIndex, simulateItem.key))
+                removes.push({from: simulateIndex++, key: simulateItem.key})
             }
         }
         else {
@@ -359,9 +358,9 @@ function reorder(aChildren, bChildren) {
     }
 
     // remove all the remaining nodes from simulate
-    while(simulateIndex < simulate.length) {
-        simulateItem = simulate[simulateIndex]
-        removes.push(remove(simulate, simulateIndex, simulateItem && simulateItem.key))
+    while(simulateIndex < newChildren.length) {
+        simulateItem = newChildren[simulateIndex]
+        removes.push({from: simulateIndex++, key: simulateItem && simulateItem.key})
     }
 
     // If the only moves we have are deletes then we can just
