@@ -24,7 +24,6 @@ test("keys get reordered", function (assert) {
     }
 
     var patches = diff(leftNode, rightNode)
-    console.log(patches)
     assert.equal(patchCount(patches), 1)
     assertReorderEquals(assert, patches, {
         removes: [
