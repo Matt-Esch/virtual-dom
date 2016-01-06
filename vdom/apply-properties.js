@@ -81,9 +81,16 @@ function patchObject(node, props, previous, propName, propValue) {
     var replacer = propName === "style" ? "" : undefined
 
     for (var k in propValue) {
+        var dk = propName === "style" ? dash(k) : k
         var value = propValue[k]
-        node[propName][k] = (value === undefined) ? replacer : value
+        node[propName][dk] = (value === undefined) ? replacer : value
     }
+}
+
+function dash(str) {
+    return str.replace(/([a-z])([A-Z])/g, function (_,a,b) {
+        return a + "-" + b.toLowerCase()
+    })
 }
 
 function getPrototype(value) {
