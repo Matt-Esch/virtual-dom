@@ -273,7 +273,7 @@ test("incompatible children are ignored", function (assert) {
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.style.cssText, style("cssText", "color: red;"))
+    assert.equal(trim(dom.style["css-text"]), style("cssText", "color: red;"))
     assert.equal(dom.childNodes.length, 0)
     assert.end()
 })
@@ -332,7 +332,7 @@ test("injected warning is used", function (assert) {
     assert.equal(dom.id, "important")
     assert.equal(dom.className, "pretty")
     assert.equal(dom.tagName, "DIV")
-    assert.equal(dom.style.cssText, style("cssText", "color: red;"))
+    assert.equal(trim(dom.style["css-text"]), style("cssText", "color: red;"))
     assert.equal(dom.childNodes.length, 0)
     assert.equal(i, 2)
     assert.end()
@@ -1031,7 +1031,7 @@ test("Different namespaces creates a patch", function (assert) {
 function style(name, value) {
     var node = render(h())
     node.style[name] = value
-    return node.style[name]
+    return trim(node.style[name])
 }
 
 // Determine if namespace is supported by the DOM
@@ -1040,3 +1040,7 @@ function supportsNamespace() {
     return 'namespaceURI' in node;
 }
 
+
+function trim (str) {
+    return str.replace(/\s+$/, '')
+}
