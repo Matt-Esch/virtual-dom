@@ -7,6 +7,7 @@ require("./thunk.js")
 require("./style.js")
 require("./attributes")
 require("./non-string.js")
+require("./style-camel-case.js")
 
 require("../vdom/test/")
 require("../vtree/test/")
