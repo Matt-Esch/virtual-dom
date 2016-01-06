@@ -25,18 +25,18 @@ test("dom node style", function (assert) {
 
     var rootNode = render(a)
     assert.equal(rootNode.style.border, style("border", "none"))
-    assert.equal(rootNode.style.className, style("className", "oops"))
+    assert.equal(rootNode.style["class-name"], style("className", "oops"))
     assert.equal(rootNode.style.display, style("display", "none"))
     var s1 = rootNode.style
     var equalNode = render(b)
     assert.equal(equalNode.style.border, style("border", "1px solid #000"))
-    assert.equal(equalNode.style.className, style("className", "oops"))
+    assert.equal(equalNode.style["class-name"], style("className", "oops"))
     assert.equal(equalNode.style.display, style("display", ""))
     var newRoot = patch(rootNode, diff(a, b))
     var s2 = newRoot.style
     assertEqualDom(assert, newRoot, equalNode)
     assert.equal(newRoot.style.border, style("border", "1px solid #000"))
-    assert.equal(newRoot.style.className, style("className", "oops"))
+    assert.equal(newRoot.style["class-name"], style("className", "oops"))
     assert.equal(newRoot.style.display, style("display", ""))
     assert.equal(s1, s2)
     assert.end()
