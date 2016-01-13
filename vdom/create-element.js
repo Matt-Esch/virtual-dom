@@ -5,6 +5,7 @@ var applyProperties = require("./apply-properties")
 var isVNode = require("../vnode/is-vnode.js")
 var isVText = require("../vnode/is-vtext.js")
 var isWidget = require("../vnode/is-widget.js")
+var isVComment = require("../vnode/is-vcomment.js")
 var handleThunk = require("../vnode/handle-thunk.js")
 
 module.exports = createElement
@@ -19,6 +20,8 @@ function createElement(vnode, opts) {
         return vnode.init()
     } else if (isVText(vnode)) {
         return doc.createTextNode(vnode.text)
+    } else if (isVComment(vnode)) {
+        return doc.createComment(vnode.comment)
     } else if (!isVNode(vnode)) {
         if (warn) {
             warn("Item is not a valid virtual dom node", vnode)

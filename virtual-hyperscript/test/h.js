@@ -14,6 +14,12 @@ test("h returns a vnode", function (assert) {
     assert.end()
 })
 
+test("h.c returns a vcomment", function (assert) {
+    assert.equal(h.c("test").comment, "test")
+
+    assert.end()
+})
+
 test("h defaults tagName to uppercase", function (assert) {
     assert.equal(h("").tagName, "DIV")
     assert.equal(h("div").tagName, "DIV")

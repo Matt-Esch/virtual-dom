@@ -6,6 +6,7 @@ var patch = require("../patch.js")
 var render = require("../create-element.js")
 var Node = require("../vnode/vnode")
 var TextNode = require("../vnode/vtext")
+var CommentNode = require("../vnode/vcomment.js")
 var version = require("../vnode/version")
 var assertEqualDom = require("./lib/assert-equal-dom.js")
 var patchCount = require("./lib/patch-count.js")
@@ -35,10 +36,26 @@ test("TextNode type and version are set", function (assert) {
     assert.end()
 })
 
+test("CommentNode is a function", function (assert) {
+    assert.equal(typeof CommentNode, "function")
+    assert.end()
+})
+
+test("CommentNode type and version are set", function (assert) {
+    assert.equal(CommentNode.prototype.type, "VirtualComment")
+    assert.deepEqual(CommentNode.prototype.version, version)
+    assert.end()
+})
+
 // h tests
 
 test("h is a function", function (assert) {
     assert.equal(typeof h, "function")
+    assert.end()
+})
+
+test("h.c is a function", function (assert) {
+    assert.equal(typeof h.c, "function")
     assert.end()
 })
 
@@ -176,6 +193,14 @@ test("render div", function (assert) {
     assert.notOk(dom.className)
     assert.equal(dom.tagName, "DIV")
     assert.equal(dom.childNodes.length, 0)
+    assert.end()
+})
+
+test("render comment node", function (assert) {
+    var vdom = h.c("test")
+    var dom = render(vdom)
+    assert.equal(dom.nodeType, 8)
+    assert.equal(dom.data, "test")
     assert.end()
 })
 
@@ -380,6 +405,49 @@ test("textnode remove", function (assert) {
     var patches = diff(again, hello)
     var newRoot = patch(rootNode, patches)
     assertEqualDom(assert, newRoot, equalNode)
+    assert.end()
+})
+
+test("comment node update test", function (assert) {
+    var hello = h.c("hello")
+    var goodbye = h.c("goodbye")
+    var rootNode = render(hello)
+    var patches = diff(hello, goodbye)
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot.data, "goodbye")
+    assert.end()
+})
+
+test("comment node replace test", function (assert) {
+    var hello = h.c("hello")
+    var goodbye = h("div")
+    var rootNode = render(hello)
+    var patches = diff(hello, goodbye)
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot.tagName, 'DIV')
+    assert.end()
+})
+
+test("comment node insert test", function (assert) {
+    var hello = h("div", h.c("hello"))
+    var again = h("div", [h.c("hello"), h.c("again")])
+    var rootNode = render(hello)
+    var patches = diff(hello, again)
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot.childNodes.length, 2)
+    assert.equal(newRoot.childNodes[0].data, "hello")
+    assert.equal(newRoot.childNodes[1].data, "again")
+    assert.end()
+})
+
+test("comment node remove test", function (assert) {
+    var hello = h("div", h.c("hello"))
+    var again = h("div", [h.c("hello"), h.c("again")])
+    var rootNode = render(again)
+    var patches = diff(again, hello)
+    var newRoot = patch(rootNode, patches)
+    assert.equal(newRoot.childNodes.length, 1)
+    assert.equal(newRoot.childNodes[0].data, "hello")
     assert.end()
 })
 

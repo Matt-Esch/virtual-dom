@@ -9,6 +9,7 @@ VirtualPatch.ORDER = 5
 VirtualPatch.INSERT = 6
 VirtualPatch.REMOVE = 7
 VirtualPatch.THUNK = 8
+VirtualPatch.VCOMMENT = 9
 
 module.exports = VirtualPatch
 
