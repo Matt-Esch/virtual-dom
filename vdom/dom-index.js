@@ -8,12 +8,12 @@ var noChild = {}
 
 module.exports = domIndex
 
-function domIndex(rootNode, tree, indices, nodes) {
+function domIndex(rootNode, tree, indices) {
     if (!indices || indices.length === 0) {
         return {}
     } else {
         indices.sort(ascending)
-        return recurse(rootNode, tree, indices, nodes, 0)
+        return recurse(rootNode, tree, indices, undefined, 0)
     }
 }
 
