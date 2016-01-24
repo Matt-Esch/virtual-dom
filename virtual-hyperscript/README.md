@@ -31,7 +31,7 @@ If you pass it a selector like `span.foo.bar#some-id` it will
   properties of the `properties` object.
 
 If you pass it an array of `children` it will have child
-  nodes, normally ou want to create children with `h()`.
+  nodes, normally you want to create children with `h()`.
 
 If you pass it a string it will create an array containing
   a single child node that is a text element.
