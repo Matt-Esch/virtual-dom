@@ -19,6 +19,8 @@ function applyPatch(vpatch, domNode, renderOptions) {
             return insertNode(domNode, patch, renderOptions)
         case VPatch.VTEXT:
             return stringPatch(domNode, vNode, patch, renderOptions)
+        case VPatch.VCOMMENT:
+            return commentPatch(domNode, vNode, patch, renderOptions)
         case VPatch.WIDGET:
             return widgetPatch(domNode, vNode, patch, renderOptions)
         case VPatch.VNODE:
@@ -77,6 +79,25 @@ function stringPatch(domNode, leftVNode, vText, renderOptions) {
     return newNode
 }
 
+function commentPatch(domNode, leftNode, vComment, renderOptions) {
+    var newNode
+
+    if (domNode.nodeType === 8) {
+        // todo: need min-document to support replaceData method to update nodeValue and length
+        domNode.data = vComment.comment
+        newNode = domNode
+    } else {
+        var parentNode = domNode.parentNode
+        newNode = renderOptions.render(vComment, renderOptions)
+
+        if (parentNode && newNode !== domNode) {
+            parentNode.replaceChild(newNode, domNode)
+        }
+    }
+
+    return newNode
+}
+
 function widgetPatch(domNode, leftVNode, widget, renderOptions) {
     var updating = updateWidget(leftVNode, widget)
     var newNode
@@ -124,7 +145,8 @@ function reorderChildren(domNode, moves) {
     var remove
     var insert
 
-    for (var i = 0; i < moves.removes.length; i++) {
+    // remove child from back to front
+    for (var i = moves.removes.length - 1; i >= 0; i--) {
         remove = moves.removes[i]
         node = childNodes[remove.from]
         if (remove.key) {
