@@ -9,6 +9,9 @@ test("coerce numbers to strings in children array", function (assert) {
     var rightNode = h("div", [ "clicked ", 1337, " times" ])
     var rootNode = createElement(leftNode)
     var newRoot = patch(rootNode, diff(leftNode, rightNode))
-    assert.equal(newRoot.toString(), '<div>clicked 1337 times</div>')
+    assert.strictEqual(
+        newRoot.outerHTML || newRoot.toString(),
+        '<div>clicked 1337 times</div>'
+    )
     assert.end()
 })
