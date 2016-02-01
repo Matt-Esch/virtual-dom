@@ -7,6 +7,7 @@ A JavaScript [DOM model](#dom-model) supporting [element creation](#element-crea
 [![Coverage Status][5]][6]
 [![Davis Dependency status][7]][8]
 [![experimental](http://hughsk.github.io/stability-badges/dist/experimental.svg)](http://github.com/hughsk/stability-badges)
+[![Join the chat at https://gitter.im/Matt-Esch/virtual-dom](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Matt-Esch/virtual-dom?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/mattesch.svg)](https://saucelabs.com/u/mattesch)
 
