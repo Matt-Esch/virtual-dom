@@ -84,11 +84,6 @@ test("input.value must be string", function (assert) {
         var node = h("input", { value: {} })
     });
 
-    assert.throws(function() {
-        var undefined;
-        var node = h("input", { value: undefined })
-    });
-
     assert.end()
 })
 
