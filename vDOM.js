@@ -24,3 +24,5 @@ function vDOM(){
   };
     
 }
+
+module.exports = vDOM;

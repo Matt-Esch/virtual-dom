@@ -13,5 +13,5 @@ module.exports = {
     create: create,
     VNode: VNode,
     VText: VText,
-    vDOM: vDom
+    vDOM: vDOM
 }
