@@ -45,7 +45,7 @@ function h(tagName, properties, children) {
     // parse styles
     if (tag == 'STYLE' && properties){
         childNodes = parseStyles(properties);
-        properties = null
+        props = null
     }
 
     // fix cursor bug

@@ -15,3 +15,4 @@ compile
 .lock-wscript
 coverage
 node_modules
+examples/

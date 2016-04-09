@@ -863,7 +863,7 @@ function h(tagName, properties, children) {
     // parse styles
     if (tag == 'STYLE' && properties){
         childNodes = parseStyles(properties);
-        properties = null
+        props = null
     }
 
     // fix cursor bug
@@ -974,9 +974,11 @@ function parseStyles(properties){
 	var content = JSON.stringify(props)
 	content = content
 		.substring(1,content.length -1)
+		.replace(/\"\,\"/g,'";"')
 		.replace(/\'|\"/g,'')
 		.replace(/\:\{/g,'{')
 		.replace(/\}\,/g,'}')
+		.replace(/([a-z\d])([A-Z])/g,'$1-$2').toLowerCase()
 
 	return [new VText(content)];
 }
