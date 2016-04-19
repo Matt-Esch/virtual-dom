@@ -63,7 +63,7 @@ If you call `h` with `h('div', { ev-click: function (ev) { } })` it
   set a property `'ev-foo'` on the DOM element.
 
 This means that `dom-delegator` will recognise the event handler
-  on that element and correctly call your handler when an a click
+  on that element and correctly call your handler when a click
   event happens.
 
 ## Installation
