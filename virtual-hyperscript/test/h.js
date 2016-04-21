@@ -75,6 +75,18 @@ test("input.value soft hook", function (assert) {
     assert.end()
 })
 
+test("input.value must be string", function (assert) {
+    assert.throws(function() {
+        var node = h("input", { value: 1234 })
+    });
+
+    assert.throws(function() {
+        var node = h("input", { value: {} })
+    });
+
+    assert.end()
+})
+
 test("h with child", function (assert) {
     var node = h("div", h("span"))
 

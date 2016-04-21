@@ -47,6 +47,16 @@ function h(tagName, properties, children) {
         props.value !== undefined &&
         !isHook(props.value)
     ) {
+        if (props.value !== null && typeof props.value !== 'string') {
+            throw UnsupportedValueType({
+                expected: 'String',
+                received: typeof props.value,
+                Vnode: {
+                    tagName: tag,
+                    properties: props
+                }
+            });
+        }
         props.value = softSetHook(props.value);
     }
 
@@ -124,6 +134,25 @@ function UnexpectedVirtualElement(data) {
         'Suggested fix: change your `h(..., [ ... ])` callsite.';
     err.foreignObject = data.foreignObject;
     err.parentVnode = data.parentVnode;
+
+    return err;
+}
+
+function UnsupportedValueType(data) {
+    var err = new Error();
+
+    err.type = 'virtual-hyperscript.unsupported.value-type';
+    err.message = 'Unexpected value type for input passed to h().\n' +
+        'Expected a ' +
+        errorString(data.expected) +
+        ' but got:\n' +
+        errorString(data.received) +
+        '.\n' +
+        'The vnode is:\n' +
+        errorString(data.Vnode)
+        '\n' +
+        'Suggested fix: Cast the value passed to h() to a string using String(value).';
+    err.Vnode = data.Vnode;
 
     return err;
 }
