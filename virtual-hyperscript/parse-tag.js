@@ -3,7 +3,7 @@
 var split = require('browser-split');
 
 var classIdSplit = /([\.#]?[a-zA-Z0-9\u007F-\uFFFF_:-]+)/;
-var notClassId = /^\.|#/;
+var isClassId = /^\.|#/;
 
 module.exports = parseTag;
 
@@ -17,7 +17,7 @@ function parseTag(tag, props) {
     var tagParts = split(tag, classIdSplit);
     var tagName = null;
 
-    if (notClassId.test(tagParts[1])) {
+    if (isClassId.test(tagParts[1])) {
         tagName = 'DIV';
     }
 
