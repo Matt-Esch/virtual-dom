@@ -39,6 +39,8 @@ function removeProperty(node, propName, propValue, previous) {
                 for (var i in previousValue) {
                     node.style[i] = ""
                 }
+            } else if (propName === "contentEditable") {
+                node[propName] = previousValue
             } else if (typeof previousValue === "string") {
                 node[propName] = ""
             } else {
