@@ -1,0 +1,40 @@
+
+<!doctype html>
+<html lang="en">
+
+	<head>
+	  <meta charset="utf-8">
+	  <title>Styles</title>
+	</head>
+
+	<script src="../dist/virtual-dom.js"></script>
+
+	<body></body>
+
+	<script>
+		
+	var DOM = new virtualDom.vDOM()
+	var e = virtualDom.h
+
+	var el = e('#comp', 'I am stylish')
+	var b = e('.greeter', 'I am a greenwee')
+
+	var styles = e('style', {
+		'#comp': {
+			color: 'blue'
+		},
+		'.greeter':{
+			backgroundColor: 'grey',
+			lineHeight: '1px'
+		}
+	})
+
+	var main = e('div', [
+		el, b, styles
+	])
+
+	DOM.render(main)
+
+	</script>
+
+ </html>

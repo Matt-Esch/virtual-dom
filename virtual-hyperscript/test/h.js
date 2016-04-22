@@ -188,3 +188,24 @@ test("h with two ids", function (assert) {
 
     assert.end()
 })
+
+test("h with style", function (assert) {
+    var node = h("style", {
+        "#foo": {color: 'blue'},
+        ".bar": {height: '10px', width: '15px'}
+    })
+
+    assert.equal(node.children[0].text,
+        "#foo{color:blue}.bar{height:10px;width:15px}")
+    assert.equal(Object.keys(node.properties).length, 0)
+
+    assert.end()
+})
+
+test("h with style using camelCasing", function (assert) {
+    var node = h("style", { "#foo": {"lineHeight":"2em"} })
+
+    assert.equal(node.children[0].text, "#foo{line-height:2em}")
+
+    assert.end()
+})

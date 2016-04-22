@@ -4,6 +4,7 @@ var h = require("./h.js")
 var create = require("./create-element.js")
 var VNode = require('./vnode/vnode.js')
 var VText = require('./vnode/vtext.js')
+var vDOM = require('./vDOM.js')
 
 module.exports = {
     diff: diff,
@@ -11,5 +12,6 @@ module.exports = {
     h: h,
     create: create,
     VNode: VNode,
-    VText: VText
+    VText: VText,
+    vDOM: vDOM
 }

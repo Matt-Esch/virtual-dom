@@ -14,6 +14,8 @@ var parseTag = require('./parse-tag.js');
 var softSetHook = require('./hooks/soft-set-hook.js');
 var evHook = require('./hooks/ev-hook.js');
 
+var parseStyles = require('./parse-styles');
+
 module.exports = h;
 
 function h(tagName, properties, children) {
@@ -38,6 +40,12 @@ function h(tagName, properties, children) {
     if (props.hasOwnProperty('namespace')) {
         namespace = props.namespace;
         props.namespace = undefined;
+    }
+
+    // parse styles
+    if (tag == 'STYLE' && properties){
+        childNodes = parseStyles(properties);
+        props = null
     }
 
     // fix cursor bug
