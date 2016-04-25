@@ -28,7 +28,7 @@ test("svg with properties", function (assert) {
 })
 
 test("svg properties are set", function (assert) {
-    var node = svg("circle.test", {
+    var node = svg("circle.class#id", {
         style: {
             border: "1px solid #000"
         },
@@ -37,6 +37,10 @@ test("svg properties are set", function (assert) {
 
     assert.strictEqual(node.properties.attributes.width, "40px")
     assert.strictEqual(node.properties.width, undefined)
+    assert.strictEqual(node.properties.attributes.class, "class")
+    assert.strictEqual(node.properties.class, undefined)
+    assert.strictEqual(node.properties.attributes.id, "id")
+    assert.strictEqual(node.properties.id, undefined)
     assert.strictEqual(
         node.properties.style.border,
         safeStyle("boder", "1px solid #000")
