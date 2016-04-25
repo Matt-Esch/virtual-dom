@@ -25,3 +25,5 @@ Newcomers should start by reading the VNode and VText documentation, as virtual 
 [Widget](widget.md) - The mechanism for taking control of node patching: DOM Element creation, updating, and removal.
 
 [CSS animations](css-animations.md)
+
+[FAQ](faq.md) - Frequently asked questions
