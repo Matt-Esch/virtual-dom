@@ -1,5 +1,9 @@
 # Release Notes
 
+## v2.1.0
+
+ - Virtual hyperscript `h()` coerces children numbers to strings.
+
 ## v2.0.0
 
   Provides fundamental fixes and tests for reordering of keyed nodes.
