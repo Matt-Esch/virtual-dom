@@ -7,11 +7,6 @@ function diffProps(a, b) {
     var diff
 
     for (var aKey in a) {
-        if (!(aKey in b)) {
-            diff = diff || {}
-            diff[aKey] = undefined
-        }
-
         var aValue = a[aKey]
         var bValue = b[aKey]
 
