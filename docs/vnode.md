@@ -32,7 +32,7 @@ Hook.prototype.hook = function(elem, key, previousValue) {
 }
 
 var tagName = "div"
-var style = "width: 100px; height: 100px; background-color: #FF0000;"
+var style = { width: "100px", height: "100px", "background-color": "#FF0000" }
 var attributes = {"class": "red box", style: style }
 var key = "my-unique-red-box"
 var namespace = "http://www.w3.org/1999/xhtml"
