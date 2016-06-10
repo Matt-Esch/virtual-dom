@@ -61,7 +61,7 @@ setInterval(function () {
 
 ## Documentation
 
-You can find the documentation for the seperate components
+You can find the documentation for the separate components
   in their READMEs
 
  - For `create-element.js` see the [vdom README](vdom/README.md)
