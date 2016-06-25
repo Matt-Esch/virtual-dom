@@ -2,6 +2,7 @@ var test = require("tape")
 var EvStore = require('ev-store')
 
 var h = require("../index")
+var createIterator = require("./create-iterator")
 
 test("h is a function", function (assert) {
     assert.equal(typeof h, "function")
@@ -97,6 +98,15 @@ test("h with child", function (assert) {
 
 test("h with children", function (assert) {
     var node = h("div", [h("span")])
+
+    assert.equal(node.children[0].tagName, "SPAN")
+
+    assert.end()
+})
+
+test("h with children iterator", function (assert) {
+    var iterator = createIterator([h("span")])
+    var node = h("div", iterator)
 
     assert.equal(node.children[0].tagName, "SPAN")
 

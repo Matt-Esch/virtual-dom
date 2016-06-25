@@ -13,6 +13,8 @@ var isVThunk = require('../vnode/is-thunk');
 var parseTag = require('./parse-tag.js');
 var softSetHook = require('./hooks/soft-set-hook.js');
 var evHook = require('./hooks/ev-hook.js');
+var isIterable = require('./iterable.js').isIterable;
+var getIterator = require('./iterable.js').getIterator;
 
 module.exports = h;
 
@@ -81,6 +83,13 @@ function addChild(c, childNodes, tag, props) {
         for (var i = 0; i < c.length; i++) {
             addChild(c[i], childNodes, tag, props);
         }
+    } else if (isIterable(c)) {
+        var iterator = getIterator(c);
+        var result = iterator.next();
+        while (! result.done) {
+            addChild(result.value, childNodes, tag, props);
+            result = iterator.next();
+        }
     } else if (c === null || c === undefined) {
         return;
     } else {
@@ -116,7 +125,7 @@ function isChild(x) {
 }
 
 function isChildren(x) {
-    return typeof x === 'string' || isArray(x) || isChild(x);
+    return typeof x === 'string' || isArray(x) || isIterable(x) || isChild(x);
 }
 
 function UnexpectedVirtualElement(data) {
