@@ -16,13 +16,29 @@ var evHook = require('./hooks/ev-hook.js');
 
 module.exports = h;
 
-function h(tagName, properties, children) {
+function h(tagName, properties) {
+
+    var len = arguments.length;
+    var children;
     var childNodes = [];
     var tag, props, key, namespace;
 
-    if (!children && isChildren(properties)) {
-        children = properties;
-        props = {};
+    // Simulate spread operator
+    if (len >= 2) {
+        var from = 2;
+
+        if (isChildren(properties)) {
+            from = 1;
+            props = {};
+        }
+
+        if (len > from) {
+            children = Array(len - from);
+
+            for (var k = from; k < len; k++) {
+                children[k - from] = arguments[k];
+            }
+        }
     }
 
     props = props || properties || {};

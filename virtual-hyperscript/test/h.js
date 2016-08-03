@@ -103,6 +103,34 @@ test("h with children", function (assert) {
     assert.end()
 })
 
+test("h with spread children", function (assert) {
+    var node = h("div", h("span"), h("h1"));
+
+    assert.equal(node.children[0].tagName, "SPAN");
+    assert.equal(node.children[1].tagName, "H1");
+
+    assert.end()
+})
+
+test("h with properties and spread children", function (assert) {
+    var node = h("div", { key: "bar" }, h("span"), h("h1"));
+
+    assert.equal(node.key, "bar")
+    assert.equal(node.children[0].tagName, "SPAN");
+    assert.equal(node.children[1].tagName, "H1");
+
+    assert.end()
+})
+
+test("h with undefined properties and children", function(assert) {
+    var node = h("div", undefined, h("span"));
+
+    assert.comment(node.children[0].tagName)
+    assert.equal(node.children[0].tagName, "SPAN")
+
+    assert.end()
+})
+
 test("h with null", function (assert) {
     var node = h("div", null)
     var node2 = h("div", [null])
