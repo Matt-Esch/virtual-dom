@@ -283,7 +283,7 @@ test("injected document object is used", function (assert) {
     var count = 0
     var doc = {
         createElement: function createElement(tagName) {
-            assert.equal(tagName, "DIV")
+            assert.equal(tagName, "div")
             count++
             return { tagName: "DIV", appendChild: function (t) {
                 assert.equal(t, "hello")
