@@ -20,7 +20,10 @@ function applyProperties(node, props, previous) {
             if (isObject(propValue)) {
                 patchObject(node, props, previous, propName, propValue);
             } else {
-                node[propName] = propValue
+                try {
+                    // this is a workaround in case of invalid value or readonly propName
+                    node[propName] = propValue;
+                } catch(err) {}
             }
         }
     }
