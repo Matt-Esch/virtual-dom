@@ -101,7 +101,7 @@ h('div', {
 
 ### Hooking into VNode after it's in the DOM
 
-If you want to a hook to fire after the DOM element has been
+If you want a hook to fire after the DOM element has been
   appended into the DOM you will have to delay the hook manually
 
 ```js
