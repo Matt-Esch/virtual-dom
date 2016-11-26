@@ -41,7 +41,12 @@ function removeNode(domNode, vNode) {
     var parentNode = domNode.parentNode
 
     if (parentNode) {
-        parentNode.removeChild(domNode)
+        // removeChild() errors in Chrome in some edge cases
+        // see: http://stackoverflow.com/questions/21926083/failed-to-execute-removechild-on-node
+        try {
+            parentNode.removeChild(domNode)
+        }
+        catch() {}
     }
 
     destroyWidget(domNode, vNode);
