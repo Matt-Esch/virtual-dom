@@ -62,7 +62,7 @@ function insertNode(parentNode, vNode, renderOptions) {
 function stringPatch(domNode, leftVNode, vText, renderOptions) {
     var newNode
 
-    if (domNode.nodeType === 3) {
+    if (domNode.nodeType === 3 && domNode.parentNode !== null) {
         domNode.replaceData(0, domNode.length, vText.text)
         newNode = domNode
     } else {
