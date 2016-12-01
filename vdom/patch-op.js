@@ -32,6 +32,8 @@ function applyPatch(vpatch, domNode, renderOptions) {
         case VPatch.THUNK:
             return replaceRoot(domNode,
                 renderOptions.patch(domNode, patch, renderOptions))
+        case VPatch.DESTROY:
+            return destroyWidget(domNode, vNode)
         default:
             return domNode
     }

@@ -988,6 +988,35 @@ test("Destroy widget nested in removed thunk", function (assert) {
     assert.end()
 })
 
+test("Can replace stateful widget with vnode", function (assert) {
+    var statefulWidget  = {
+        init: function () {
+            return render(h("div.widget"))
+        },
+        update: function () {},
+        destroy: function () {},
+        type: "Widget"
+    }
+
+    var leftNode = h("div", statefulWidget)
+    var rightNode = h("div", h("div.vnode"))
+
+    var rootNode = render(leftNode)
+
+    assert.equal(rootNode.childNodes.length, 1)
+    assert.equal(rootNode.childNodes[0].className, 'widget')
+
+    var patches = diff(leftNode, rightNode)
+    var newRoot = patch(rootNode, patches)
+
+    assert.equal(newRoot, rootNode)
+
+    assert.equal(newRoot.childNodes.length, 1)
+    assert.equal(newRoot.childNodes[0].className, 'vnode')
+
+    assert.end()
+})
+
 test("Create element respects namespace", function (assert) {
     if (!supportsNamespace()) {
         assert.skip("browser doesn't support namespaces");

@@ -135,7 +135,7 @@ function destroyWidgets(vNode, patch, index) {
         if (typeof vNode.destroy === "function") {
             patch[index] = appendPatch(
                 patch[index],
-                new VPatch(VPatch.REMOVE, vNode, null)
+                new VPatch(VPatch.DESTROY, vNode, null)
             )
         }
     } else if (isVNode(vNode) && (vNode.hasWidgets || vNode.hasThunks)) {
