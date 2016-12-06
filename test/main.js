@@ -199,6 +199,17 @@ test("node class name is applied correctly", function (assert) {
     assert.end()
 })
 
+test("node xmlns is applied correctly", function(assert){
+    var vdom = h("html", { xmlns: "http://www.w3.org/1999/xhtml" })
+    var dom = render(vdom)
+    assert.notOk(dom.id)
+    assert.notOk(dom.className)
+    assert.equal(dom.tagName, "HTML")
+    assert.equal(dom.getAttribute("xmlns"), "http://www.w3.org/1999/xhtml")
+    assert.equal(dom.childNodes.length, 0)
+    assert.end()
+})
+
 test("mixture of node/classname applied correctly", function (assert) {
     var vdom = h("#override.very", { id: "important", className: "pretty"})
     var dom = render(vdom)
