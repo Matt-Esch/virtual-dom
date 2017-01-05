@@ -72,7 +72,7 @@ test("Node child stateful hooks are identified", function (assert) {
 
 test("hooks get called in render", function (assert) {
     var counter = 0
-    var vtree = h("div", {
+    var vtree = h("div.foo", {
         "some-key": hook(function (elem, prop) {
             counter++
             assert.equal(prop, "some-key")
