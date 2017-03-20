@@ -26,9 +26,8 @@ function createElement(vnode, opts) {
         return null
     }
 
-    var node = (vnode.namespace === null) ?
-        doc.createElement(vnode.tagName) :
-        doc.createElementNS(vnode.namespace, vnode.tagName)
+ 
+    var node = createElementInternal(vnode, doc);
 
     var props = vnode.properties
     applyProperties(node, props)
@@ -43,4 +42,22 @@ function createElement(vnode, opts) {
     }
 
     return node
+}
+
+function createElementInternal(vnode, doc) {
+  try {
+    return (vnode.namespace === null) ?
+      doc.createElement(vnode.tagName) :
+      doc.createElementNS(vnode.namespace, vnode.tagName);
+  } catch(ex) {
+    // if createElement throws invalid character error
+    // that means its an invalid tagname 
+    // replace it with div
+    if (ex.INVALID_CHARACTER_ERR === ex.code && vnode.tagName !== "DIV" ) {
+      vnode.tagName = "DIV";
+      return createElementInternal(vnode, doc);
+    } 
+
+    throw ex;
+  }
 }
