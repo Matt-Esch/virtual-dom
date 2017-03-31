@@ -116,7 +116,7 @@ function isChild(x) {
 }
 
 function isChildren(x) {
-    return typeof x === 'string' || isArray(x) || isChild(x);
+    return typeof x === 'string' || typeof x === 'number' || isArray(x) || isChild(x);
 }
 
 function UnexpectedVirtualElement(data) {
