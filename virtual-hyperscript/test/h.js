@@ -188,3 +188,13 @@ test("h with two ids", function (assert) {
 
     assert.end()
 })
+
+test("h with Number", function (assert) {
+    var node = h("div", 1)
+    var node2 = h("div", [1])
+
+    assert.equal(node.children[0].text, "1")
+    assert.equal(node2.children[0].text, "1")
+
+    assert.end()
+})
