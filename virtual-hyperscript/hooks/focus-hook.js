@@ -1,7 +1,7 @@
 'use strict';
 
 var document = require("global/document");
-var nextTick = require("next-tick");
+var nextTick = require("next-tick-2");
 
 module.exports = MutableFocusHook;
 

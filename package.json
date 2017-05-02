@@ -30,7 +30,7 @@
     "ev-store": "^7.0.0",
     "global": "^4.3.0",
     "is-object": "^1.0.1",
-    "next-tick": "^0.2.2",
+    "next-tick-2": "^1.1.0",
     "x-is-array": "0.1.0",
     "x-is-string": "0.1.0"
   },
