@@ -6,6 +6,7 @@ var isVText = require("../vnode/is-vtext")
 var isWidget = require("../vnode/is-widget")
 var isThunk = require("../vnode/is-thunk")
 var handleThunk = require("../vnode/handle-thunk")
+var selector = require("../vnode/selector")
 
 var diffProps = require("./diff-props")
 
@@ -400,7 +401,11 @@ function keyIndex(children) {
         var child = children[i]
 
         if (child.key) {
-            keys[child.key] = i
+            if (keys[child.key]) {
+                throw new Error('duplicate vdom key: ' + child.key + ', vdom: ' + selector(child))
+            } else {
+                keys[child.key] = i
+            }
         } else {
             free.push(i)
         }
