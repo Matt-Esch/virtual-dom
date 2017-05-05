@@ -9,6 +9,7 @@ var TextNode = require("../vnode/vtext")
 var version = require("../vnode/version")
 var assertEqualDom = require("./lib/assert-equal-dom.js")
 var patchCount = require("./lib/patch-count.js")
+var selector = require("../vnode/selector")
 
 
 
@@ -1024,6 +1025,12 @@ test("Different namespaces creates a patch", function (assert) {
     assert.equal(rootNode.tagName, "div")
     assert.equal(rootNode.namespaceURI, "undefined")
 
+    assert.end()
+})
+
+test('can pretty print node as selector', function (assert) {
+    var node = h("div", {id: 'an-id', className: " class-1  class-2"})
+    assert.equal(selector(node), "div#an-id.class-1.class-2")
     assert.end()
 })
 
