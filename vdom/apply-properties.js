@@ -23,7 +23,7 @@ function applyProperties(node, props, previous) {
 
     } else if (isSoftSetHook(propValue)) {
       removeProperty(node, propName, propValue, previous);
-      node[propName] = propValue.value;
+      setProperty(node, propName, propValue);
 
     } else {
       if (isObject(propValue)) {
@@ -52,9 +52,9 @@ function removeProperty(node, propName, propValue, previous) {
         node.style[i] = "";
       }
     } else if (typeof previousValue === "string") {
-      node[propName] = "";
+      setProperty(node, propName, "");
     } else {
-      node[propName] = null;
+      setProperty(node, propName, null);
     }
 
   } else if (previousValue.unhook) {
