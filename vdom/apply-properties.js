@@ -1,7 +1,7 @@
 var isObject = require('is-object');
 var isHook = require('../vnode/is-vhook');
 var isSoftSetHook = require('./is-soft-set-hook');
-var isUndefinedValue = require('./is-undefined-value');
+var undefinedValue = require('./undefined-value');
 
 module.exports = applyProperties;
 
@@ -9,7 +9,7 @@ function applyProperties(node, props, previous) {
   for (var propName in props) {
     var propValue = props[propName];
 
-    if (isUndefinedValue(propValue)) {
+    if (undefinedValue.isUndefined(propValue)) {
       removeProperty(node, propName, propValue, previous);
 
     } else if (isHook(propValue)) {
@@ -101,7 +101,7 @@ function patchObject(node, previous, propName, propValue) {
 
   for (var k in propValue) {
     var value = propValue[k];
-    node[propName][k] = isUndefinedValue(value) ? replacer : value;
+    node[propName][k] = undefinedValue.isUndefined(value) ? replacer : value;
   }
 }
 
