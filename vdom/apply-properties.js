@@ -23,7 +23,7 @@ function applyProperties(node, props, previous) {
 
     } else if (isSoftSetHook(propValue)) {
       removeProperty(node, propName, propValue, previous);
-      node[propName] = propValue.value;
+      setProperty(node, propName, propValue.value);
 
     } else {
       if (isObject(propValue)) {
