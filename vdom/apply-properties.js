@@ -2,6 +2,7 @@ var isObject = require('is-object');
 var isHook = require('../vnode/is-vhook');
 var isSoftSetHook = require('./is-soft-set-hook');
 var undefinedValue = require('./undefined-value');
+var attributes = require('./attributes');
 
 module.exports = applyProperties;
 
@@ -63,14 +64,15 @@ function removeProperty(node, propName, propValue, previous) {
 }
 
 function setProperty(node, propName, value) {
-  // this is a workaround in case of invalid value or readonly propName
   try {
-    node[propName] = value;
-  } catch(err) {}
+    node[propName] = attributes.attributeToPropertyValue(propName, value);
+  } catch(err) {
+      // ignore error in case of invalid value or readonly propName
+  }
 }
 
 function patchObject(node, previous, propName, propValue) {
-  var previousValue = previous ? previous[propName] : undefined
+  var previousValue = previous ? previous[propName] : undefined;
 
   // Set attributes
   if (propName === "attributes") {
