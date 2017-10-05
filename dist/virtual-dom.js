@@ -273,7 +273,7 @@ function applyProperties(node, props, previous) {
             if (isObject(propValue)) {
                 patchObject(node, props, previous, propName, propValue);
             } else {
-                node[propName] = propValue
+                propName === 'className' ? node[propName] = propValue : node.setAttribute(propName, propValue)
             }
         }
     }
