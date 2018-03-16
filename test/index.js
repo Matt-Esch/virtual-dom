@@ -1,6 +1,6 @@
 'use strict'
 
-require("./main.js")
+require("./h.js")
 require("./hook.js")
 require("./nested-properties.js")
 require("./undefined-properties.js")
@@ -10,6 +10,9 @@ require("./style.js")
 require("./attributes")
 require("./non-string.js")
 require("./widget.js")
+require("./patch.js")
+require("./render.js")
+require("./vnode.js")
 
 require("../vdom/test/")
 require("../vtree/test/")
