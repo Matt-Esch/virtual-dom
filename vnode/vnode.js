@@ -1,3 +1,5 @@
+'use strict'
+
 var version = require("./version")
 var isVNode = require("./is-vnode")
 var isWidget = require("./is-widget")

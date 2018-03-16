@@ -1,3 +1,5 @@
+'use strict'
+
 var test = require("tape")
 
 var h = require("../h.js")

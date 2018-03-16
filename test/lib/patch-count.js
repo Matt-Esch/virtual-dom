@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = patchCount
 
 function patchCount(patch) {

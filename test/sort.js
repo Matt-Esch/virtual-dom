@@ -1,3 +1,5 @@
+'use strict'
+
 //
 // This tests the performance of vtree/diff.
 //

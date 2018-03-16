@@ -1,3 +1,5 @@
+'use strict'
+
 var test = require("tape")
 var doc = require("global/document")
 
@@ -56,7 +58,7 @@ test("sets the attribute if previous value was not an AttributeHook", function (
     var elem = createElement(first)
     assert.equal(elem.getAttributeNS(namespace, 'myattr'), blankAttributeNS())
 
-    patches = diff(first, second)
+    var patches = diff(first, second)
     patch(elem, patches)
     assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'the value')
 
@@ -75,7 +77,7 @@ test("sets the attribute if previous value uses a different namespace", function
     var elem = createElement(first)
     assert.equal(elem.getAttributeNS(namespace, 'myattr'), blankAttributeNS())
 
-    patches = diff(first, second)
+    var patches = diff(first, second)
     patch(elem, patches)
     assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'the value')
 
@@ -100,7 +102,7 @@ test("removes the attribute if next value is not an AttributeHook", function (as
     var elem = createElement(first)
     assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'the value')
 
-    patches = diff(first, second)
+    var patches = diff(first, second)
     patch(elem, patches)
     assert.equal(elem.getAttributeNS(namespace, 'myattr'), blankAttributeNS())
 
@@ -119,7 +121,7 @@ test("removes the attribute if next value uses a different namespace", function 
     var elem = createElement(first)
     assert.equal(elem.getAttributeNS(namespace, 'myattr'), 'the value')
 
-    patches = diff(first, second)
+    var patches = diff(first, second)
     patch(elem, patches)
     assert.equal(elem.getAttributeNS(namespace, 'myattr'), blankAttributeNS())
 

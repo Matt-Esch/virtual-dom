@@ -1,3 +1,5 @@
+'use strict'
+
 var isObject = require("is-object")
 var isHook = require("../vnode/is-vhook")
 

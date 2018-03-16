@@ -1,3 +1,5 @@
+'use strict'
+
 var applyProperties = require("./apply-properties")
 
 var isWidget = require("../vnode/is-widget.js")

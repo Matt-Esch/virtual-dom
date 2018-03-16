@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = assertEqualDom
 
 function assertEqualDom(assert, a, b) {

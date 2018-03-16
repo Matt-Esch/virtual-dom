@@ -1,3 +1,5 @@
+'use strict'
+
 var test = require("tape")
 var EvStore = require('ev-store')
 
@@ -76,14 +78,14 @@ test("input.value soft hook", function (assert) {
 })
 
 test("input.value must be coercible to string", function (assert) {
-    var node = h("input", { value: 1234 })
-    var node = h("input", { value: { valueOf: function () {return 1234}} })
-    var node = h("input", { value: new String(1234) })
-    var node = h("input", { value: new Number(1234) })
-    var node = h("input", { value: new Date() })
+    h("input", { value: 1234 })
+    h("input", { value: { valueOf: function () {return 1234}} })
+    h("input", { value: new String(1234) })
+    h("input", { value: new Number(1234) })
+    h("input", { value: new Date() })
 
     assert.throws(function() {
-        var node = h("input", { value: {} })
+        h("input", { value: {} })
     });
 
     assert.end()

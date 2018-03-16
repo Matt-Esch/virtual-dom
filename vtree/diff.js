@@ -1,3 +1,5 @@
+'use strict'
+
 var isArray = require("x-is-array")
 
 var VPatch = require("../vnode/vpatch")

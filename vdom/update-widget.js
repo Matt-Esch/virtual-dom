@@ -1,3 +1,5 @@
+'use strict'
+
 var isWidget = require("../vnode/is-widget.js")
 
 module.exports = updateWidget

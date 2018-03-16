@@ -1,3 +1,5 @@
+'use strict'
+
 var h = require("../../h.js")
 
 module.exports = nodesFromArray

@@ -1,3 +1,5 @@
+'use strict'
+
 var test = require("tape")
 
 var h = require("../h.js")
@@ -270,7 +272,7 @@ test("hooks are not called on trivial diff", function (assert) {
 })
 
 test("property-replacing diff calls unhook", function (assert) {
-  unhookCallCount = 0
+  var unhookCallCount = 0
 
   function zhook(x) {
     this.x = x
@@ -283,8 +285,8 @@ test("property-replacing diff calls unhook", function (assert) {
     unhookCallCount += 1
   }
 
-  hooker = new zhook('ONE')
-  hooker2 = new zhook('TWO')
+  var hooker = new zhook('ONE')
+  var hooker2 = new zhook('TWO')
 
   var firstTree = h("div", {roothook: hooker})
   var secondTree = h("div", {roothook: hooker2})

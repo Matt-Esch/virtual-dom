@@ -1,9 +1,7 @@
+'use strict'
+
 var test = require("tape")
 var VNode = require("../../vnode/vnode")
-var VText = require("../../vnode/vtext")
-var diff = require("../../vtree/diff")
-
-var createElement = require("../create-element")
 var patch = require("../patch")
 
 test("overrided patch function is correctly used and received correct options", function (assert) {

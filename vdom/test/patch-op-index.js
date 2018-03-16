@@ -1,3 +1,5 @@
+'use strict'
+
 var test = require("tape")
 var VNode = require("../../vnode/vnode")
 var VText = require("../../vnode/vtext")

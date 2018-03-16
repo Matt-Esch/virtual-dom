@@ -1,3 +1,5 @@
+'use strict'
+
 require("./main.js")
 require("./hook.js")
 require("./nested-properties.js")

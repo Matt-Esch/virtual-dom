@@ -1,3 +1,5 @@
+'use strict'
+
 var isVNode = require("./is-vnode")
 var isVText = require("./is-vtext")
 var isWidget = require("./is-widget")

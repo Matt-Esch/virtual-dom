@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = isHook
 
 function isHook(hook) {
