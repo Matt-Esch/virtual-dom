@@ -47,7 +47,7 @@ function h(tagName, properties, children) {
         props.value !== undefined &&
         !isHook(props.value)
     ) {
-        if (typeof props.value === 'number' || props.value.valueOf !== Object.prototype.valueOf) props.value += ''
+        if (typeof props.value === 'number' || props.value && props.value.valueOf !== Object.prototype.valueOf) props.value += ''
 
         if (props.value !== null && typeof props.value !== 'string') {
             throw UnsupportedValueType({
