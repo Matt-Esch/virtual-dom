@@ -26,24 +26,24 @@
   },
   "dependencies": {
     "browser-split": "0.0.1",
-    "error": "^4.3.0",
+    "error": "^7.0.2",
     "ev-store": "^7.0.0",
-    "global": "^4.3.0",
+    "global": "^4.3.2",
     "is-object": "^1.0.1",
-    "next-tick": "^0.2.2",
-    "x-is-array": "0.1.0",
-    "x-is-string": "0.1.0"
+    "next-tick": "^1.0.0",
+    "x-is-array": "^0.1.0",
+    "x-is-string": "^0.1.0"
   },
   "devDependencies": {
-    "browserify": "^9.0.7",
-    "istanbul": "^0.3.13",
-    "min-document": "^2.14.0",
-    "opn": "^1.0.1",
+    "browserify": "^16.1.1",
+    "istanbul": "^0.4.5",
+    "min-document": "^2.19.0",
+    "opn": "^5.3.0",
     "run-browser": "^2.0.2",
-    "tap-dot": "^1.0.0",
-    "tap-spec": "^3.0.0",
-    "tape": "^4.0.0",
-    "zuul": "^2.1.1"
+    "tap-dot": "^1.0.5",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.9.0",
+    "zuul": "^3.11.1"
   },
   "license": "MIT",
   "scripts": {
