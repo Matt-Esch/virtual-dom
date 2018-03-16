@@ -40,16 +40,18 @@ function h(tagName, properties, children) {
         props.namespace = undefined;
     }
 
-    // fix cursor bug
+    // fix cursor bug #377
     if (tag === 'INPUT' &&
         !namespace &&
         props.hasOwnProperty('value') &&
         props.value !== undefined &&
         !isHook(props.value)
     ) {
+        if (typeof props.value === 'number' || props.value.valueOf !== Object.prototype.valueOf) props.value += ''
+
         if (props.value !== null && typeof props.value !== 'string') {
             throw UnsupportedValueType({
-                expected: 'String',
+                expected: 'String or String-able',
                 received: typeof props.value,
                 Vnode: {
                     tagName: tag,

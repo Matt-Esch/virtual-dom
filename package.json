@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "browser-split": "0.0.1",
+    "bubleify": "^1.1.0",
     "error": "^7.0.2",
     "ev-store": "^7.0.0",
     "global": "^4.3.2",
