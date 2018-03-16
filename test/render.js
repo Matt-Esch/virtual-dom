@@ -63,6 +63,13 @@ test("mixture of node/classname applied correctly", function (assert) {
     assert.end()
 })
 
+test("input value is applied correctly", function (assert) {
+    var vdom = h("input", {type: 'range', value: 110, max: 200})
+    var dom = render(vdom)
+    assert.equal(dom.value, '110')
+    assert.end()
+})
+
 test("style object is applied correctly", function (assert) {
     var vdom = h("#important.pretty", { style: {
         border: "1px solid rgb(0, 0, 0)",
