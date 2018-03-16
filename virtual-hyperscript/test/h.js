@@ -75,7 +75,7 @@ test("input.value soft hook", function (assert) {
     assert.end()
 })
 
-test.only("input.value must be coercible to string", function (assert) {
+test("input.value must be coercible to string", function (assert) {
     var node = h("input", { value: 1234 })
     var node = h("input", { value: { valueOf: function () {return 1234}} })
     var node = h("input", { value: new String(1234) })

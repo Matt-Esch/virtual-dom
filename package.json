@@ -56,6 +56,8 @@
     "browser": "run-browser test/index.js",
     "phantom": "run-browser test/index.js -b | tap-spec",
     "dist": "browserify --standalone virtual-dom index.js > dist/virtual-dom.js",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
     "travis-test": "npm run phantom && npm run cover && istanbul report lcov && ((cat coverage/lcov.info | coveralls) || exit 0)",
     "release": "npm run release-patch",
     "release-patch": "git checkout master && npm version patch && git push origin master --tags && npm publish",
