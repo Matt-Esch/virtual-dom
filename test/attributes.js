@@ -74,3 +74,25 @@ test("attributes can be completely unset", function (assert) {
     assert.ok(newRootNode.getAttribute("c") == null)
     assert.end()
 })
+
+test("boolean attributes/properties are set and unset correctly", function (assert) {
+    var leftTree = h("div", {
+        disabled: "disabled"
+    })
+
+    var rightTree = h("div", {
+        hidden: "",
+        disabled: undefined
+    })
+
+    var rootNode = createElement(leftTree)
+    var patches = diff(leftTree, rightTree)
+
+
+    var newRootNode = patch(rootNode, patches)
+
+    assert.equal(newRootNode, rootNode)
+    assert.ok(newRootNode.hidden, true)
+    assert.notOk(newRootNode.disabled)
+    assert.end()
+})

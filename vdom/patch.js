@@ -68,13 +68,15 @@ function applyPatch(rootNode, domNode, patchList, renderOptions) {
 }
 
 function patchIndices(patches) {
-    var indices = []
+    var indices = [],
+        index;
 
     for (var key in patches) {
-        if (key !== "a") {
-            indices.push(Number(key))
+        index = + key;
+        if (index || index === 0) {
+            indices.push(index);
         }
     }
 
-    return indices
+    return indices;
 }
