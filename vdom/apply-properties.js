@@ -79,10 +79,14 @@ function patchObject(node, previous, propName, propValue) {
     for (var attrName in propValue) {
       var attrValue = propValue[attrName];
 
-      if (undefinedValue.isUndefined(attrValue)) {
-        node.removeAttribute(attrName);
-      } else {
-        node.setAttribute(attrName, attrValue);
+      try {
+        if (undefinedValue.isUndefined(attrValue)) {
+          node.removeAttribute(attrName);
+        } else {
+          node.setAttribute(attrName, attrValue);
+        }
+      } catch(ex) {
+        // suppress invalid attribute error
       }
     }
 
