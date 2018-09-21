@@ -792,7 +792,12 @@ function getReorderPatch(patches) {
     for (var key in patches) {
         if (key !== "a" && patches.hasOwnProperty(key)) {
             var patch = patches[key]
-            if (patch.type === VPatch.ORDER) {
+            if (Array.isArray(patch)) {
+              var orderPathes = patch.filter(p => p.type === VPatch.ORDER)
+              if (orderPathes.length >= 1) {
+                return orderPathes[0]
+              }
+            } else if (patch.type === VPatch.ORDER) {
                 return patch
             }
         }
