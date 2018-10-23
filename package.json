@@ -39,7 +39,6 @@
     "istanbul": "^0.3.13",
     "min-document": "^2.14.0",
     "opn": "^1.0.1",
-    "run-browser": "^2.0.2",
     "tap-dot": "^1.0.0",
     "tap-spec": "^3.0.0",
     "tape": "^4.0.0",
