@@ -906,7 +906,7 @@ function UnexpectedVirtualElement(data) {
         errorString(data.foreignObject) +
         '.\n' +
         'The parent vnode is:\n' +
-        errorString(data.parentVnode)
+        errorString(data.parentVnode) +
         '\n' +
         'Suggested fix: change your `h(..., [ ... ])` callsite.';
     err.foreignObject = data.foreignObject;
